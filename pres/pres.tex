@@ -39,191 +39,191 @@
   % \bibliographystyle{alpha}
   % \nobibliography{robustness}
 
-  \begin{frame}
-    \titlepage
-  \end{frame}
+\begin{frame}
+  \titlepage
+\end{frame}
 
-  \begin{frame}[fragile]{Motivation}
-  	% Here's a cite: \cite{chaudhuri11}
-  \end{frame}
+\begin{frame}[fragile]{Motivation}
+  % Here's a cite: \cite{chaudhuri11}
+\end{frame}
 
-  \begin{frame}[fragile]{Lists}
-  	asdf
-  \end{frame}
+\begin{frame}[fragile]{Lists}
+  asdf
+\end{frame}
 
-  \begin{frame}[fragile]{Binary Search Trees}
-    \begin{columns}
-      \begin{column}{0.4\textwidth}
+\begin{frame}[fragile]{Binary Search Trees}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \qroofx=2
+      \qroofy=1
+      \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{LR}. ]
+    \end{column}
+    \begin{column}{0.1\textwidth}
+      $\xmapsto{\mathrm{rotate}}$
+    \end{column}
+    \begin{column}{0.4\textwidth}
         \qroofx=2
         \qroofy=1
-        \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{LR}. ]
-      \end{column}
-      \begin{column}{0.1\textwidth}
-        $\xmapsto{\mathrm{rotate}}$
-      \end{column}
-      \begin{column}{0.4\textwidth}
-          \qroofx=2
-          \qroofy=1
-          \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{LL}. ]  ]
-      \end{column}
-    \end{columns}
-    \vfill
-    \begin{columns}
-      \begin{column}{0.45\textwidth}
+        \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{LL}. ]  ]
+    \end{column}
+  \end{columns}
+  \vfill
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \qroofx=2
+      \qroofy=1
+      \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
+    \end{column}
+    \begin{column}{0.1\textwidth}
+      $\xmapsto{\mathrm{flatten}}$
+    \end{column}
+    \begin{column}{0.45\textwidth}
         \qroofx=2
         \qroofy=1
-        \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
-      \end{column}
-      \begin{column}{0.1\textwidth}
-        $\xmapsto{\mathrm{flatten}}$
-      \end{column}
-      \begin{column}{0.45\textwidth}
-          \qroofx=2
-          \qroofy=1
-          \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
-      \end{column}
-    \end{columns}
-    \vfill
-  \end{frame}
+        \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
+    \end{column}
+  \end{columns}
+  \vfill
+\end{frame}
 
-  \begin{frame}[fragile]{Binary Search Trees}
-    It suffices to show
-    \begin{itemize}
-      \item Every tree can be transformed into a ``normal form'' (i.e. list)
-      \item Every operation is reversable
-    \end{itemize}
-  \end{frame}
+\begin{frame}[fragile]{Binary Search Trees}
+  It suffices to show
+  \begin{itemize}
+    \item Every tree can be transformed into a ``normal form'' (i.e. list)
+    \item Every operation is reversable
+  \end{itemize}
+\end{frame}
 
-  \begin{frame}[fragile]{Binary Search Trees -- Proof by example}
-    \begin{itemize}
-      \item Every tree can be transformed into a ``normal form'' (i.e. list)
-    \end{itemize}
+\begin{frame}[fragile]{Binary Search Trees -- Proof by example}
+  \begin{itemize}
+    \item Every tree can be transformed into a ``normal form'' (i.e. list)
+  \end{itemize}
 
-    \only<1-2>{
-      \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.9 8 $\e$ ]]
-    }
-    \only<2>{
-      $\xmapsto{\mathrm{rotate}^{-1}}$
-    }
-    \only<2-3>{
-      \Tree [.9 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] 8 ] $\e$ ]
-    }
-    \only<3>{
-      $\xmapsto{\mathrm{flatten}}$
-    }
-    \only<3-4>{
-      \Tree [.9 [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] $\e$ ] $\e$ ]
-    }
-    \only<4>{
-      $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<4-5>{
-      \Tree [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] 9 ]
-    }
-    \only<5>{
-      $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<5-6>{
-      \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.8 $\e$ 9 ] ]
-    }
-    \only<6>{
-      $\xmapsto{\mathrm{flatten}}$
-    }
-    \only<6-7>{
-      \Tree [.7 [.5 [.3 [.2 1 $\e$ ] 4 ] 6 ] [.8 $\e$ 9 ] ]
-    }
-    \only<7>{
-      $\xmapsto{\mathrm{flatten}}$
-    }
-    \only<7-8>{
-      \Tree [.7 [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] $\e$ ] [.8 $\e$ 9 ] ]
-    }
-    \only<8>{
-      $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<8-9>{
-      \Tree [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] [.7 $\e$ [.8 $\e$ 9 ] ]]
-    }
-    \only<9>{
-      $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<9-10>{
-      \Tree [.5 [.3 [.2 1 $\e$ ] 4 ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
-    }
-    \only<10>{
-      $\xmapsto{\mathrm{flatten}}$
-    }
-    \only<10-11>{
-      \Tree [.5 [.4 [.3 [.2 1 $\e$ ] $\e$ ] $\e$ ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
-    }
-    \only<11>{
-      $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<11-12>{
-      \Tree [.4 [.3 [.2 1 $\e$ ] $\e$ ] [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]
-    }
-    \only<12>{
-      $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<12-13>{
-      \Tree [.3 [.2 1 $\e$ ] [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]
-    }
-    \only<13>{
-       $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<13-14>{
-      \Tree [.2 1 [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]
-    }
-    \only<14>{
-      \hspace{-0.5in} $\xmapsto{\mathrm{rotate}}$
-    }
-    \only<14-15>{
-      \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]]
-    }
-  \end{frame}
+  \only<1-2>{
+    \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.9 8 $\e$ ]]
+  }
+  \only<2>{
+    $\xmapsto{\mathrm{rotate}^{-1}}$
+  }
+  \only<2-3>{
+    \Tree [.9 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] 8 ] $\e$ ]
+  }
+  \only<3>{
+    $\xmapsto{\mathrm{flatten}}$
+  }
+  \only<3-4>{
+    \Tree [.9 [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] $\e$ ] $\e$ ]
+  }
+  \only<4>{
+    $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<4-5>{
+    \Tree [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] 9 ]
+  }
+  \only<5>{
+    $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<5-6>{
+    \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.8 $\e$ 9 ] ]
+  }
+  \only<6>{
+    $\xmapsto{\mathrm{flatten}}$
+  }
+  \only<6-7>{
+    \Tree [.7 [.5 [.3 [.2 1 $\e$ ] 4 ] 6 ] [.8 $\e$ 9 ] ]
+  }
+  \only<7>{
+    $\xmapsto{\mathrm{flatten}}$
+  }
+  \only<7-8>{
+    \Tree [.7 [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] $\e$ ] [.8 $\e$ 9 ] ]
+  }
+  \only<8>{
+    $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<8-9>{
+    \Tree [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] [.7 $\e$ [.8 $\e$ 9 ] ]]
+  }
+  \only<9>{
+    $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<9-10>{
+    \Tree [.5 [.3 [.2 1 $\e$ ] 4 ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
+  }
+  \only<10>{
+    $\xmapsto{\mathrm{flatten}}$
+  }
+  \only<10-11>{
+    \Tree [.5 [.4 [.3 [.2 1 $\e$ ] $\e$ ] $\e$ ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
+  }
+  \only<11>{
+    $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<11-12>{
+    \Tree [.4 [.3 [.2 1 $\e$ ] $\e$ ] [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]
+  }
+  \only<12>{
+    $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<12-13>{
+    \Tree [.3 [.2 1 $\e$ ] [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]
+  }
+  \only<13>{
+     $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<13-14>{
+    \Tree [.2 1 [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]
+  }
+  \only<14>{
+    \hspace{-0.5in} $\xmapsto{\mathrm{rotate}}$
+  }
+  \only<14-15>{
+    \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]]
+  }
+\end{frame}
 
 \end{document}
 
-  % \begin{frame}[fragile]{Multicolumn Example}
-  %   \begin{columns}
-  %     \begin{column}{0.5\textwidth}
-  %       Hello
-  %     \end{column}
-  %     \begin{column}{0.5\textwidth}  %%<--- here
-  %       \begin{flushright}
-  %       image
-  %       \end{flushright}
-  %     \end{column}
-  %   \end{columns}
-  % \end{frame}
+% \begin{frame}[fragile]{Multicolumn Example}
+%   \begin{columns}
+%     \begin{column}{0.5\textwidth}
+%       Hello
+%     \end{column}
+%     \begin{column}{0.5\textwidth}  %%<--- here
+%       \begin{flushright}
+%       image
+%       \end{flushright}
+%     \end{column}
+%   \end{columns}
+% \end{frame}
 
-  % \begin{frame}[fragile]{The Code Topology $T(1,1,1)$}
-  %   View codewords as a grid
-  %   \vfill
-  %   \begin{tabular}{c c c >{\columncolor[rgb]{.8,.8,1}}c | c}
-  %     $x_{1,1}$ & $x_{1,2}$ & $x_{1,3}$ & $x_{1,1} + x_{1,2} + x_{1,3}$ \\
-  %     $x_{2,1}$ & $x_{2,2}$ & \cellcolor[rgb]{1,0,0}$y$ & $x_{2,1} + x_{2,2} + y$ \\
-  %     \rowcolor[rgb]{.8,.8,1}
-  %     $x_{1,1}+x_{2,1}$ & $x_{1,2}+x_{1,2}$ & $x_{1,3}+y$ & (*) & (column parities)\\
-  %     \hline
-  %     & & & (row parities)
-  %   \end{tabular}
-  %   \vfill
-  %   Parities for correlated failures
-  %   \hfill
-  %   \emphasizeWhen{2}{
-  %     Maximize Recoverability
-  %   }
+% \begin{frame}[fragile]{The Code Topology $T(1,1,1)$}
+%   View codewords as a grid
+%   \vfill
+%   \begin{tabular}{c c c >{\columncolor[rgb]{.8,.8,1}}c | c}
+%     $x_{1,1}$ & $x_{1,2}$ & $x_{1,3}$ & $x_{1,1} + x_{1,2} + x_{1,3}$ \\
+%     $x_{2,1}$ & $x_{2,2}$ & \cellcolor[rgb]{1,0,0}$y$ & $x_{2,1} + x_{2,2} + y$ \\
+%     \rowcolor[rgb]{.8,.8,1}
+%     $x_{1,1}+x_{2,1}$ & $x_{1,2}+x_{1,2}$ & $x_{1,3}+y$ & (*) & (column parities)\\
+%     \hline
+%     & & & (row parities)
+%   \end{tabular}
+%   \vfill
+%   Parities for correlated failures
+%   \hfill
+%   \emphasizeWhen{2}{
+%     Maximize Recoverability
+%   }
 
-  %   $(*) = \sum_{i,j} x_{i,j} $
-  %   \hfill
-  %   \emphasizeWhen{2}{
-  %     $y = \sum_{i,j} \gamma_{i,j} x_{i,j}$
-  %   }
+%   $(*) = \sum_{i,j} x_{i,j} $
+%   \hfill
+%   \emphasizeWhen{2}{
+%     $y = \sum_{i,j} \gamma_{i,j} x_{i,j}$
+%   }
 
-  %   \hfill
-  %   \emphasizeWhen{2}{
-  %     Global ``backup" parity
-  %   }
+%   \hfill
+%   \emphasizeWhen{2}{
+%     Global ``backup" parity
+%   }
 
-  % \end{frame}
+% \end{frame}
