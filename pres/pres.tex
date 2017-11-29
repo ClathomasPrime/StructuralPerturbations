@@ -3,6 +3,7 @@
 \usepackage{listings}
 \usepackage{colortbl}% http://ctan.org/pkg/xcolor
 \usepackage{tikz}
+\usepackage{tikz-cd}
 \usepackage{natbib}
 \usepackage{bibentry}
 \usepackage{color}
@@ -11,6 +12,8 @@
 \usepackage[customcolors]{hf-tikz}
 % \usepackage{tabularx}
 \usetikzlibrary{positioning,chains,fit,shapes,calc}
+\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{automata}
 
 \usetheme{Pittsburgh}
 
@@ -47,8 +50,69 @@
   % Here's a cite: \cite{chaudhuri11}
 \end{frame}
 
-\begin{frame}[fragile]{Lists}
-  asdf
+\begin{frame}[fragile]{Lists -- Invariance under order}
+  Given an array $a$
+  \begin{itemize}
+    \item Let $a_{swap}$ be $a$ with its first and second entry swapped
+    \begin{itemize}
+      \item $[ a[1], a[0], a[2], a[3], \ldots, a[n] ]$
+    \end{itemize}
+    \item Let $a_{rot}$ be $a$ rotated by $1$
+    \begin{itemize}
+      \item $[ a[1], a[2], a[3], \ldots  a[n], a[0] ]$
+    \end{itemize}
+  \end{itemize}
+  \vfill
+  Theorem: If for any $a$, $P(a) = P(a_{swap}) = P(a_{rot})$,
+  then for any permutation $a'$ of $a$,
+  we have $P(a) = P(a')$.
+\end{frame}
+
+\begin{frame}[fragile]{Automata -- Invariance under order}
+  \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+      auto, scale=0.6, every node/.style={scale=0.6}
+  ] 
+    \node[state,initial] (q_0)   {$q_0$}; 
+    \node[state] (q_b) [right=of q_0] {$q_b$}; 
+    \node[state] (q_a) [above=of q_b] {$q_a$}; 
+    \node[state] (q_c) [below=of q_b] {$q_c$}; 
+    \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+    \path[->] 
+    (q_0) edge node {a / $\epsilon$} (q_a)
+          edge node {b / $\epsilon$} (q_b)
+          edge node [below left] {c / $\epsilon$} (q_c)
+    (q_a) edge node {x / xa} (q_1)
+    (q_b) edge node {x / xb} (q_1)
+    (q_c) edge node [below right] {x / xc} (q_1)
+    (q_1) edge [loop right] node {x / x} (q_1)
+          ;
+  \end{tikzpicture}
+  \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+      auto, scale=0.6, every node/.style={scale=0.6}
+  ] 
+    \node[state,initial] (q_0)   {$q_0$}; 
+    \node[state] (q_b) [right=of q_0] {$q_b$}; 
+    \node[state] (q_a) [above=of q_b] {$q_a$}; 
+    \node[state] (q_c) [below=of q_b] {$q_c$}; 
+    \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+    \path[->] 
+    (q_0) edge node {a / $\epsilon$} (q_a)
+          edge node {b / $\epsilon$} (q_b)
+          edge node [below left] {c / $\epsilon$} (q_c)
+    (q_a) edge node {\$ / a\$} (q_1)
+          edge [loop above] node {x / x} (q_a)
+    (q_b) edge node {\$ / b\$} (q_1)
+          edge [loop above] node {x / x} (q_b)
+    (q_c) edge node [below right] {\$ / c\$} (q_1)
+          edge [loop above] node {x / x} (q_c)
+          ;
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{Automata -- Invariance under order}
+  Theorem: Given an automata $M$, we can check if $M$
+  is invariant under the order of its input
+  in time $\widetilde{O}(|\Sigma||M|)$
 \end{frame}
 
 \begin{frame}[fragile]{Binary Search Trees}
@@ -181,6 +245,110 @@
     \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]]
   }
 \end{frame}
+
+\begin{frame}[fragile]{More General Procedure}
+  Invariance of a program $P : T\to Z$
+  relative to a function $f : T \to T'$
+  \begin{itemize}
+    \item E.g. $f : BST \to List$
+  \end{itemize}
+  \vfill
+  Observation:
+  The following are equivalent:
+  \begin{itemize}
+    \item $f(x) = f(y) \implies P(x) = P(y)$
+    \item There exists a program $\widetilde{P} : T'\to Z$
+      such that $P = \widetilde{P} \circ f$
+  \end{itemize}
+
+  \[
+    \begin{tikzcd}
+      T \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
+      & T' \arrow[dashed]{ru}{\widetilde{P}} &   \\
+    \end{tikzcd}
+  \]
+\end{frame}
+
+\begin{frame}[fragile]{More General Procedure}
+  \begin{itemize}
+    \item Idea: Synthesize a witness to the invariance
+    \begin{itemize}
+      \item A function $\widetilde{P} : T' \to Z$
+    \end{itemize}
+    \item $P$ and $f$ provide a \emph{full specification} of $\widetilde{P}$
+    \item Counterexample guided inductive synthesis
+  \end{itemize}
+
+  \[
+    \begin{tikzcd}
+      T \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
+      & T' \arrow[dashed]{ru}{\widetilde{P}} &   \\
+    \end{tikzcd}
+  \]
+\end{frame}
+
+\begin{frame}[fragile]{More General Procedure}
+  \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
+    text centered, draw=black, fill=orange!30,
+    text width=10em ]
+  \tikzstyle{smallprocess} = [rectangle, minimum width=3cm, minimum height=1cm,
+    text centered, draw=black, fill=orange!30,
+    text width=6em ]
+  \tikzstyle{io} = [rectangle, rounded corners,
+    minimum width=3cm, minimum height=1cm,
+    text centered, draw=black, fill=blue!30]
+  \tikzstyle{arrow} = [thick,->,>=stealth]
+
+  \begin{tikzpicture}[node distance=2cm, scale=0.8, every node/.style={scale=0.8}]
+    \node (start) [io] {
+      Input $P$ and $f$.
+      Let $E = \{ \}$.
+    };
+    \node (synth) [process, below of=start, yshift=-0.5cm] {
+      Synthesize a program $\widetilde{P} : T' \to Z$
+      given examples $\{ (f(x), P(x)) | x\in E \}$
+    };
+    \node (verify) [process, right of=synth, xshift=4cm] {
+      Verify whether $\widetilde{P}\circ f$
+      is equivalent to $P$
+    };
+    \node (yes) [io, above of=verify] {
+      return YES
+    };
+    \node (check) [process, below of=verify, yshift=-1cm] {
+      Check if there are any $x\in E$ such that
+      $f(x)=f(x_0)$, yet $P(x) \ne P(x_0)$
+    };
+    \node (no) [io, below of=check, yshift=-0.5cm] {
+      return NO
+    };
+    \node (add) [smallprocess, below of=synth, yshift=-1cm] {
+      Add $x_0$ to the example set $E$
+    };
+
+    \draw [arrow] (start) -- (synth);
+    \draw [arrow] (synth) -- (verify);
+    \draw [arrow] (verify) --
+      node[anchor=west, text width=6cm] {No, with \\ counterexample $x_0\in T$}
+      (check);
+    \draw [arrow] (verify) --
+      node[anchor=west, text width=6cm] {Yes, equivalent}
+      (yes);
+    \draw [arrow] (check) --
+      node[anchor=north, text width=2cm, text centered] {No, $x$ does not exists}
+      (add);
+      \draw [arrow] (add) -- (synth);
+    \draw [arrow] (check) --
+      node[anchor=west, text width=6cm] {Yes, $x$ exists}
+      (no);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{More General Procedure}
+  asdf
+\end{frame}
+
+
 
 \end{document}
 
