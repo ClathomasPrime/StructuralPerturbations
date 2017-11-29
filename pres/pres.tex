@@ -47,7 +47,69 @@
 \end{frame}
 
 \begin{frame}[fragile]{Motivation}
-  % Here's a cite: \cite{chaudhuri11}
+    \begin{itemize}
+        \item<1-> An attempt to synthesize the max function using PBE:
+            \begin{itemize}
+                \item \((13, 15) \mapsto 15\)
+                \item \((-23, 19) \mapsto 19\)
+                \item \((-75, -13) \mapsto -13\)
+            \end{itemize}
+        \item<2-> Synthesized program: \verb!P(a,b):=return b!
+        \item<3-> Neither synthesized program, nor synthesizer are {\it robust}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Robustness}
+    \begin{itemize}
+        \item<1-> Robustness: behaving predictably on uncertain inputs [\cite{chaudhuri12}]
+        \item<2-> \verb!P(13,15)! \(\not=\) \verb!P(15,13)!
+        \item<3-> 
+            \begin{itemize}
+                \item \((15, 13) \mapsto 15\)
+                \item \((-23, 19) \mapsto 19\)
+                \item \((-13, -75) \mapsto -13\)
+            \end{itemize}
+            would synthesize very different program
+    \end{itemize}
+    % how does robustness help?
+\end{frame}
+
+\begin{frame}[fragile]{Robustness Properties}
+    \begin{itemize}[<+->]
+        \item Continuity: small change to input \(\Rightarrow\) small change to output
+        \begin{center}
+            \verb!Sort([1,4,3,6])=[1,3,4,6]!
+            \verb!Sort([2,3,3,5])=[2,3,3,5]!
+        \end{center}
+    \item Permutation: permuting input permutes the output
+        \begin{center}
+            \verb!Find([1,4,3,6], 4)=1!
+
+            \(\sigma = (0\,2\,1\,3)\)
+
+            \verb!Find([6,3,1,4], 4)=3!
+            
+            \(\operatorname{Find}(\sigma[1,4,3,6]) = \sigma\operatorname{Find}([1,4,3,6])\)
+        \end{center}
+    \item Permutation: permuting input leaves output invariant
+        \begin{center}
+            \verb!Sort([1,4,3,6])=[1,3,4,6]!
+            \verb!Sort([6,3,1,4])=[1,3,4,6]!
+        \end{center}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Verifying Continuity}
+    % focus on loop free programs
+    % discuss if rules
+    % only applies to numerical perturbations
+\end{frame}
+
+\begin{frame}{Cartesian Hoare Logic}
+    % robustness as a 2-safety property
+    % product program
+    % Cartesian Hoare Logic
+    % downside for many branches
 \end{frame}
 
 \begin{frame}[fragile]{Lists -- Invariance under order}
