@@ -193,16 +193,16 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Motivation}
+\begin{frame}[fragile]{Structural invariants -- Motivation}
   \begin{itemize}
     \item Sanity checks and bug finding
+    % mention bug finding
     \vfill
     \item Functions invariant under order of list
     \begin{itemize}
       \item max, sum, sort
     \end{itemize}
     \vfill
-    % mention bug finding
     \item Data structures with representing something else
     \item Invariance under value it represents
     \begin{itemize}
@@ -232,73 +232,75 @@
   Proof: Math
 \end{frame}
 
-\begin{frame}[fragile]{Automata -- Invariance under order}
-  \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-      auto, scale=0.6, every node/.style={scale=0.6}
-  ] 
-    \node[state,initial] (q_0)   {$q_0$}; 
-    \node[state] (q_b) [right=of q_0] {$q_b$}; 
-    \node[state] (q_a) [above=of q_b] {$q_a$}; 
-    \node[state] (q_c) [below=of q_b] {$q_c$}; 
-    \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-    \path[->] 
-    (q_0) edge node {a / $\epsilon$} (q_a)
-          edge node {b / $\epsilon$} (q_b)
-          edge node [below left] {c / $\epsilon$} (q_c)
-    (q_a) edge node {x / xa} (q_1)
-    (q_b) edge node {x / xb} (q_1)
-    (q_c) edge node [below right] {x / xc} (q_1)
-    (q_1) edge [loop right] node {x / x} (q_1)
-          ;
-  \end{tikzpicture}
-  \ \ \ \ 
-  \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-      auto, scale=0.6, every node/.style={scale=0.6}
-  ] 
-    \node[state,initial] (q_0)   {$q_0$}; 
-    \node[state] (q_b) [right=of q_0] {$q_b$}; 
-    \node[state] (q_a) [above=of q_b] {$q_a$}; 
-    \node[state] (q_c) [below=of q_b] {$q_c$}; 
-    \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-    \path[->] 
-    (q_0) edge node {a / $\epsilon$} (q_a)
-          edge node {b / $\epsilon$} (q_b)
-          edge node [below left] {c / $\epsilon$} (q_c)
-    (q_a) edge node {\$ / a\$} (q_1)
-          edge [loop above] node {x / x} (q_a)
-    (q_b) edge node {\$ / b\$} (q_1)
-          edge [loop above] node {x / x} (q_b)
-    (q_c) edge node [below right] {\$ / c\$} (q_1)
-          edge [loop above] node {x / x} (q_c)
-          ;
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}[fragile]{Automata -- Invariance under order}
-  Theorem: Given a deterministic automata $M$, we can check if $M$
-  is invariant under the order of its input
-  in time $O(|\Sigma|^2|M|\log(|\Sigma||M|))$.
-  \vspace{0.3in}
-
-  Proof:
-  \begin{itemize}
-    \item Construct the machines $M_{swap}$ and $M_{rot}$ by
-      composing $M$ with those machines
-    \begin{itemize}
-      \item Requires $O(|\Sigma||M|)$ states
-    \end{itemize}
-    \item Check if $L(M_{swap}) = L(M) = L(M_{rot})$
-    \begin{itemize}
-      \item E.g. by state minimization in time $O(n|\Sigma| \log n)$
-    \end{itemize}
-  \end{itemize}
-\end{frame}
+% \begin{frame}[fragile]{Automata -- Invariance under order}
+%   \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+%       auto, scale=0.6, every node/.style={scale=0.6}
+%   ] 
+%     \node[state,initial] (q_0)   {$q_0$}; 
+%     \node[state] (q_b) [right=of q_0] {$q_b$}; 
+%     \node[state] (q_a) [above=of q_b] {$q_a$}; 
+%     \node[state] (q_c) [below=of q_b] {$q_c$}; 
+%     \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+%     \path[->] 
+%     (q_0) edge node {a / $\epsilon$} (q_a)
+%           edge node {b / $\epsilon$} (q_b)
+%           edge node [below left] {c / $\epsilon$} (q_c)
+%     (q_a) edge node {x / xa} (q_1)
+%     (q_b) edge node {x / xb} (q_1)
+%     (q_c) edge node [below right] {x / xc} (q_1)
+%     (q_1) edge [loop right] node {x / x} (q_1)
+%           ;
+%   \end{tikzpicture}
+%   \ \ \ \ 
+%   \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+%       auto, scale=0.6, every node/.style={scale=0.6}
+%   ] 
+%     \node[state,initial] (q_0)   {$q_0$}; 
+%     \node[state] (q_b) [right=of q_0] {$q_b$}; 
+%     \node[state] (q_a) [above=of q_b] {$q_a$}; 
+%     \node[state] (q_c) [below=of q_b] {$q_c$}; 
+%     \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+%     \path[->] 
+%     (q_0) edge node {a / $\epsilon$} (q_a)
+%           edge node {b / $\epsilon$} (q_b)
+%           edge node [below left] {c / $\epsilon$} (q_c)
+%     (q_a) edge node {\$ / a\$} (q_1)
+%           edge [loop above] node {x / x} (q_a)
+%     (q_b) edge node {\$ / b\$} (q_1)
+%           edge [loop above] node {x / x} (q_b)
+%     (q_c) edge node [below right] {\$ / c\$} (q_1)
+%           edge [loop above] node {x / x} (q_c)
+%           ;
+%   \end{tikzpicture}
+% \end{frame}
+% 
+% \begin{frame}[fragile]{Automata -- Invariance under order}
+%   Theorem: Given a deterministic automata $M$, we can check if $M$
+%   is invariant under the order of its input
+%   in time $O(|\Sigma|^2|M|\log(|\Sigma||M|))$.
+%   \vspace{0.3in}
+% 
+%   Proof:
+%   \begin{itemize}
+%     \item Construct the machines $M_{swap}$ and $M_{rot}$ by
+%       composing $M$ with those machines
+%     \begin{itemize}
+%       \item Requires $O(|\Sigma||M|)$ states
+%     \end{itemize}
+%     \item Check if $L(M_{swap}) = L(M) = L(M_{rot})$
+%     \begin{itemize}
+%       \item State minimization in time $O(n|\Sigma| \log n)$
+%         [Hopcroft 1971]
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
 
 \begin{frame}[fragile]{Programs -- Invariance under order}
   \begin{itemize}
     \item maxList([x]) = x
     \item maxList([x, ...xs...]) = max(x, maxList(xs))
   \end{itemize}
+  \vfill
   \begin{itemize}
     \item Verifying maxList($a$) = maxList($a_{swap}$) has one case:
   \end{itemize}
@@ -364,100 +366,119 @@
 \end{frame}
 
 \begin{frame}[fragile]{Binary Search Trees}
-  It suffices to show
-  \begin{itemize}
-    \item Every tree can be transformed into a ``normal form'' (i.e. list)
-    \item Every operation is reversable
-  \end{itemize}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      It suffices to show
+      \begin{itemize}
+        \item Every tree can be transformed into a ``normal form'' (i.e. list)
+        \begin{itemize}
+          \item ``flatten'' straightens out the tree
+          \item ``rotate'' lets you straighten all the parts
+        \end{itemize}
+        \item Every operation is reversable
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+      \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ 4 ]]]
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Binary Search Trees -- Proof by example}
+\begin{frame}[fragile]{Lists and Binary Search Trees}
   \begin{itemize}
-    \item Every tree can be transformed into a ``normal form'' (i.e. list)
+    \item Can check robustness under ALL permutations 
+      by checking just TWO permutations
   \end{itemize}
 
-  \only<1-2>{
-    \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.9 8 $\e$ ]]
-  }
-  \only<2>{
-    $\xmapsto{\mathrm{rotate}^{-1}}$
-  }
-  \only<2-3>{
-    \Tree [.9 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] 8 ] $\e$ ]
-  }
-  \only<3>{
-    $\xmapsto{\mathrm{flatten}}$
-  }
-  \only<3-4>{
-    \Tree [.9 [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] $\e$ ] $\e$ ]
-  }
-  \only<4>{
-    $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<4-5>{
-    \Tree [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] 9 ]
-  }
-  \only<5>{
-    $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<5-6>{
-    \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.8 $\e$ 9 ] ]
-  }
-  \only<6>{
-    $\xmapsto{\mathrm{flatten}}$
-  }
-  \only<6-7>{
-    \Tree [.7 [.5 [.3 [.2 1 $\e$ ] 4 ] 6 ] [.8 $\e$ 9 ] ]
-  }
-  \only<7>{
-    $\xmapsto{\mathrm{flatten}}$
-  }
-  \only<7-8>{
-    \Tree [.7 [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] $\e$ ] [.8 $\e$ 9 ] ]
-  }
-  \only<8>{
-    $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<8-9>{
-    \Tree [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] [.7 $\e$ [.8 $\e$ 9 ] ]]
-  }
-  \only<9>{
-    $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<9-10>{
-    \Tree [.5 [.3 [.2 1 $\e$ ] 4 ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
-  }
-  \only<10>{
-    $\xmapsto{\mathrm{flatten}}$
-  }
-  \only<10-11>{
-    \Tree [.5 [.4 [.3 [.2 1 $\e$ ] $\e$ ] $\e$ ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
-  }
-  \only<11>{
-    $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<11-12>{
-    \Tree [.4 [.3 [.2 1 $\e$ ] $\e$ ] [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]
-  }
-  \only<12>{
-    $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<12-13>{
-    \Tree [.3 [.2 1 $\e$ ] [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]
-  }
-  \only<13>{
-     $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<13-14>{
-    \Tree [.2 1 [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]
-  }
-  \only<14>{
-    \hspace{-0.5in} $\xmapsto{\mathrm{rotate}}$
-  }
-  \only<14-15>{
-    \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]]
-  }
 \end{frame}
+
+% \begin{frame}[fragile]{Binary Search Trees -- Proof by example}
+%   \begin{itemize}
+%     \item Every tree can be transformed into a ``normal form'' (i.e. list)
+%   \end{itemize}
+% 
+%   \only<1-2>{
+%     \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.9 8 $\e$ ]]
+%   }
+%   \only<2>{
+%     $\xmapsto{\mathrm{rotate}^{-1}}$
+%   }
+%   \only<2-3>{
+%     \Tree [.9 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] 8 ] $\e$ ]
+%   }
+%   \only<3>{
+%     $\xmapsto{\mathrm{flatten}}$
+%   }
+%   \only<3-4>{
+%     \Tree [.9 [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] $\e$ ] $\e$ ]
+%   }
+%   \only<4>{
+%     $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<4-5>{
+%     \Tree [.8 [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] $\e$ ] 9 ]
+%   }
+%   \only<5>{
+%     $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<5-6>{
+%     \Tree [.7 [.3 [.2 1 $\e$ ] [.5 4 6 ]] [.8 $\e$ 9 ] ]
+%   }
+%   \only<6>{
+%     $\xmapsto{\mathrm{flatten}}$
+%   }
+%   \only<6-7>{
+%     \Tree [.7 [.5 [.3 [.2 1 $\e$ ] 4 ] 6 ] [.8 $\e$ 9 ] ]
+%   }
+%   \only<7>{
+%     $\xmapsto{\mathrm{flatten}}$
+%   }
+%   \only<7-8>{
+%     \Tree [.7 [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] $\e$ ] [.8 $\e$ 9 ] ]
+%   }
+%   \only<8>{
+%     $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<8-9>{
+%     \Tree [.6 [.5 [.3 [.2 1 $\e$ ] 4 ] $\e$ ] [.7 $\e$ [.8 $\e$ 9 ] ]]
+%   }
+%   \only<9>{
+%     $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<9-10>{
+%     \Tree [.5 [.3 [.2 1 $\e$ ] 4 ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
+%   }
+%   \only<10>{
+%     $\xmapsto{\mathrm{flatten}}$
+%   }
+%   \only<10-11>{
+%     \Tree [.5 [.4 [.3 [.2 1 $\e$ ] $\e$ ] $\e$ ] [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]
+%   }
+%   \only<11>{
+%     $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<11-12>{
+%     \Tree [.4 [.3 [.2 1 $\e$ ] $\e$ ] [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]
+%   }
+%   \only<12>{
+%     $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<12-13>{
+%     \Tree [.3 [.2 1 $\e$ ] [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]
+%   }
+%   \only<13>{
+%      $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<13-14>{
+%     \Tree [.2 1 [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]
+%   }
+%   \only<14>{
+%     \hspace{-0.5in} $\xmapsto{\mathrm{rotate}}$
+%   }
+%   \only<14-15>{
+%     \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]]
+%   }
+% \end{frame}
 
 % Maybe swap the code example for a list function
 % Save this for the paper
@@ -489,24 +510,38 @@
 % \end{frame}
 
 \begin{frame}[fragile]{More General Procedure}
+  \begin{itemize}
+    \item Sets of permutations are case-by-case
+    \item Goal: formulation of invariance
+    \begin{itemize}
+      \item Useful
+      \item Easy to code/express
+      \item Checkable
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{More General Procedure}
   Invariance of a program $P : T\to Z$
   relative to a function $f : T \to T'$
   \begin{itemize}
-    \item E.g. $f : BST \to List$
+    \item $f(t)$ gives a ``canonical representative'' of $t$
+    \item For concreteness, $f = list : BST \to List$
   \end{itemize}
   \vfill
   Observation:
   The following are equivalent:
   \begin{itemize}
-    \item $f(x) = f(y) \implies P(x) = P(y)$
-    \item There exists a program $\widetilde{P} : T'\to Z$
-      such that $P = \widetilde{P} \circ f$
+    \item $list(x) = list(y) \implies P(x) = P(y)$
+    \item There exists a program $\widetilde{P} : Lists\to Z$
+      such that $P(t) = \widetilde{P}(list(t))$
   \end{itemize}
 
   \[
     \begin{tikzcd}
-      T \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
-      & T' \arrow[dashed]{ru}{\widetilde{P}} &   \\
+      BSTs \arrow{rr}{P} \arrow{rd}{list} &   & Z \\
+      & Lists \arrow[dashed]{ru}{\widetilde{P}} &   \\
     \end{tikzcd}
   \]
 \end{frame}
@@ -515,16 +550,16 @@
   \begin{itemize}
     \item Idea: Synthesize a witness to the invariance
     \begin{itemize}
-      \item A function $\widetilde{P} : T' \to Z$
+      \item A function $\widetilde{P} : Lists \to Z$
     \end{itemize}
-    \item $P$ and $f$ provide a \emph{full specification} of $\widetilde{P}$
+    \item $P$ and $list$ provide a \emph{full specification} of $\widetilde{P}$
     \item Counterexample guided inductive synthesis
   \end{itemize}
 
   \[
     \begin{tikzcd}
-      T \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
-      & T' \arrow[dashed]{ru}{\widetilde{P}} &   \\
+      BSTs \arrow{rr}{P} \arrow{rd}{list} &   & Z \\
+      & Lists \arrow[dashed]{ru}{\widetilde{P}} &   \\
     \end{tikzcd}
   \]
 \end{frame}
@@ -543,45 +578,45 @@
 
   \begin{tikzpicture}[node distance=2cm, scale=0.8, every node/.style={scale=0.8}]
     \node (start) [io] {
-      Input $P$ and $f$.
+      Input $P$.
       Let $E = \{ \}$.
     };
     \node (synth) [process, below of=start, yshift=-0.5cm] {
-      Synthesize a program $\widetilde{P} : T' \to Z$
-      given examples $\{ (f(x), P(x)) | x\in E \}$
+      Synthesize a program $\widetilde{P} : Lists \to Z$
+      given examples $\{ (list(t), P(t)) | t\in E \}$
     };
     \node (verify) [process, right of=synth, xshift=4cm] {
-      Verify whether $\widetilde{P}\circ f$
-      is equivalent to $P$
+      Verify whether $\widetilde{P}(list(t))$
+      is equivalent to $P(t)$
     };
     \node (yes) [io, above of=verify] {
       return YES
     };
     \node (check) [process, below of=verify, yshift=-1cm] {
-      Check if there are any $x\in E$ such that
-      $f(x)=f(x_0)$, yet $P(x) \ne P(x_0)$
+      Check if there are any $t\in E$ such that
+      $list(t)=list(t_0)$, yet $P(t) \ne P(t_0)$
     };
     \node (no) [io, below of=check, yshift=-0.5cm] {
       return NO
     };
     \node (add) [smallprocess, below of=synth, yshift=-1cm] {
-      Add $x_0$ to the example set $E$
+      Add $t_0$ to the example set $E$
     };
 
     \draw [arrow] (start) -- (synth);
     \draw [arrow] (synth) -- (verify);
     \draw [arrow] (verify) --
-      node[anchor=west, text width=6cm] {No, with \\ counterexample $x_0\in T$}
+      node[anchor=west, text width=6cm] {No, with \\ counterexample $t_0\in BSTs$}
       (check);
     \draw [arrow] (verify) --
       node[anchor=west, text width=6cm] {Yes, equivalent}
       (yes);
     \draw [arrow] (check) --
-      node[anchor=north, text width=2cm, text centered] {No, $x$ does not exists}
+      node[anchor=north, text width=2cm, text centered] {No, $t$ does not exists}
       (add);
       \draw [arrow] (add) -- (synth);
     \draw [arrow] (check) --
-      node[anchor=west, text width=6cm] {Yes, $x$ exists}
+      node[anchor=west, text width=6cm] {Yes, $t$ exists}
       (no);
   \end{tikzpicture}
 \end{frame}
