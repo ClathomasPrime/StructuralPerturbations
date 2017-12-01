@@ -9,6 +9,7 @@
 \usepackage{color}
 \usepackage{mathtools}
 \usepackage{qtree}
+\usepackage{rotating}
 \usepackage[customcolors]{hf-tikz}
 % \usepackage{tabularx}
 \usetikzlibrary{positioning,chains,fit,shapes,calc}
@@ -18,6 +19,7 @@
 \usetheme{Pittsburgh}
 
 \newcommand{\e}{\emptyset}
+\newcommand{\req}[0]{\begin{turn}{90} $=$\end{turn}}
 
 \newcommand{\emphasize}[1]{{\color[rgb]{1,0,0}#1}}
 \newcommand{\emphasizeWhen}[2]{ {\color<#1>[rgb]{1,0,0} #2} }
@@ -47,9 +49,24 @@
 \end{frame}
 
 \begin{frame}[fragile]{Motivation}
-  % Here's a cite: \cite{chaudhuri11}
+  \begin{itemize}
+    \item ``Sanity Checks''
+    \vfill
+    \item Functions invariant under order of list
+    \begin{itemize}
+      \item max, sum, sort
+    \end{itemize}
+    \vfill
+    % mention bug finding
+    \item Data structures with representing something else
+    \item Invariance under value it represents
+    \begin{itemize}
+      \item binary search trees, heaps, hash sets
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
+% Not a great transition
 \begin{frame}[fragile]{Lists -- Invariance under order}
   Given an array $a$
   \begin{itemize}
@@ -63,9 +80,11 @@
     \end{itemize}
   \end{itemize}
   \vfill
-  Theorem: If for any $a$, $P(a) = P(a_{swap}) = P(a_{rot})$,
+  Lemma: If for any $a$, $P(a) = P(a_{swap}) = P(a_{rot})$,
   then for any permutation $a'$ of $a$,
   we have $P(a) = P(a')$.
+
+  Proof: Math
 \end{frame}
 
 \begin{frame}[fragile]{Automata -- Invariance under order}
@@ -87,6 +106,7 @@
     (q_1) edge [loop right] node {x / x} (q_1)
           ;
   \end{tikzpicture}
+  \ \ \ \ 
   \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
       auto, scale=0.6, every node/.style={scale=0.6}
   ] 
@@ -110,9 +130,30 @@
 \end{frame}
 
 \begin{frame}[fragile]{Automata -- Invariance under order}
-  Theorem: Given an automata $M$, we can check if $M$
+  Theorem: Given a deterministic automata $M$, we can check if $M$
   is invariant under the order of its input
-  in time $\widetilde{O}(|\Sigma||M|)$
+  in time $O(|\Sigma|^2|M|\log(|\Sigma||M|))$.
+  \vspace{0.3in}
+
+  Proof:
+  \begin{itemize}
+    \item Construct the machines $M_{swap}$ and $M_{rot}$ by
+      composing $M$ with those machines
+    \begin{itemize}
+      \item Requires $O(|\Sigma||M|)$ states
+    \end{itemize}
+    \item Check if $L(M_{swap}) = L(M) = L(M_{rot})$
+    \begin{itemize}
+      \item E.g. by state minimization in time $O(n|\Sigma| \log n)$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Binary Search Trees}
+  \begin{itemize}
+    \item For lists, two simple permutations generated all permutations
+    \item Goal: similar permutations for BSTs
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Binary Search Trees}
@@ -120,7 +161,7 @@
     \begin{column}{0.4\textwidth}
       \qroofx=2
       \qroofy=1
-      \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{LR}. ]
+      \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
     \end{column}
     \begin{column}{0.1\textwidth}
       $\xmapsto{\mathrm{rotate}}$
@@ -128,7 +169,7 @@
     \begin{column}{0.4\textwidth}
         \qroofx=2
         \qroofy=1
-        \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{LL}. ]  ]
+        \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
     \end{column}
   \end{columns}
   \vfill
@@ -244,6 +285,35 @@
   \only<14-15>{
     \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ [.6 $\e$ [.7 $\e$ [.8 $\e$ 9 ] ]]]]]]]
   }
+\end{frame}
+
+% Maybe swap the code example for a list function
+% Save this for the paper
+\begin{frame}[fragile]{Checking BST code}
+  \begin{itemize}
+    \item Goal: write a secondSmallest function on BSTs
+  \end{itemize}
+  secondSmallest$\Bigg($\hspace{-1in}\Tree [.b [.a $\e$ $\e$ ] \qroof{R}. ]$\Bigg)$ = b
+  \vfill
+  secondSmallest$\Bigg($\hspace{-0.7in}\Tree [.a $\e$ \qroof{R}. ]$\Bigg)$ = smallest(R)
+  \vfill
+  (more cases)
+\end{frame}
+
+\begin{frame}[fragile]{Checking BST code}
+  \begin{itemize}
+    \item One case of checking invariance under rotation:
+  \end{itemize}
+  \begin{align*}
+    secondSmallest\Bigg(\Tree [.b [.a $\e$ $\e$ ] \qroof{R}. ] \Bigg) 
+      & = &
+    secondSmallest\Bigg(\Tree [.a  $\e$ [.b $\e$ \qroof{R}. ]] \Bigg) 
+     \\ 
+    b
+      & = &
+    smallest\Bigg(\Tree [.b $\e$ \qroof{R}. ] \Bigg) 
+  \end{align*}
+
 \end{frame}
 
 \begin{frame}[fragile]{More General Procedure}
