@@ -195,7 +195,7 @@
 
 \begin{frame}[fragile]{Motivation}
   \begin{itemize}
-    \item ``Sanity Checks''
+    \item Sanity checks and bug finding
     \vfill
     \item Functions invariant under order of list
     \begin{itemize}
@@ -292,6 +292,33 @@
       \item E.g. by state minimization in time $O(n|\Sigma| \log n)$
     \end{itemize}
   \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Programs -- Invariance under order}
+  \begin{itemize}
+    \item maxList([x]) = x
+    \item maxList([x, ...xs...]) = max(x, maxList(xs))
+  \end{itemize}
+  \begin{itemize}
+    \item Verifying maxList($a$) = maxList($a_{swap}$) has one case:
+  \end{itemize}
+  \begin{align*}
+    maxList([x, y, ...xs...])
+      & \stackrel{?}{=}
+    maxList([y, x, ...xs...])
+    \\ || \qquad & \qquad || \\
+    max(x, maxList([y, ...xs...]))
+      & \qquad
+    max(y, maxList([x, ...xs...]))
+    \\ || \qquad & \qquad || \\
+    max(x, max(y, maxList(xs)))
+      & \qquad
+    max(y, max(x, maxList(xs)))
+    \\ || \qquad & \qquad || \\
+    max(x, max(y, z))
+      & \qquad
+    max(y, max(x, z))
+  \end{align*}
 \end{frame}
 
 \begin{frame}[fragile]{Binary Search Trees}
@@ -434,32 +461,32 @@
 
 % Maybe swap the code example for a list function
 % Save this for the paper
-\begin{frame}[fragile]{Checking BST code}
-  \begin{itemize}
-    \item Goal: write a secondSmallest function on BSTs
-  \end{itemize}
-  secondSmallest$\Bigg($\hspace{-1in}\Tree [.b [.a $\e$ $\e$ ] \qroof{R}. ]$\Bigg)$ = b
-  \vfill
-  secondSmallest$\Bigg($\hspace{-0.7in}\Tree [.a $\e$ \qroof{R}. ]$\Bigg)$ = smallest(R)
-  \vfill
-  (more cases)
-\end{frame}
-
-\begin{frame}[fragile]{Checking BST code}
-  \begin{itemize}
-    \item One case of checking invariance under rotation:
-  \end{itemize}
-  \begin{align*}
-    secondSmallest\Bigg(\Tree [.b [.a $\e$ $\e$ ] \qroof{R}. ] \Bigg) 
-      & = &
-    secondSmallest\Bigg(\Tree [.a  $\e$ [.b $\e$ \qroof{R}. ]] \Bigg) 
-     \\ 
-    b
-      & = &
-    smallest\Bigg(\Tree [.b $\e$ \qroof{R}. ] \Bigg) 
-  \end{align*}
-
-\end{frame}
+% \begin{frame}[fragile]{Checking BST code}
+%   \begin{itemize}
+%     \item Goal: write a secondSmallest function on BSTs
+%   \end{itemize}
+%   secondSmallest$\Bigg($\hspace{-1in}\Tree [.b [.a $\e$ $\e$ ] \qroof{R}. ]$\Bigg)$ = b
+%   \vfill
+%   secondSmallest$\Bigg($\hspace{-0.7in}\Tree [.a $\e$ \qroof{R}. ]$\Bigg)$ = smallest(R)
+%   \vfill
+%   (more cases)
+% \end{frame}
+% 
+% \begin{frame}[fragile]{Checking BST code}
+%   \begin{itemize}
+%     \item One case of checking invariance under rotation:
+%   \end{itemize}
+%   \begin{align*}
+%     secondSmallest\Bigg(\Tree [.b [.a $\e$ $\e$ ] \qroof{R}. ] \Bigg) 
+%       & = &
+%     secondSmallest\Bigg(\Tree [.a  $\e$ [.b $\e$ \qroof{R}. ]] \Bigg) 
+%      \\ 
+%     b
+%       & = &
+%     smallest\Bigg(\Tree [.b $\e$ \qroof{R}. ] \Bigg) 
+%   \end{align*}
+% 
+% \end{frame}
 
 \begin{frame}[fragile]{More General Procedure}
   Invariance of a program $P : T\to Z$
@@ -557,10 +584,6 @@
       node[anchor=west, text width=6cm] {Yes, $x$ exists}
       (no);
   \end{tikzpicture}
-\end{frame}
-
-\begin{frame}[fragile]{More General Procedure}
-  asdf
 \end{frame}
 
 \begin{frame}{Future Directions}
