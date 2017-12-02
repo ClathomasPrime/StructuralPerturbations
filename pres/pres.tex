@@ -206,8 +206,14 @@
 \begin{frame}[fragile]{Our Contributions}
   \begin{itemize}
     % mention bug finding
-    \item Small sets of perturbations 
-    \item Small sets of perturbations 
+    \item Small sets of perturbations that ``generate'' all perturbations
+    \begin{itemize}
+      \item Lists, binary search trees
+    \end{itemize}
+    \item Formulate ``invariance with respect to a function''
+    \begin{itemize}
+      \item General, sound procedure
+    \end{itemize}
     \vfill
     \item Sanity checks and bug finding
   \end{itemize}
@@ -381,17 +387,16 @@
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}  %%<--- here
-      \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ 4 ]]]
+      \Tree [.1 $\e$ [.2 $\e$ [.3 $\e$ [.4 $\e$ [.5 $\e$ 6 ]]]]]
     \end{column}
   \end{columns}
 \end{frame}
 
 \begin{frame}[fragile]{Lists and Binary Search Trees}
   \begin{itemize}
-    \item Can check robustness under ALL permutations 
+    \item Can check robustness under ALL permutations
       by checking just TWO permutations
   \end{itemize}
-
 \end{frame}
 
 % \begin{frame}[fragile]{Binary Search Trees -- Proof by example}
@@ -521,7 +526,6 @@
       \item Checkable
     \end{itemize}
   \end{itemize}
-
 \end{frame}
 
 \begin{frame}[fragile]{More General Procedure}
@@ -584,11 +588,11 @@
       Let $E = \{ \}$.
     };
     \node (synth) [process, below of=start, yshift=-0.5cm] {
-      Synthesize a program $\widetilde{P} : Lists \to Z$
+      \textbf{Synthesize} a program $\widetilde{P} : Lists \to Z$
       given examples $\{ (list(t), P(t)) | t\in E \}$
     };
     \node (verify) [process, right of=synth, xshift=4cm] {
-      Verify whether $\widetilde{P}(list(t))$
+      \textbf{Verify} whether $\widetilde{P}(list(t))$
       is equivalent to $P(t)$
     };
     \node (yes) [io, above of=verify] {
@@ -630,6 +634,7 @@
         \item \space
         \item Find more data structures with small perturbation sets
         \item Speed up our general procedure
+        \item Synthesis for verification?
         \item Implement!
     \end{itemize}
 \end{frame}
