@@ -169,7 +169,7 @@
 
 \begin{frame}{Cartesian Hoare Logic}
     \begin{itemize}
-        \item<1-> Robustness requires 2 executions
+        \item<1-> Robustness requires two executions
         \item<2-> Verified using product program
             \begin{itemize}
                 \item<3-> \(P_{1} \varoast P_{2}\) is simultaneous execution
@@ -181,6 +181,7 @@
                 \item<7-> Symmetry: \[\|x_{1} = y_{2} \wedge x_{2} = y_{1}\|f(x,y)\|ret_{1} = ret_{2}\|\]
             \end{itemize}
         \item<8-> Requires specifying property in first-order logic
+        \item<9-> Not optimized for \(2\)-safety properties
     \end{itemize}
     % robustness as a 2-safety property
     % product program
@@ -204,13 +205,17 @@
 %\end{frame}
 
 \begin{frame}[fragile]{Our Contributions}
-  \begin{itemize}
-    % mention bug finding
-    \item Small sets of perturbations 
-    \item Small sets of perturbations 
-    \vfill
-    \item Sanity checks and bug finding
-  \end{itemize}
+    Goals:
+    \begin{itemize}
+        \item<2-> Reason about invariance under discrete perturbations
+        \item<3-> Want to optimize for our specific problem
+    \end{itemize}
+        \vfill
+    \uncover<4->{Results:}
+    \begin{itemize}
+        \item<5-> Small sets of perturbations 
+        \item<6-> Sanity checks and bug finding
+    \end{itemize}
 \end{frame}
 
 % Not a great transition
@@ -626,8 +631,8 @@
 \begin{frame}{Future Directions}
     \begin{itemize}[<+->]
         \item Develop proof rules for discrete perturbations
-        \item Address branching in 2-safety properties
-        \item \space
+        \item Improved handling of branching programs by Cartesian Hoare Logic
+        \item Working implementation of Cartesian Hoare Logic
         \item Find more data structures with small perturbation sets
         \item Speed up our general procedure
         \item Implement!
