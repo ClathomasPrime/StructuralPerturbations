@@ -4,8 +4,8 @@
 \usepackage{colortbl}% http://ctan.org/pkg/xcolor
 \usepackage{tikz}
 \usepackage{tikz-cd}
-\usepackage{natbib}
-\usepackage{bibentry}
+%\usepackage{natbib}
+%\usepackage{bibentry}
 \usepackage{color}
 \usepackage{mathtools}
 \usepackage{qtree}
@@ -66,7 +66,7 @@
 
 \begin{frame}[fragile]{Robustness}
     \begin{itemize}
-        \item<1-> Robustness: behaving predictably on uncertain inputs [\cite{chaudhuri12}]
+        \item<1-> Robustness: behaving predictably on uncertain inputs \cite{chaudhuri12}
         \item<2-> \verb!P(13,15)! \(\not=\) \verb!P(15,13)!
         \item<3-> 
             \begin{itemize}
@@ -113,7 +113,7 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Verifying Continuity}
+\begin{frame}[fragile]{Verifying Continuity \cite{chaudhuri10}}
     \begin{itemize}
         \item<1-> Consider
             \begin{algorithmic}[1]
@@ -167,7 +167,7 @@
 %    \end{itemize}
 %\end{frame}
 
-\begin{frame}{Cartesian Hoare Logic}
+\begin{frame}{Cartesian Hoare Logic \cite{sousa16}}
     \begin{itemize}
         \item<1-> Robustness requires two executions
         \item<2-> Verified using product program
@@ -234,7 +234,7 @@
   \vfill
   Lemma: If for any $a$, $P(a) = P(a_{swap}) = P(a_{rot})$,
   then for any permutation $a'$ of $a$,
-  we have $P(a) = P(a')$.
+  we have $P(a) = P(a')$. \cite{dummitfoote}
 
   Proof: Math
 \end{frame}
@@ -639,7 +639,13 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}{References}
+    \bibliographystyle{abbrv}
+    \bibliography{robustness}
+\end{frame}
+
 \end{document}
+
 
 % \begin{frame}[fragile]{Multicolumn Example}
 %   \begin{columns}
