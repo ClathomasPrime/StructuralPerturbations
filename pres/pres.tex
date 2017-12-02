@@ -4,8 +4,8 @@
 \usepackage{colortbl}% http://ctan.org/pkg/xcolor
 \usepackage{tikz}
 \usepackage{tikz-cd}
-\usepackage{natbib}
-\usepackage{bibentry}
+%\usepackage{natbib}
+%\usepackage{bibentry}
 \usepackage{color}
 \usepackage{mathtools}
 \usepackage{qtree}
@@ -66,7 +66,7 @@
 
 \begin{frame}[fragile]{Robustness}
     \begin{itemize}
-        \item<1-> Robustness: behaving predictably on uncertain inputs [\cite{chaudhuri12}]
+        \item<1-> Robustness: behaving predictably on uncertain inputs \cite{chaudhuri12}
         \item<2-> \verb!P(13,15)! \(\not=\) \verb!P(15,13)!
         \item<3-> 
             \begin{itemize}
@@ -113,7 +113,7 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Verifying Continuity}
+\begin{frame}[fragile]{Verifying Continuity \cite{chaudhuri10}}
     \begin{itemize}
         \item<1-> Consider
             \begin{algorithmic}[1]
@@ -167,9 +167,9 @@
 %    \end{itemize}
 %\end{frame}
 
-\begin{frame}{Cartesian Hoare Logic}
+\begin{frame}{Cartesian Hoare Logic \cite{sousa16}}
     \begin{itemize}
-        \item<1-> Robustness requires 2 executions
+        \item<1-> Robustness requires two executions
         \item<2-> Verified using product program
             \begin{itemize}
                 \item<3-> \(P_{1} \varoast P_{2}\) is simultaneous execution
@@ -181,6 +181,7 @@
                 \item<7-> Symmetry: \[\|x_{1} = y_{2} \wedge x_{2} = y_{1}\|f(x,y)\|ret_{1} = ret_{2}\|\]
             \end{itemize}
         \item<8-> Requires specifying property in first-order logic
+        \item<9-> Not optimized for \(2\)-safety properties
     \end{itemize}
     % robustness as a 2-safety property
     % product program
@@ -204,18 +205,36 @@
 %\end{frame}
 
 \begin{frame}[fragile]{Our Contributions}
+  % \begin{itemize}
+  %   % mention bug finding
+  %   \item Small sets of perturbations that ``generate'' all perturbations
+  %   \begin{itemize}
+  %     \item Lists, binary search trees
+  %   \end{itemize}
+  %   \item Formulate ``invariance with respect to a function''
+  %   \begin{itemize}
+  %     \item General, sound procedure
+  %   \end{itemize}
+  %   \vfill
+  %   \item Sanity checks and bug finding
+  % \end{itemize}
+  Goals:
   \begin{itemize}
-    % mention bug finding
-    \item Small sets of perturbations that ``generate'' all perturbations
-    \begin{itemize}
-      \item Lists, binary search trees
-    \end{itemize}
-    \item Formulate ``invariance with respect to a function''
-    \begin{itemize}
-      \item General, sound procedure
-    \end{itemize}
-    \vfill
-    \item Sanity checks and bug finding
+      \item Reason about invariance under discrete perturbations
+      \item Want to optimize for our specific problem
+  \end{itemize}
+      \vfill
+  \uncover{Results:}
+  \begin{itemize}
+      \item Small sets of perturbations that ``generate'' all perturbations
+      \begin{itemize}
+        \item Lists, binary search trees
+      \end{itemize}
+      \item Formulate ``invariance with respect to a function''
+      \begin{itemize}
+        \item General, sound procedure
+      \end{itemize}
+      \item Sanity checks and bug finding
   \end{itemize}
 \end{frame}
 
@@ -237,7 +256,7 @@
   then for any permutation $a'$ of $a$,
   we have $P(a) = P(a')$.
 
-  Proof: Math
+  Proof: Math \cite{dummitfoote}
 \end{frame}
 
 % \begin{frame}[fragile]{Automata -- Invariance under order}
@@ -559,7 +578,7 @@
       \item A function $\widetilde{P} : Lists \to Z$
     \end{itemize}
     \item $P$ and $list$ provide a \emph{full specification} of $\widetilde{P}$
-    \item Counterexample guided inductive synthesis
+    \item Counterexample guided inductive synthesis \cite{solar06}
   \end{itemize}
 
   \[
@@ -628,10 +647,10 @@
 \end{frame}
 
 \begin{frame}{Future Directions}
-    \begin{itemize}[<+->]
+    \begin{itemize}% [<+->]
         \item Develop proof rules for discrete perturbations
-        \item Address branching in 2-safety properties
-        \item \space
+        \item Improved handling of branching programs by Cartesian Hoare Logic
+        \item Working implementation of Cartesian Hoare Logic
         \item Find more data structures with small perturbation sets
         \item Speed up our general procedure
         \item Synthesis for verification?
@@ -639,7 +658,14 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}{References}
+  \footnotesize
+  \bibliographystyle{abbrv}
+  \bibliography{robustness}
+\end{frame}
+
 \end{document}
+
 
 % \begin{frame}[fragile]{Multicolumn Example}
 %   \begin{columns}
