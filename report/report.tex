@@ -28,8 +28,7 @@
 \DeclareMathOperator{\SimultConj}{SimultConj}
 \DeclareMathOperator{\len}{length}
 
-% \title{Improving PBE by Verifying Robustness Properties}
-\title{Verifying Robustness of Programs Under Algebraic Perturbations}
+\title{Verifying Robustness of Programs Under Structural Perturbations}
 \author{Jacob Bond and Clay Thomas}
 \institute{Purdue University}
 
@@ -48,18 +47,11 @@ Consider an attempt to specify the \(\max\) function by providing to a program s
 
 First, the program synthesizer is not robust as transposing the inputs of all of the examples would result in the program \verb!P(a,b):=return a;!, while transposing a only single input would result in the correct program \verb!P(a,b):=return a>b?a:b;\!.
 
-Second, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty of the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;\! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return \verb!P(a,b):=return a>b?a:b;\!.  Moreover, 
-
-However, if instructed to return a program which is invariant under permuting the arguments, this would no longer be a viable program, and it is likely that the synthesizer would return a function for finding the \(\max\) of two elements.
-
-Moreover, by reversing the inputs from the input-output pairs given above, the synthesizer would now be likely to construct a program which returns the first input.  In this way, the synthesizer is sensitive to small changes in input, and would not be robust itself.
-
-% continuity is no longer the focus; this introduction needs to be modified
-It is desirable for programs to respond smoothly to changes in input, in the sense that if a small change is made to the input, the change in output is also small.  Many classical algorithms are indeed robust with respect to continuity \cite{chaudhuri11}.  In the setting of PBE, a user would likely prefer, and expect, a program synthesizer to return a robust program.  For this reason, the ability to efficiently verify robustness would be useful in the determination of which program the synthesizer should return.
+Second, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty of the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;\! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return \verb!P(a,b):=return a>b?a:b;\!.
 
 Moreover, a synthesizer which returns robust programs will itself be more robust.  Let \(\mathcal{I}_{1} = (I_{1}, O_{1})\) and \(\mathcal{I}_{2} = (I_{2}, O_{2})\) be two input-output pairs for a program synthesizer which differ by a small perturbation.  If the program \(\mathcal{P}_{1}\) returned by the synthesizer on input \(\mathcal{I}_{1}\) is robust, then \(\mathcal{P}_{1}(I_{2})\) will approximate \(O_{2}\) because \(I_{2}\) approximates \(I_{1}\).  For this reason, \(\mathcal{P}_{2}\), the program returned on input \(\mathcal{I}_{2}\), should only differ from \(\mathcal{P}_{1}\) by a small amount.
 
-Finally, if a sufficiently efficient method for verifying program robustness is developed, it could be applied to a program synthesizer in order to verify directly that the synthesizer is indeed robust.
+Thus, the issue of robustness in PBE can be addressed by verifying robustness, either of the synthesized programs or even of the synthesizer as a whole.  However, verification of robustness requires the ability to reason about robustness.
 
 \subsection{Problem Definition}
 
@@ -119,9 +111,9 @@ For the permutation \(\sigma\) above,
 5 & 3 & 1 & 2 & 4 & 0
 \end{tabular}.\]
 
+% give first-order formula for being a permutation
 \paragraph{First-Order Formula for a Permutation}
 The property of being a permutation on \(\{0, \dotsc, N-1\}\) is encoded in the theory of arrays as
-% explain this
 \begin{multline*}\Perm(a, N): N = \len(a) \wedge (\forall i. 0 \leq i < N \rightarrow 0 \leq a[i] < N) \wedge\\(\forall i,j. 0 \leq i < j < N \rightarrow a[i] \not= a[j]).\end{multline*}
 
 \paragraph{Action on an Array}
@@ -150,13 +142,6 @@ The permutations on \(N\) elements, \(S_{N}\), can all be expressed as compositi
 \makeatletter
 \renewcommand{\@cite}[1]{[#1]}
 \makeatother
-
-\subsection{Automata}
-We consider two classes of automata: finite state machines (FSM) and finite state transducers (FST). All automata we consider are deterministic. Given an automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is an FSM, we represent "accept" by $1$ and "reject" by $0$. Otherwise, $A$ is a finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$ denote the set of strings accepted by $A$. (We do not define the language of an FST).
-
-Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM. 
-
-We will assume that all input strings are terminated by a special end-of-input character \$.
 
 \section{Examples of Robust Programs}
 
@@ -209,6 +194,90 @@ x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge
 \end{algorithmic}
 \end{algorithm}
 
+% should this part actually be included?
+\paragraph{Relabeling}
+Consider a bipartite graph drawn without edge-crossings.  Labeling the edges results in a cyclic ordering of the edges around each vertex, which can then be viewed as a pair of permutations \(\sigma_{0}, \sigma_{1} \in S_{N}\).  However, relabeling the edges does not change the structure of the graph, and as such, many computations performed on the graph should be invariant under a relabeling of the graph.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.5\textwidth}
+        \centering
+    \begin{tikzpicture}
+        \GraphInit[vstyle=Classic]
+        \SetVertexMath
+        \tikzset{
+            VertexStyle/.style = {
+                inner sep = 0pt,
+                outer sep = 0pt,
+                shape = circle,
+                fill = black,
+                minimum size = 4.5pt,
+                draw}
+                }
+        \SetGraphUnit{1.25}
+    \tikzset{VertexStyle/.append style={fill = white}}
+    \Vertex[NoLabel = true]{A}
+    \tikzset{VertexStyle/.append style={fill = black}}
+    \SOEA[NoLabel = true](A){B}
+    \tikzset{VertexStyle/.append style={fill = white}}
+    \SOWE[NoLabel = true](B){C}
+        {\SetGraphUnit{2.5}
+        \EA[NoLabel = true](B){D}}
+    \tikzset{VertexStyle/.append style={fill = black}}
+    \SOEA[NoLabel = true](D){E}
+    \NOEA[NoLabel = true](D){F}
+    \SetUpEdge[labelstyle = {sloped,below = 2}]
+        \Edge[label = 4](B)(D)
+    \SetUpEdge[labelstyle = {sloped,above = 2}]
+    \Edge[label = 3](B)(C)
+        \Edge[label = 5](D)(E)
+        \Edge[label = 6](D)(F)
+    \tikzset{EdgeStyle/.append style = {bend left = 60}}
+        \Edge[label = 1](B)(A)
+        \Edge[label = 2](A)(B)
+    \end{tikzpicture}
+\end{minipage}\begin{minipage}{0.5\textwidth}
+\begin{align*}
+    \sigma_{0} &= (1\,3\,4\,2)(5)(6)\\
+    \sigma_{1} &= (1\,2)(3)(4\,5\,6)
+\end{align*}
+\end{minipage}
+\caption{A dessin d'enfant and its corresponding pair of permutations}
+\end{figure}
+
+A relabeling of the graph corresponds to simultaneously conjugating the permutations \(\sigma_{0}, \sigma_{1}\) by and element of \(S_{N}\).  This can be expressed in a first-order theory as follows:
+
+\begin{enumerate}
+\item Let the property that \(c\) conjugates \(a\) into \(b\) be given by
+\[\Conj(a, b, c): \forall i.\, 0 \leq i < \len(a) \rightarrow a[c[i]] = c[b[i]].\]
+\item Then being simultaneously conjugate is the property that
+\[\SimultConj([x_{1}, y_{1}], [x_{2}, y_{2}]): \exists c.\, \Perm(c) \wedge \Conj(x_{1}, x_{2}, c) \wedge \Conj(y_{1}, y_{2}, c)\]
+\end{enumerate}
+
+An example of such an algorithm is to compute a canonical pair of permutations for any equivalence class of graphs.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Function{CanonicalPair}{s0, s1}
+\State CandidateReps \(\gets\) []
+\For{0 \(\leq\) i \(<\) N}
+\State \(Q \gets \) Deque([i]), perm \(\gets\) [i]
+\While{length(perm) \(<\) N}
+\State \(x\gets\) PopLeft(Q)
+\For{s in (s0, s1)}
+\If{s(x) not in perm}
+\State Append(perm, s(x))
+\State PushRight(Q, s(x))
+\EndIf
+\EndFor
+\EndWhile
+\State Append(CandidateReps,[perm\(^{-1}\)\(*\)s0\(*\)perm, perm\(^{-1}\)\(*\)s1\(*\)perm])
+\EndFor
+\Return{Min(CandidateReps)}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
 \section{Verifying Robustness Using Cartesian Hoare Logic}
 
 % discuss using Descartes' algorithm to verify robustness
@@ -216,6 +285,23 @@ x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge
 \subsection{Shortcomings Regarding Lipschitz-Continuity}
 
 % discuss how the If rule of CHL can be improved for verifying continuity
+
+\section{Preliminaries}
+
+\subsection{The symetric group}
+The symetric group $S_n$ is the group of bijective functions on the set $\{1,2,\ldots, n\}$, which we call permutations. We will write elements of $S_n$ using ``cycle notation'', where $(i_1\ i_2\ \ldots\ i_m)$ represents the permutation that sends $i_j$ to $i_{j+1}$ for $j=1,\ldots, m-1$ and sends $i_m$ to $i_1$.
+
+We will often talk about the symmetric group acting on linear data types (namely, arrays, lists, and strings). For any $\sigma \in S_n$ and any array $a$, this action is given by the formula
+$$ (\sigma a)[i] = a[\sigma(i)] $$
+where we index our arrays starting at $1$. This action extends naturally to lists and strings. For an example, the action of the full cycle $(1\ 2\ 3\ \ldots\ n)$ just ``rotates'' a string by one, e.g. $(1\ 2\ 3\ 4)``abcd'' = ``bcda''$.
+% discuss the use of arrays for representing permutations maybe?
+
+\subsection{Automata}
+We consider two classes of automata: finite state machines (FSM) and finite state transducers (FST). All automata we consider are deterministic. Given an automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is an FSM, we represent "accept" by $1$ and "reject" by $0$. Otherwise, $A$ is a finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$ denote the set of strings accepted by $A$. (We do not define the language of an FST).
+
+Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM. 
+
+We will assume that all input strings are terminated by a special end-of-input character \$.
 
 \section{Invariance under permuting arrays}
 
