@@ -45,9 +45,13 @@ The question of robustness is fundamental to the subject of programming by examp
 
 Consider an attempt to specify the \(\max\) function by providing to a program synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and \((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the result will likely be the program \verb!P(a,b):=return b;!.  Two issues are at play here: the program syntehsizer is not robust and the synthesized program is also not robust.
 
-First, the program synthesizer is not robust as transposing the inputs of all of the examples would result in the program \verb!P(a,b):=return a;!, while transposing a only single input would result in the correct program \verb!P(a,b):=return a>b?a:b;\!.
+First, the program synthesizer is not robust as transposing the inputs of all of the examples would result in the program \verb!P(a,b):=return a;!, while transposing just a single input would result in the correct program
 
-Second, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty of the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;\! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return \verb!P(a,b):=return a>b?a:b;\!.
+\hspace{2\parindent}\verb!P(a,b):=return a>b?a:b;!.
+
+Second, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty of the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return
+
+\hspace{2\parindent}\verb!P(a,b):=return a>b?a:b;!.
 
 Moreover, a synthesizer which returns robust programs will itself be more robust.  Let \(\mathcal{I}_{1} = (I_{1}, O_{1})\) and \(\mathcal{I}_{2} = (I_{2}, O_{2})\) be two input-output pairs for a program synthesizer which differ by a small perturbation.  If the program \(\mathcal{P}_{1}\) returned by the synthesizer on input \(\mathcal{I}_{1}\) is robust, then \(\mathcal{P}_{1}(I_{2})\) will approximate \(O_{2}\) because \(I_{2}\) approximates \(I_{1}\).  For this reason, \(\mathcal{P}_{2}\), the program returned on input \(\mathcal{I}_{2}\), should only differ from \(\mathcal{P}_{1}\) by a small amount.
 
@@ -55,23 +59,7 @@ Thus, the issue of robustness in PBE can be addressed by verifying robustness, e
 
 \subsection{Problem Definition}
 
-% discuss k-safety properties here
-Our goal is to formulate robustness conditions inside of a first-order theory, in order to utilize an SMT solver in checking robustness.  In particular, we will explore various robustness properties for arrays of integers, as well as automated methods for checking these properties with an SMT solver.  We will perform an experiment to determine the improvements that result from a synthesis engine being able to reason about robustness properties.
-
-\section{Robustness Properties}
-
-Robustness of a program is the property that the program behaves predictably on uncertain inputs \cite{chaudhuri12}.  In our context, the uncertainty derives from the fact that the user's input only specifies a very small number of potential arguments to the desired function and that the returned program should not change drastically as a result of specifying input-output pairs which are slightly perturbed.
-
-Some settings in which programs should be robust:
-\begin{itemize}
-\item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
-\item permutations of arrays,
-\item simultaneous permutations of arrays,
-\item relabeling of inputs \cite{zapponi03}.
-\end{itemize}
-
-\paragraph{Robustness as a 2-Safety Property}
-A 2-safety property is one which requires reasoning about two execution traces simultaneously.  As robustness requires reasoning about uncertain inputs, this can be achieved by considering a given input along with a second input which may be considered to vary over the range of uncertainty.  In this way, robustness is a 2-safety property.
+\subsection{Related Work}
 
 \section{Preliminaries}
 
@@ -119,7 +107,10 @@ The property of being a permutation on \(\{0, \dotsc, N-1\}\) is encoded in the 
 \paragraph{Action on an Array}
 
 Given a permutation \(\sigma\), \(\sigma\) can {\it act} on an array \(a\) as follows.  Let \(a = [37, 25, 19, 49, 81, 21]\) and \(\sigma\) be as above.  Then \(\sigma(3) = \sigma[3] = 1\) and applying \(\sigma\) to \(a\) results in the element of \(a\) at index \(3\), \(49\), being moved to index \(1\) in \(\sigma a\).  That is, \(\sigma a[1] = 49\) and \(a[3] = \sigma a[1] = \sigma a[\sigma[3]]\).  More generally,
-\[\sigma a[\sigma[i]] = a[i] \Longleftrightarrow \sigma a[i] = a[\sigma^{-1}[i]].\]
+\begin{equation}
+\sigma a[\sigma[i]] = a[i] \Longleftrightarrow \sigma a[i] = a[\sigma^{-1}[i]].
+\label{action}
+\end{equation}
 
 \paragraph{Generating Permutations}
 For information on permutation groups, see \S1.3 in \cite{dummitfoote}.
@@ -128,7 +119,6 @@ For information on permutation groups, see \S1.3 in \cite{dummitfoote}.
 \renewcommand{\@cite}[1]{#1}
 \makeatother
 The permutations on \(N\) elements, \(S_{N}\), can all be expressed as compositions of the permutations [Exercises 3-4, \S3.5, \cite{dummitfoote}]
-
 % increase the intercolumn spacing
 \[\begin{tabular}{ccccc}
 0 & 1 & 2 & \(\dotsm\) & \(N-1\)\\
@@ -138,12 +128,27 @@ The permutations on \(N\) elements, \(S_{N}\), can all be expressed as compositi
 \begin{tabular}{ccccc}
 0 & 1 & 2 & \(\dotsm\) & \(N-1\)\\
 1 & 2 & 3 & \(\dotsm\) & 0
-\end{tabular}.\]
+\end{tabular},\]
 \makeatletter
 \renewcommand{\@cite}[1]{[#1]}
 \makeatother
+where the first permutation is a transposition of \(0\) and \(1\) and the second permutation is a rotation of all of the elements by one position.
 
-\section{Examples of Robust Programs}
+\subsection{Automata}
+We consider two classes of automata: finite state machines (FSM) and finite state transducers (FST). All automata we consider are deterministic. Given an automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is an FSM, we represent "accept" by $1$ and "reject" by $0$. Otherwise, $A$ is a finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$ denote the set of strings accepted by $A$. (We do not define the language of an FST).
+
+Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM. 
+
+We will assume that all input strings are terminated by a special end-of-input character \$.
+
+\section{Robustness Properties}
+
+Some settings in which programs should be robust:
+\begin{itemize}
+\item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
+\item permutations of arrays and matrices,
+\item simultaneous permutations of arrays,
+\end{itemize}
 
 \subsection{Continuity}
 
@@ -151,26 +156,23 @@ The permutations on \(N\) elements, \(S_{N}\), can all be expressed as compositi
 
 \subsection{Permutations}
 
-Suppose \(\mathcal{P}\) is a program with takes an array as input.  Assume further that it is desired that \(\mathcal{P}\) be permutation invariant.
-
 \subsubsection{Sorting}
-
-
 
 % discuss maximum function being invariant under permutations
 
 \subsubsection{Searching}
 
-% discuss that if P(a, x) finds x in the array a, then P(sigma(a), x) = sigma(P(a, x))
+Consider the function \verb!Find(a, x)! which returns the index of the element \verb!x! in the array \verb!a! or \(-1\) if \verb!x! is not an element of \verb!a!.  Let \(\sigma\) be a permutation and suppose that \verb!a[i]=x!.  Then from \eqref{action}
+\[\sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! = \verb!x!,\]
+so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).  Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) = -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is robust in that perturbing the input array by a permutation \(\sigma\) perturbs the output of \verb!Find! by the same permutation \(\sigma\).
 
 \subsubsection{Adjacency Matrices}
 
 % programs operating on adjacency matrices should either be invariant under permutations or behave similarly to searching
 
-\subsection{Further Examples of Robustness Properties}
+\subsection{Simultaneous Permutation}
 
-\paragraph{Simultaneous Permutation}
-Consider an algorithm for grading a multipart homework problem, which takes as input three arrays:  the student's responses, the correct answers, and the amounts that each part is worth.  A reordering of the parts of the problem should not affect the points which a student earns.  As reordering the parts of the problem corresponds to simultaneously permuting the three input arrays, the grading algorithm should be invariant under simultaneous permutations of the input arrays.  Using ideas from Section \ref{perms}, this property can be expressed as the conjunction of the following two formulas:
+Consider an algorithm for grading a multipart homework problem, which takes as input three arrays:  the student's responses, the correct answers, and the credit to be awarded for each part.  A reordering of the parts of the problem should not affect the credit which a student is awarded.  As reordering the parts of the problem corresponds to simultaneously permuting the three input arrays, the grading algorithm should be invariant under simultaneous permutations of the input arrays.  Using ideas from Section \ref{perms}, this property can be expressed as the conjunction of the following two formulas:
 
 \begin{multline*}x_{2}[1] = x_{1}[0] \wedge y_{2}[1] = y_{1}[0] \wedge z_{2}[1] = z_{1}[0] \wedge\\
 x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge\\
@@ -178,6 +180,8 @@ x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge
 \end{multline*}
 \begin{multline*}\len(y_{1}) = N \wedge (x_{2}[0] = x_{1}[N-1] \wedge y_{2}[0] = y_{1}[N-1] \wedge z_{2}[0] = z_{1}[N-1]) \wedge\\ \forall i.\, 1 \leq i < N \rightarrow (x_{2}[i] = x_{1}[i-1] \wedge y_{2}[i] = y_{1}[i-1] \wedge z_{2}[i] = z_{1}[i-1])
 \end{multline*}
+
+The first formula specifies that the first two parts of the problem are transposed, while the rest of the parts remain unchanged.  The second specifies a rotation by one of the parts of the problem.
 %\begin{multline*}N = \len(y_{1}) \wedge \exists a. \Perm(a, N) \wedge \forall i. 0 \leq i < N \rightarrow\\(x_{2}[a[i]] = x_{1}[i] \wedge y_{2}[a[i]] = y_{1}[i] \wedge z_{2}[a[i]] = z_{1}[i])\end{multline*}
 
 \begin{algorithm}
@@ -194,114 +198,16 @@ x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge
 \end{algorithmic}
 \end{algorithm}
 
-% should this part actually be included?
-\paragraph{Relabeling}
-Consider a bipartite graph drawn without edge-crossings.  Labeling the edges results in a cyclic ordering of the edges around each vertex, which can then be viewed as a pair of permutations \(\sigma_{0}, \sigma_{1} \in S_{N}\).  However, relabeling the edges does not change the structure of the graph, and as such, many computations performed on the graph should be invariant under a relabeling of the graph.
+\section{Verifying Robustness}
 
-\begin{figure}[h]
-    \centering
-    \begin{minipage}{0.5\textwidth}
-        \centering
-    \begin{tikzpicture}
-        \GraphInit[vstyle=Classic]
-        \SetVertexMath
-        \tikzset{
-            VertexStyle/.style = {
-                inner sep = 0pt,
-                outer sep = 0pt,
-                shape = circle,
-                fill = black,
-                minimum size = 4.5pt,
-                draw}
-                }
-        \SetGraphUnit{1.25}
-    \tikzset{VertexStyle/.append style={fill = white}}
-    \Vertex[NoLabel = true]{A}
-    \tikzset{VertexStyle/.append style={fill = black}}
-    \SOEA[NoLabel = true](A){B}
-    \tikzset{VertexStyle/.append style={fill = white}}
-    \SOWE[NoLabel = true](B){C}
-        {\SetGraphUnit{2.5}
-        \EA[NoLabel = true](B){D}}
-    \tikzset{VertexStyle/.append style={fill = black}}
-    \SOEA[NoLabel = true](D){E}
-    \NOEA[NoLabel = true](D){F}
-    \SetUpEdge[labelstyle = {sloped,below = 2}]
-        \Edge[label = 4](B)(D)
-    \SetUpEdge[labelstyle = {sloped,above = 2}]
-    \Edge[label = 3](B)(C)
-        \Edge[label = 5](D)(E)
-        \Edge[label = 6](D)(F)
-    \tikzset{EdgeStyle/.append style = {bend left = 60}}
-        \Edge[label = 1](B)(A)
-        \Edge[label = 2](A)(B)
-    \end{tikzpicture}
-\end{minipage}\begin{minipage}{0.5\textwidth}
-\begin{align*}
-    \sigma_{0} &= (1\,3\,4\,2)(5)(6)\\
-    \sigma_{1} &= (1\,2)(3)(4\,5\,6)
-\end{align*}
-\end{minipage}
-\caption{A dessin d'enfant and its corresponding pair of permutations}
-\end{figure}
-
-A relabeling of the graph corresponds to simultaneously conjugating the permutations \(\sigma_{0}, \sigma_{1}\) by and element of \(S_{N}\).  This can be expressed in a first-order theory as follows:
-
-\begin{enumerate}
-\item Let the property that \(c\) conjugates \(a\) into \(b\) be given by
-\[\Conj(a, b, c): \forall i.\, 0 \leq i < \len(a) \rightarrow a[c[i]] = c[b[i]].\]
-\item Then being simultaneously conjugate is the property that
-\[\SimultConj([x_{1}, y_{1}], [x_{2}, y_{2}]): \exists c.\, \Perm(c) \wedge \Conj(x_{1}, x_{2}, c) \wedge \Conj(y_{1}, y_{2}, c)\]
-\end{enumerate}
-
-An example of such an algorithm is to compute a canonical pair of permutations for any equivalence class of graphs.
-
-\begin{algorithm}
-\begin{algorithmic}[1]
-\Function{CanonicalPair}{s0, s1}
-\State CandidateReps \(\gets\) []
-\For{0 \(\leq\) i \(<\) N}
-\State \(Q \gets \) Deque([i]), perm \(\gets\) [i]
-\While{length(perm) \(<\) N}
-\State \(x\gets\) PopLeft(Q)
-\For{s in (s0, s1)}
-\If{s(x) not in perm}
-\State Append(perm, s(x))
-\State PushRight(Q, s(x))
-\EndIf
-\EndFor
-\EndWhile
-\State Append(CandidateReps,[perm\(^{-1}\)\(*\)s0\(*\)perm, perm\(^{-1}\)\(*\)s1\(*\)perm])
-\EndFor
-\Return{Min(CandidateReps)}
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-\section{Verifying Robustness Using Cartesian Hoare Logic}
+% double check this citation:
+A 2-safety property is one which requires reasoning about two execution traces simultaneously \cite{terauchi05}.  Robustness is the property that given two inputs which are related by some form of uncertainty, the outputs should be related in a predictable way.  Thus, robustness is a 2-safety property.
 
 % discuss using Descartes' algorithm to verify robustness
 
 \subsection{Shortcomings Regarding Lipschitz-Continuity}
 
 % discuss how the If rule of CHL can be improved for verifying continuity
-
-\section{Preliminaries}
-
-\subsection{The symetric group}
-The symetric group $S_n$ is the group of bijective functions on the set $\{1,2,\ldots, n\}$, which we call permutations. We will write elements of $S_n$ using ``cycle notation'', where $(i_1\ i_2\ \ldots\ i_m)$ represents the permutation that sends $i_j$ to $i_{j+1}$ for $j=1,\ldots, m-1$ and sends $i_m$ to $i_1$.
-
-We will often talk about the symmetric group acting on linear data types (namely, arrays, lists, and strings). For any $\sigma \in S_n$ and any array $a$, this action is given by the formula
-$$ (\sigma a)[i] = a[\sigma(i)] $$
-where we index our arrays starting at $1$. This action extends naturally to lists and strings. For an example, the action of the full cycle $(1\ 2\ 3\ \ldots\ n)$ just ``rotates'' a string by one, e.g. $(1\ 2\ 3\ 4)``abcd'' = ``bcda''$.
-% discuss the use of arrays for representing permutations maybe?
-
-\subsection{Automata}
-We consider two classes of automata: finite state machines (FSM) and finite state transducers (FST). All automata we consider are deterministic. Given an automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is an FSM, we represent "accept" by $1$ and "reject" by $0$. Otherwise, $A$ is a finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$ denote the set of strings accepted by $A$. (We do not define the language of an FST).
-
-Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM. 
-
-We will assume that all input strings are terminated by a special end-of-input character \$.
 
 \section{Invariance under permuting arrays}
 
