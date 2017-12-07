@@ -18,6 +18,7 @@
 \usepackage{varwidth}
 \usepackage{qtree}
 \usepackage{mathtools}
+\usepackage{tabularx}
 
 \newlength\Colsep
 \setlength\Colsep{10pt}
@@ -323,84 +324,68 @@ Represent binary search trees by the algebraic data type
 Then define two (partial) operations $\rho$ and $\theta$ on binary search trees
 as follows:
 
-\noindent
-data Tree = Nil $|$ Branch Tree Int Tree
-\\ \\
-$\rho$(Branch (Branch LL a LR) b R)
-\\ \hphantom{df} = Branch LL a (Branch LR b R)
-\\ \\
-$\theta$(Branch (Branch LL a (Branch LRL b LRR)) c R)
-\\ \hphantom{df} = Branch LL a (Branch LR b R)
-
-% \noindent\begin{minipage}{\textwidth}
-%   \begin{minipage}[c][2cm][c]{\dimexpr0.6\textwidth-0.5\Colsep\relax}
-%   \end{minipage}\hfill
-%   \noindent\begin{minipage}{0.4\textwidth}
-%     \begin{minipage}[c][6cm][c]{\dimexpr0.19\textwidth}
-%       \qroofx=2
-%       \qroofy=1
-%       \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-%     \end{minipage}\hfill
-%     \begin{minipage}[c][6cm][c]{\dimexpr0.02\textwidth}
-%       $\xmapsto{\mathrm{\ \ \rho\ \ }}$
-%     \end{minipage}\hfill
-%     \begin{minipage}[c][6cm][c]{\dimexpr0.19\textwidth}
-%       \qroofx=2
-%       \qroofy=1
-%       \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-%     \end{minipage}%
-%     \vfill
-%     \begin{minipage}[c][6cm][c]{\dimexpr0.19\textwidth}
-%       \qroofx=2
-%       \qroofy=1
-%       \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-%     \end{minipage}\hfill
-%     \begin{minipage}[c][6cm][c]{\dimexpr0.02\textwidth}
-%       $\xmapsto{\mathrm{\ \ \rho\ \ }}$
-%     \end{minipage}\hfill
-%     \begin{minipage}[c][6cm][c]{\dimexpr0.19\textwidth}
-%       \qroofx=2
-%       \qroofy=1
-%       \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-%     \end{minipage}%
-%   \end{minipage}
-% \end{minipage}
-
-% \begin{varwidth}[t]{.5\textwidth}
-%   Petites nacelles :
-%   \begin{itemize}
-%   \item Inverseur BR710
-%   \item Nacelle F7X
-% \end{varwidth}% <---- Don't forget this %
-% \hspace{4em}% <---- Don't forget this %
-% \begin{varwidth}[t]{.5\textwidth}
-%   Petites nacelles :
-%   \begin{itemize}
-%   \item Nacelle SAAB2000
-%   \item Inverseur BR710
-%   \item Nacelle F7X
-% \end{itemize}
-% \end{varwidth}
-
-
-(intuitively thought of as a rotation)(intuitively thought of a
-
-
 \begin{algorithm}
-\begin{algorithmic}
-\Function{Listify}{T}
-\While{T has a right child}
-  \State apply $\rho^{-1}$ to T
-\EndWhile
-\While{T has a left child}
-  \While{T's left child has a right child}
-    \State apply $\theta$ to T
-  \EndWhile
-  \State apply $\rho$ to T
-\EndWhile
-\EndFunction
-\end{algorithmic}
+  data Tree = Nil $|$ Branch Tree Int Tree
+  \\ \\
+  list Nil = [\ ] \\
+  list (Branch left a right) = list(left) ++ [a] ++ list(right)
+  \\ \\
+  $\rho$(Branch (Branch LL a LR) b R)
+  \\ \hphantom{df} = Branch LL a (Branch LR b R)
+  \\ \\
+  $\theta$(Branch (Branch LL a (Branch LRL b LRR)) c R)
+  \\ \hphantom{df} = Branch LL a (Branch LR b R)
 \end{algorithm}
+
+\qroofx=2
+\qroofy=1
+\def\tabularxcolumn#1{m{#1}}
+
+\begin{tabularx}{\textwidth}{ccc}
+ \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
+    & $\xmapsto{\ \ \rho\ \ }$
+    & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
+  \\
+  \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
+  & $\xmapsto{\ \ \theta\ \ }$
+  & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
+\end{tabularx}
+
+\begin{theorem}
+  If a program $P$ on binary search trees is invariant under $\rho$
+  and $\theta$, then whenever $\mathrm{list}(t_1) = \mathrm{list}(t_2)$,
+  we have $P(t_1) = P(t_2)$.
+\end{theorem}
+\begin{proof}
+  Observe that if $P$ is invariant under $\rho$ and $\theta$,
+  then $P$ is also invariant under $\rho^{-1}$ and $\theta^{-1}$.
+  Thus, we need to show that any two binary search trees representing the same
+  ordered list can be transformed into one another using only $\rho$,
+  $\rho^{-1}$, $\theta$, and $\theta^{-1}$.
+  Because these operations are invertible, it suffices to demonstrate that you
+  can use them to transform any binary search tree into a ``degenerate list
+  structure'', in which no subtree has a nonnull left child.
+
+  Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$:
+  \begin{algorithm}
+    \begin{algorithmic}[1]
+      \Function{Listify}{t}
+      \While{t has a right child}
+        \State apply $\rho^{-1}$ to t
+      \EndWhile
+      \While{t has a left child}
+        \While{t's left child has a right child}
+          \State apply $\theta$ to t
+        \EndWhile
+        \State apply $\rho$ to t
+      \EndWhile
+      \EndFunction
+    \end{algorithmic}
+  \end{algorithm} 
+  I claim that this algorithm terminates with $t$ in degenerate list form.
+
+\end{proof}
+
 
 \section{Invariance with respect to a function}
 
