@@ -15,6 +15,7 @@
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{tkz-graph}
+\usepackage{tikz-cd}
 \usepackage{varwidth}
 \usepackage{qtree}
 \usepackage{mathtools}
@@ -188,7 +189,7 @@ Some settings in which programs should be robust:
 
 Let \(F\) and \(G\) be the formulas
 \begin{gather*}
-    F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],
+    F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
         G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
 \end{gather*}
 Then invariace of a program which takes an array as input can be specified by
@@ -455,7 +456,7 @@ first order logic. One approach comes from the following observation:
 \begin{lemma} Let $P : T \to T'$ and $f : T' \to Z$.
   Then $P$ is invariant with respect to $f$ if and only if
   there exists a program $\widetilde{P} : T'\to Z$
-  such that $P = \widetilde{P} \after f$
+  such that $P = \widetilde{P} \circ f$
 \end{lemma}
 
   \[
