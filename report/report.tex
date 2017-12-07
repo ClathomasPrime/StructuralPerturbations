@@ -305,9 +305,13 @@ Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) =
 
 We will assume that all input strings are terminated by a special end-of-input character \$.
 
-\section{Invariance under permuting arrays}
+\section{Invariance under permuting lists}
+\label{permlists}
 
-A different problem we have been thinking about is more discrete and  algebraic in nature. We want to verify that programs are invariant under permutations of their input arrays.
+A different problem we have been thinking about is more discrete
+and algebraic in nature.
+We want to verify that programs are invariant under
+permutations of their input arrays.
 
 \subsection{Automata}
 Given a program $P$ which takes a linear data type
@@ -388,49 +392,25 @@ Certainly this method is more efficient than checking invariance under a larger 
 
 \section{Invariance under permuting binary search trees}
 
-\iffalse % entire section commented out by iffalse
-\section{Abstract Interpretation For Linearity}
-Yet another problem we've been thinking about is the linearity of functions as mappings between vector spaces.
+In the previous section~\ref{permlists}, we found a reduction
 
-When dealing with vector spaces, one commonly wants functions to be linear, i.e. for any vectors $v,u$ and scalar $a$, we have
-\begin{enumerate}
-	\item $f(v+u) = f(v) + f(u)$
-    \item $f(av) = af(v)$
-\end{enumerate}
-Both of these properties are expressible in the framework of \cite{sousa16}, as
-\begin{enumerate}
-	\item $||v_3 = v_1 + v_2||\ f(v)\ ||ret_3 = ret_1+ret_2||$
-    \item $\forall k.\ ||v_2 = k\cdot v_1 ||\ f(v)\ 
-    	||ret_2 = k\cdot ret_1||$
-\end{enumerate}
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Function{Listify}{T}
+\While{T has a right child}
+  \State apply $\rho^{-1}$ to T
+\EndWhile
+\While{T has a left child}
+  \While{T's left child has a right child}
+    \State apply $\theta$ to T
+  \EndWhile
+  \State apply $\rho$ to T
+\EndWhile
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
-While these methods may work, a more specialized way to verify linearity may be more efficient and more effective. To this end, we describe an abstract domain focusing specifically on item (2) above. This abstract domain describes relationships like ``y is linear in x''. Our goal will be to prove statements like
-$\{true\} S \{y = \mathrm{linear\ in\ }x\}$, where $y$
-is the output and $x$ is the input.
-
-Consider a program for computing approximate fixedpoints of a matrix multiplied by a vector, i.e. $A^n v$ for some given $A$, $n$, and $v$. As simple program for this, along with its (abstract) annotations, is given by
-
-\begin{verbatim}
-{v=linear in v}
-r := v
-i := 0
-while i < n:
-    r := A*r
-    i := i+1
-{r=linear in v}
-\end{verbatim}
-
-We intuitively describe verifying this program, but we will not make this formal. We start by trying to derive an inductive invariant for the loop. The strongest postcondition of the initial two statements is something like \texttt{\{r=linear in v, v=linear in v, i=const\}}. Then, the strongest postcondition of the loop body is \texttt{\{r=linear in v, v=linear in v, i=number\}}. The important relation is maintained through the loop, namely, \texttt{r} scales linearly with \texttt{v}.
-
-There are still a lot of details to work out in this abstract domain, but here are a few more operations that should probably hold in the domain:
-\begin{itemize}
-	\item $\zero + \linin x = \linin x$
-    \item $\const + \linin x = \afin x$
-    \item $\const + \afin x = \afin x$
-    % \item $\linin x + \linin y = ??$
-\end{itemize}
-% The last line highlights an example difficulty in making this domain more useful
-\fi
+\section{Invariance with respect to a function}
 
 \section{Related Work}
 
