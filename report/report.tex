@@ -74,9 +74,19 @@ Moreover, a synthesizer which returns robust programs will itself be more robust
 
 Thus, the issue of robustness in PBE can be addressed by verifying robustness, either of the synthesized programs or even of the synthesizer as a whole.  However, verification of robustness requires the ability to reason about robustness.
 
-\subsection{Problem Definition}
+\section{Related Work}
 
-\subsection{Related Work}
+\paragraph{Relational Logics} Benton \cite{benton} established a Relational Hoare Logic in order to reason about relational properties, properties which consider two, usually distinct, programs.  Barthe et al. \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to probabalistic programs in order to reason about cryptographic protocols and differential privacy.
+
+\paragraph{Self-Composition} Barthe et al. \cite{barthecomposition} applied self-composition, sequential running of renamed copies of the original program, to study secure information flow.  Terauchi \& Aiken \cite{terauchi05} built on this work by applying a type-based approach to complement self-composition.
+
+\paragraph{\(2\)-Safety Properties} In \cite{terauchi05}, Terauchi \& Aiken introduce the term \(2\)-safety property to describe a property which requires two execution traces in order to reason about it.  A general approach to the verification of \(2\)-safety properties is the creation of a product program \cite{bartheproduct}, a program which interleaves two copies of a given program to create a new program.  It \cite{bartheanalysis}, Barthe et al. analyzes various relational program logics, as well as different notions of product programs.
+
+\paragraph{Continuity} Hamlet \cite{hamlet02} considered the concept of program continuity, but declared that automating verification of continuity for programs with loops was infeasible.  Chaudhuri et al. \cite{chaudhuri10,chaudhuri11} consider the continuity and Lipschitz continuity of programs over the real numbers. Samanta et al. \cite{samanta13} and Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity for proving robustness in the context of transducers.
+
+\paragraph{Robustness} Robustness for control systems was investigated by Majumdar and Saha \cite{majumdar09} and for general programs by \cite{chaudhuri11}.  Additionally, the robustness of networked systems was explored by Samanta et al. \cite{samanta13a}.
+
+\paragraph{\(k\)-Safety Properties} Clarkson and Schneider \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this idea.  Sousa and Dillig \cite{sousa16} formulated a verification algorithm in order to automate checking of \(k\)-safety properties.
 
 \section{Preliminaries}
 
@@ -215,7 +225,7 @@ The first formula specifies that the first two parts of the problem are transpos
 \end{algorithmic}
 \end{algorithm}
 
-\section{Verifying Robustness}
+\subsection{Verifying Robustness}
 
 % double check this citation:
 A 2-safety property is one which requires reasoning about two execution traces simultaneously \cite{terauchi05}.  Robustness is the property that given two inputs which are related by some form of uncertainty, the outputs should be related in a predictable way.  Thus, robustness is a 2-safety property.
@@ -389,19 +399,6 @@ as follows:
 
 \section{Invariance with respect to a function}
 
-\section{Related Work}
-
-\subsection{Robustness}
-
-Robustness for control systems was investigated by Majumdar and Saha \cite{majumdar09} and for general programs by \cite{chaudhuri11}.  Additionally, the robustness of networked systems was explored by Samanta et al. \cite{samanta13a}.
-
-\subsection{Continuity}
-
-Hamlet \cite{hamlet02} considered the concept of program continuity, but declared that automating verification of continuity for programs with loops was infeasible.  Chaudhuri et al. \cite{chaudhuri10,chaudhuri11} consider the continuity and Lipschitz continuity of programs over the real numbers. Samanta et al. \cite{samanta13} and Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity for proving robustness in the context of transducers.
-
-\subsection{\(k\)-safety Properties}
-
-The concept of a 2-safety property was introduced by Terauchi and Aiken \cite{terauchi05} in the study of secure information flow.  Clarkson and Schneider \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this idea.  Finally, Sousa and Dillig \cite{sousa16} formulated a verification algorithm in order to automate checking of \(k\)-safety properties.
 
 %
 % ---- Bibliography ----
