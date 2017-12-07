@@ -349,9 +349,7 @@ as follows:
 
 \qroofx=2
 \qroofy=1
-\def\tabularxcolumn#1{m{#1}}
-
-\begin{tabularx}{\textwidth}{ccc}
+\begin{tabular}{ccc}
  \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
     & $\xmapsto{\ \ \rho\ \ }$
     & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
@@ -359,7 +357,7 @@ as follows:
   \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
   & $\xmapsto{\ \ \theta\ \ }$
   & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
-\end{tabularx}
+\end{tabular}
 
 \begin{theorem}
   If a program $P$ on binary search trees is invariant under $\rho$
@@ -377,27 +375,86 @@ as follows:
   structure'', in which no subtree has a nonnull left child.
 
   Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$:
-  \begin{algorithm}
+  \begin{algorithm}[H]
     \begin{algorithmic}[1]
-      \Function{Listify}{t}
-      \While{t has a right child}
-        \State apply $\rho^{-1}$ to t
+      \Function{Listify}{$t$}
+      \While{$t$ has a right child}
+        \State apply $\rho^{-1}$ to $t$
       \EndWhile
-      \While{t has a left child}
-        \While{t's left child has a right child}
-          \State apply $\theta$ to t
+      \While{$t$ has a left child}
+        \While{$t$'s left child has a right child}
+          \State apply $\theta$ to $t$
         \EndWhile
-        \State apply $\rho$ to t
+        \State apply $\rho$ to $t$
       \EndWhile
       \EndFunction
     \end{algorithmic}
   \end{algorithm} 
+
   I claim that this algorithm terminates with $t$ in degenerate list form.
+  Proof: the first loop clearly terminates, and leave $t$ with a null right
+  child. Thus, after the first loop, $t$'s right child is in degenerate list
+  form.
+
+  Consider the inner loop on line 5. This loop clearly always terminates,
+  and leave the right subtree of $t$ unchanged.
+  When this loop finishes, $t$'s left child has a null right child.
+  Observe that if $\rho$ is applied to $t$ when $t$'s left child
+  has a null right child AND $t$'s right child is in degenerate list form,
+  then the resulting tree's right subchild remains in degenerate list form.
+  Thus, at each iteration of the second loop starting at line 4,
+  we have $t$'s right child in degenerate list form.
+
+  Furthermore, upon each iteration of the loop starting at line 4,
+  we move one more node into the right subtree of $t$.
+  Thus, this loop eventually halts, and $t$ is left with a null left child.
+  As $t$'s right subtree is also in degenerate list form,
+  $t$ is left in degenerate list form.
+
+  Clearly, if $t_1$ and $t_2$ are both in degenerate list form,
+  then $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
+  Thus, if $\mathrm{list}(t_1) = \mathrm{list}(t_2)$, then $t_1$ and $t_2$
+  can both be transformed into the same degenerate list structure
+  useing the $\rho$ and $\theta$.
+  Thus, $t_1$ can be transformed into $t_2$.
 
 \end{proof}
 
-
 \section{Invariance with respect to a function}
+
+All previous work on these topics share one downside: they require programmers
+to express their invariants in formal logic. This could potentially be
+difficult. One class of invariants that can be expressed through codes is
+\emph{invariance with respect to a function}.
+
+\begin{definition} We say that a program $P$ is invariant with respect to a
+  function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
+\end{definition}
+
+For example, if a programmer defines a tree or heap data type with a function 
+$\mathrm{list}$ mapping the data type to lists,
+then nearly every function written on this data type should be invariant with
+respect to the $\mathrm{list}$ function,
+as these data types are meant to represent the lists perfectly (while allowing
+for faster algorithms).
+
+We regard this problem as very difficult, because the function $f$ can be
+expressed with arbitrary code and thus encode more complicated properties than
+first order logic. One approach comes from the following observation:
+
+\begin{lemma} Let $P : T \to T'$ and $f : T' \to Z$.
+  Then $P$ is invariant with respect to $f$ if and only if
+  there exists a program $\widetilde{P} : T'\to Z$
+  such that $P = \widetilde{P} \after f$
+\end{lemma}
+
+  \[
+    \begin{tikzcd}
+      BSTs \arrow{rr}{P} \arrow{rd}{list} &   & Z \\
+      & Lists \arrow[dashed]{ru}{\widetilde{P}} &   \\
+    \end{tikzcd}
+  \]
+
 
 
 %
