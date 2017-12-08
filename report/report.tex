@@ -184,10 +184,24 @@ The permutations on \(N\) elements, \(S_{N}\), can all be expressed as compositi
 where the first permutation is a transposition of \(0\) and \(1\) and the second permutation is a rotation of all of the elements by one position.
 
 \subsection{Automata}
-We consider two classes of automata: finite state machines (FSM) and finite state transducers (FST). All automata we consider are deterministic. Given an automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is an FSM, we represent "accept" by $1$ and "reject" by $0$. Otherwise, $A$ is a finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$ denote the set of strings accepted by $A$. (We do not define the language of an FST).
+We consider two classes of automata: finite state machines (FSM) and finite
+state transducers (FST). All automata we consider are deterministic. Given an
+automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is a
+FSM, we represent ``accept'' by $1$ and ``reject'' by $0$. Otherwise, $A$ is a
+finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$
+denote the set of strings accepted by $A$. (We do not define the language of a
+FST).
 
-Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM.
-
+Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) =
+L(B)$ is decidable. We can compose a FST $T$ and a FSM $A$, denoted $A \circ T$,
+to get another FSM such that $(A\circ T)(s) = A(T(s))$.
+Furthermore, $A\circ T$ can be constructed with $|S_A||S_T|$ states,
+where $S_A$ and $S_T$ are the states of $A$ and $T$.
+% For example, $A\circ T$ can be constructed with set of
+% states $S_A \times S_T$, where $S_A$ and $S_T$ are the states of $A$ and $T$,
+% and with transition function
+% \[ \delta_{A\after T}((a,t), c) = (\delta_A( , \delta_T(t,c))
+% \]
 We will assume that all input strings are terminated by a special end-of-input character \$.
 
 \section{Robustness Properties}
@@ -268,6 +282,7 @@ A more general approach to verifying robustness properties is the creation of a 
 
 \subsection{Cartesian Hoare Logic}
 
+
 After discussing with the authors of \cite{sousa16}, it seems that with a lot of
 time and effort, their implementation of Descartes could be used to verify many
 robustness properties.
@@ -317,7 +332,7 @@ such that for any $n$ and any string $s$
 with $|s|=n$, we have
 $T_{\alpha}(s)=(1\ 2\ \ldots\ n) s$ and
 $T_{\beta}(s) = (1\ 2) s$.
-Then, determining whether an FSM $M$ is
+Then, determining whether a FSM $M$ is
 invariant under permutation of its inputs
 is equivalent to determining whether
 \[
@@ -334,6 +349,24 @@ transition from $s_a$ to $s_a$, reading $b$
 and writing $b$.
 Then for each $a$, there is a transition from
 $s_a$ to $s_1$, reading $\$$ and writing $a\$$.
+\begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+    auto, scale=0.6, every node/.style={scale=0.6}
+] 
+  \node[state,initial] (q_0)   {$q_0$}; 
+  \node[state] (q_b) [right=of q_0] {$q_b$}; 
+  \node[state] (q_a) [above=of q_b] {$q_a$}; 
+  \node[state] (q_c) [below=of q_b] {$q_c$}; 
+  \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+  \path[->] 
+  (q_0) edge node {a / $\epsilon$} (q_a)
+        edge node {b / $\epsilon$} (q_b)
+        edge node [below left] {c / $\epsilon$} (q_c)
+  (q_a) edge node {x / xa} (q_1)
+  (q_b) edge node {x / xb} (q_1)
+  (q_c) edge node [below right] {x / xc} (q_1)
+  (q_1) edge [loop right] node {x / x} (q_1)
+        ;
+\end{tikzpicture}
 
 We now construct $T_\beta$.
 For each symbol $a \in \Sigma$,
@@ -346,6 +379,27 @@ and writing output $ba$.
 Then $s_1$ simply has transitions to $s_1$,
 reading any $a\in \Sigma$ and writing
 back $a$.
+\begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+    auto, scale=0.6, every node/.style={scale=0.6}
+] 
+  \node[state,initial] (q_0)   {$q_0$}; 
+  \node[state] (q_b) [right=of q_0] {$q_b$}; 
+  \node[state] (q_a) [above=of q_b] {$q_a$}; 
+  \node[state] (q_c) [below=of q_b] {$q_c$}; 
+  \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+  \path[->] 
+  (q_0) edge node {a / $\epsilon$} (q_a)
+        edge node {b / $\epsilon$} (q_b)
+        edge node [below left] {c / $\epsilon$} (q_c)
+  (q_a) edge node {\$ / a\$} (q_1)
+        edge [loop above] node {x / x} (q_a)
+  (q_b) edge node {\$ / b\$} (q_1)
+        edge [loop above] node {x / x} (q_b)
+  (q_c) edge node [below right] {\$ / c\$} (q_1)
+        edge [loop above] node {x / x} (q_c)
+        ;
+\end{tikzpicture}
+
 
 \subsection{Programs}
 The previous section indicates a method for verifying
@@ -385,12 +439,12 @@ as follows:
 \qroofy=1
 \begin{tabular}{ccc}
  \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-    & $\xmapsto{\ \ \rho\ \ }$
+    & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \!\!\!\!}
     & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
   \\
   \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
-  & $\xmapsto{\ \ \theta\ \ }$
-  & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
+    & \raisebox{-0.5in}{\ \ \ $\xmapsto{\ \ \theta\ \ }$ \!\!\!\!}
+    & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
 \end{tabular}
 
 You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
@@ -487,7 +541,7 @@ underlying list.
     \begin{center}
       \begin{tabular}{ccc}
         \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
-        & $\xmapsto{\ \ \rho\ \ }$
+        & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
         & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
       \end{tabular}
     \end{center}
