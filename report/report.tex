@@ -13,6 +13,7 @@
 \usepackage{algorithm}
 
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{tkz-graph}
 \usepackage{tikz-cd}
@@ -92,9 +93,30 @@ Thus, the issue of robustness in PBE can be addressed by verifying robustness, e
 
 \section{Preliminaries}
 
-\subsection{Continuity and Lipschitz-Continuity}
+\subsection{Continuity and Lipschitz Continuity}
 
-% define continuity and LIpschitz-continuity of a program
+%Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of input variables \(In\), a state \(\sigma'\) is an \(\varepsilon\) perturbation of a state \(\sigma\), denoted \(Pert_{\varepsilon,In}(\sigma, \sigma')\),  if
+%\begin{enumerate}
+%    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\), and
+%    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\) \cite{chaudhuri10}.
+%\end{enumerate}
+%
+%Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of variables \(V\), a state \(\sigma'\) is \(\varepsilon\)-close to a state \(\sigma\), denoted \(\sigma \approx_{\varepsilon,V} \sigma'\), if for all \(x \in V\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) \cite{chaudhuri10}.
+%
+A program \(\mathcal{P}\) is continuous at a state \(\sigma\) with respect to input variables \(In\) and observable variables \(Obs\) if for all \(\varepsilon \in \mathbb{R}^{+}\), there is a \(\delta \in \mathbb{R}^{+}\) so that if \(\sigma'\) satisfies
+%\(Pert_{\delta,In}(\sigma,\sigma')\) implies \(P(\sigma)\approx_{\varepsilon,Obs}\mathcal{P}(\sigma')\) \cite{chaudhuri10}.
+\begin{enumerate}
+    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) and
+    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\),
+\end{enumerate}
+then for all \(x \in Obs\), \(d\big(\mathcal{P}(\sigma)(x), \mathcal{P}(\sigma')(x)\big)\) \cite{chaudhuri10}.
+
+Lipschitz continuity of a mathematical function \(f\) is the property that there exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\), \(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program \(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in \mathbb{R}^{+}\),
+\begin{enumerate}
+    \item \(d\big(\sigma(x_{in}), \sigma'(x_{in})\big) < \varepsilon\) and
+    \item for all \(y \not= x\), \(\sigma(y) = \sigma'(y)\)
+\end{enumerate}
+implies that \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) < K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\) \cite{chaudhuri11}.
 
 \subsection{Permutations}
 \label{perms}
@@ -172,16 +194,16 @@ We will assume that all input strings are terminated by a special end-of-input c
 
 \section{Robustness Properties}
 
-Some settings in which programs should be robust:
+The uncertainty with respect to which a program is robust can take many different forms.  Some common perturbations include
 \begin{itemize}
 \item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
 \item permutations of arrays and matrices,
-\item simultaneous permutations of arrays,
+\item simultaneous permutations of arrays.
 \end{itemize}
 
 \subsection{Continuity}
 
-% discuss sorting being 1-Lipschitz
+Robustness in the setting of numerical perturbations is realized by the property of continuity.  In many situations, the result of a program should be relatively stable with respect to any uncertainty in the input.  That is, if the input is perturbed, the output should vary only slightly, relative to the input perturbation.  This is exactly the concept of Lipschitz continuity.  if it is possible that the input has been slightly perturbed, the result of the program should not be drastically different.  As an example, sorting algorithms are \(1\)-Lipschitz.  If each element of the input array is perturbed by an amount no more than \(1\), then each element of the output array will be changed by no more than \(1\).
 
 \subsection{Permutations}
 
@@ -197,7 +219,7 @@ Then invariace of a program which takes an array as input can be specified by
 
 \subsubsection{Sorting}
 
-% discuss maximum function being invariant under permutations
+Sorting is one example of a procedure which is robust with respect to permuting the input.  Even in the face of uncertainty regarding the order of the input array, the result of procedure will not be altered.  The \verb!max! function is a special case of this invariance of sorting algorithms under permutation, which is the root of the incorrectness of the attempts to synthesize the \verb!max! function in Section 1.
 
 \subsubsection{Searching}
 
