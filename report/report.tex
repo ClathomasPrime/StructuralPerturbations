@@ -83,7 +83,7 @@ Second, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)
 
 Moreover, a synthesizer which returns robust programs will itself be more robust.  Let \(\mathcal{I}_{1} = (I_{1}, O_{1})\) and \(\mathcal{I}_{2} = (I_{2}, O_{2})\) be two input-output pairs for a program synthesizer which differ by a small perturbation.  If the program \(\mathcal{P}_{1}\) returned by the synthesizer on input \(\mathcal{I}_{1}\) is robust, then \(\mathcal{P}_{1}(I_{2})\) will approximate \(O_{2}\) because \(I_{2}\) approximates \(I_{1}\).  For this reason, \(\mathcal{P}_{2}\), the program returned on input \(\mathcal{I}_{2}\), should only differ from \(\mathcal{P}_{1}\) by a small amount.
 
-Thus, the issue of robustness in PBE can be addressed by verifying robustness, either of the synthesized programs or even of the synthesizer as a whole.  However, verification of robustness requires the ability to reason about robustness.
+Thus, the issue of robustness in PBE can be addressed by verifying robustness, either of the synthesized programs or even of the synthesizer as a whole.  However, verification of robustness requires the ability to reason about robustness.  Standard program verifiers are unable to verify robustness properties as they are an example of a \(2\)-safety property, a property which requires reasoning about two execution traces simultaneously.  In particular, robustness is the property that given two inputs which are related by some form of uncertainty, the outputs should be related in a predictable way.  As such, verifying robustness requires reasoning about the relationship between two execution traces.
 
 \section{Related Work}
 
@@ -91,7 +91,7 @@ Thus, the issue of robustness in PBE can be addressed by verifying robustness, e
 
 \paragraph{Self-Composition} Barthe et al. \cite{barthecomposition} applied self-composition, sequential running of renamed copies of the original program, to study secure information flow.  Terauchi \& Aiken \cite{terauchi05} built on this work by applying a type-based approach to complement self-composition.
 
-\paragraph{\(2\)-Safety Properties} In \cite{terauchi05}, Terauchi \& Aiken introduce the term \(2\)-safety property to describe a property which requires two execution traces in order to reason about it.  A general approach to the verification of \(2\)-safety properties is the creation of a product program \cite{bartheproduct}, a program which interleaves two copies of a given program to create a new program.  It \cite{bartheanalysis}, Barthe et al. analyzes various relational program logics, as well as different notions of product programs.
+\paragraph{\(2\)-Safety Properties} In \cite{terauchi05}, Terauchi \& Aiken introduced the term \(2\)-safety property.  A general approach to the verification of \(2\)-safety properties is the creation of a product program \cite{bartheproduct}, a program which interleaves two copies of a given program to create a new program.  It \cite{bartheanalysis}, Barthe et al. analyzes various relational program logics, as well as different notions of product programs.
 
 \paragraph{Continuity} Hamlet \cite{hamlet02} considered the concept of program continuity, but declared that automating verification of continuity for programs with loops was infeasible.  Chaudhuri et al. \cite{chaudhuri10,chaudhuri11} consider the continuity and Lipschitz continuity of programs over the real numbers. Samanta et al. \cite{samanta13} and Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity for proving robustness in the context of transducers.
 
@@ -266,16 +266,14 @@ Consider an algorithm for grading a multipart homework problem, which takes as i
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Verifying Robustness}
+\section{Verifying Robustness}
 
-% double check this citation:
-A 2-safety property is one which requires reasoning about two execution traces simultaneously \cite{terauchi05}.  Robustness is the property that given two inputs which are related by some form of uncertainty, the outputs should be related in a predictable way.  Thus, robustness is a 2-safety property.
 
-% discuss using Descartes' algorithm to verify robustness
+\subsection{Lipschitz Continuity}
 
-\subsection{Shortcomings Regarding Lipschitz-Continuity}
+\subsection{Product Programs}
 
-% discuss how the If rule of CHL can be improved for verifying continuity
+\subsection{Cartesian Hoare Logic}
 
 \section{Invariance under permuting lists}
 \label{permlists}
