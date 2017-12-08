@@ -28,6 +28,7 @@
 \usepackage{qtree}
 \usepackage{mathtools}
 \usepackage{tabularx}
+\usepackage{stmaryrd} %for \varoast (circle with asterisk)
 
 \newlength\Colsep
 \setlength\Colsep{10pt}
@@ -161,7 +162,7 @@ Given a permutation \(\sigma\), \(\sigma\) can {\it act} on an array \(a\) as fo
 \end{equation}
 
 \paragraph{Generating Permutations}
-For information on permutation groups, see \S1.3 in \cite{dummitfoote}.
+Information on permutation groups can be found in \S1.3 of \cite{dummitfoote}.
 
 \makeatletter
 \renewcommand{\@cite}[1]{#1}
@@ -226,7 +227,7 @@ so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).  Considerin
 
 \subsubsection{Adjacency Matrices}
 
-% programs operating on adjacency matrices should either be invariant under permutations or behave similarly to searching
+The effect of permuting the rows and columns of an adjacency matrix by the same permutation is simply a relabelling of the vertices.  As the labelling of the vertices is arbitrary, a program which takes an adjacency matrix as input should likely satisfy one of two robustness properties.  If the program computes a property of the graph, such as the existence of a Hamiltonian cycle, the program should be invariant under such a relabelling.  If the program computes a result which depends on the labelling, such as finding an explicit Hamiltonian cycle, the program should satisfy the same property as in the case of searching, that the output should be perturbed by the same permutation as the input.
 
 \subsection{Simultaneous Permutation}
 
@@ -257,10 +258,13 @@ Consider an algorithm for grading a multipart homework problem, which takes as i
 
 \section{Verifying Robustness}
 
-
 \subsection{Lipschitz Continuity}
 
+Verifying the property of Lipschitz continuity is considered by Chaudhuri et al. \cite{chaudhuri10,chaudhuri11}.  The approach taken is to verify continuity of the program as a whole and then verify that each control flow path of the program is piecewise Lipschitz continuous by showing that it is piecewise linear.  The continuity verification is performed using a program logic for reasoning about continuity \cite{chaudhuri10}.  In order to establish that each control flow path is piecewise linear, an abstract interpretation is applied in which an abstract state, referred to as a robustness matrix, is used to determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).  One advantage of this approach, similar to other relational program logics, is that branches of \verb!if! blocks can be reasoned about independently and then it is verified that the branches are compatible.  As this compatibility is transitive, this prevents have to make a pairwise comparison of each branch as in approaches based on product programs.  However, the approach used in \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations. 
+
 \subsection{Product Programs}
+
+A more general approach to verifying robustness properties is the creation of a product program which is then provided as input to a standard program verifier \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\) of two programs \(\mathcal{P}_{1}, \mathcal{P}_{2}\) is a program which is equivalent to simultaneously executing both \(\mathcal{P}_{1}\) and \(\mathcal{P}_{2}\).  Because a single program is created with distinct variables corresponding to each variable of \(\mathcal{P}_{1}\) and \(\mathcal{P}_{2}\), relational properties between \(\mathcal{P}_{1}\) and \(\mathcal{P}_{2}\) can be expressed as a standard verification property of the single program \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\).  As a result, a \(2\)-safety property about \(\mathcal{P}\), such as robustness, can be established by providing \(\mathcal{P} \varoast \mathcal{P}\) to any standard program verifier.
 
 \subsection{Cartesian Hoare Logic}
 
