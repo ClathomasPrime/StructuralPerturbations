@@ -29,6 +29,7 @@
 \usepackage{mathtools}
 \usepackage{tabularx}
 \usepackage{stmaryrd} %for \varoast (circle with asterisk)
+\usepackage{subfig}
 
 \newlength\Colsep
 \setlength\Colsep{10pt}
@@ -398,13 +399,6 @@ execution traces.
     computes $F$. Then $F$ is invariant under permutation of its input if and only
     if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
 
-%    Certainly this method is more efficient than checking invariance under a
-%    larger class of permutations. For DFAs, this simplification made the problem
-%    of permutation invariance solvable. This indicates that this simplification
-%    may aid in our analysis in a profound way. For example, this may be a much
-%    easier way of verifying this invariance compared to expressing permutations
-%    as a general $2$-safety property.
-
 \section{Invariance under permuting binary search trees}
 
   In the previous section~\ref{permlists}, we found a reduction
@@ -449,7 +443,7 @@ execution traces.
     Observe that if $P$ is invariant under $\rho$ and $\theta$,
     then $P$ is also invariant under $\rho^{-1}$ and $\theta^{-1}$.
     Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
-    via $\rho$ and $\theta$ into another tree $t_3$,
+    via $\rho$, $\theta$, and their inverses into another tree $t_3$,
     because then we can transform $t_1$ into $t_3$, then apply the inverse
     transformation to get to $t_2$.
     We proceed by providing an algorithm for transforming to a $t_3$
@@ -463,11 +457,6 @@ execution traces.
           list form.
       \end{enumerate}
     \end{definition}
-
-    \begin{figure}[H]
-      \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
-      \caption{A tree in degenerate list form}
-    \end{figure}
 
     It is clear that if $t_1$ and $t_2$ are in degenerate list form, then
     $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
@@ -502,6 +491,31 @@ execution traces.
     %   * what is a consequence of the loop condition being false
 
     To verify that this algorithm terminates with $t$ in degenerate list form,
+
+    \begin{figure}[H]%
+      \centering
+
+      \subfloat[][A tree in degenerate list form]{
+        \hspace{0.8in}
+        \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
+        \hspace{0.8in}
+      }
+      \qquad
+      \qquad
+      \subfloat[][Applying $\rho$ to a tree as in line~\ref{apply-rho}]{
+        % \label{fig-apply-rho}
+        \qroofx=2
+        \qroofy=1
+          \begin{tabular}{ccc}
+            \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
+            & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
+            & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
+          \end{tabular}
+      }
+    \end{figure}
+
+
+    To verify that this algorithm terminates with $t$ in degenerate list form,
     we need only verify that each of the assertions hold and that the loop
     invariant is inductive.
 
@@ -520,19 +534,6 @@ execution traces.
     As shown in figure~\ref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
     in degenerate list form. 
     Thus, the invariant is inductive.
-    \begin{figure}
-      \qroofx=2
-      \qroofy=1
-      \begin{center}
-        \begin{tabular}{ccc}
-          \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
-          & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
-          & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
-        \end{tabular}
-      \end{center}
-      \caption{Applying $\rho$ to a tree as in line~\ref{apply-rho}}
-      \label{fig-apply-rho}
-    \end{figure}
 
     Finally, we see that our conclusion on line~\ref{postcond} follows from the
     loop invariant and the negation of the condition, by the definition of
@@ -562,8 +563,8 @@ execution traces.
   expressed with arbitrary code and thus encode more complicated properties than
   first order logic. One approach comes from the following observation:
 
-  \begin{lemma} Let $P : S \to T$ and $f : T \to Z$.
-    Then $P$ is invariant with respect to $f$ if and only if
+  \begin{lemma} Let $P : S \to Z$ and $f : S \to T$.
+    Then $P$ is $f$-class invariant if and only if
     there exists a program $\widetilde{P} : T\to Z$
     such that $P = \widetilde{P} \circ f$
   \end{lemma}
@@ -574,7 +575,7 @@ execution traces.
       \end{tikzcd}
     \]
   \begin{proof}
-    If $P$ is invariant with respect to $f$, then the function
+    If $P$ is $f$-class invariant, then the function
     \[ \widetilde{P}(t) = \begin{cases}
          P(s), & t = f(s) \text{ for some $s\in S$} \\
          z_0, & \text{otherwise}
@@ -585,7 +586,7 @@ execution traces.
 
     Conversely, if $\widetilde{P}$ exists, then whenever $f(s)=f(s')$,
     we have $P(s) = \widetilde{P}(f(s)) = \widetilde{P}(f(s')) = P(s')$,
-    so $P$ is invariant with respect to $f$.
+    so $P$ is $f$-class invariant.
   \end{proof}
 
   Now, the key observation is that $P$ and $f$ together give a full functional
@@ -658,7 +659,7 @@ execution traces.
   \end{figure}
 
   \begin{theorem}
-    The algorithm~\ref{invarFuncLoop} is sound and relatively complete,
+    The algorithm in figure~\ref{invarFuncLoop} is sound and relatively complete,
     relative to a perfect synthesizer and a perfect equivalence-of-programs
     verifier.
   \end{theorem}
@@ -683,16 +684,9 @@ execution traces.
     $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
   \end{proof}
 
-%
-% ---- Bibliography ----
-%
-\bibliographystyle{splncs}
-\bibliography{robustness}
-
-
 \appendix
 
-\section{Preliminaries}
+\section{Appendix: Background}
 
 \subsection{Lipschitz Robustness}
 
@@ -788,6 +782,13 @@ where $S_A$ and $S_T$ are the states of $A$ and $T$.
 % \[ \delta_{A\after T}((a,t), c) = (\delta_A( , \delta_T(t,c))
 % \]
 We will assume that all input strings are terminated by a special end-of-input character \$.
+
+%
+% ---- Bibliography ----
+%
+\bibliographystyle{splncs}
+\bibliography{robustness}
+
 
 \end{document}
 
