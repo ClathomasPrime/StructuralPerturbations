@@ -409,11 +409,14 @@ execution traces.
   two permutations suffice to generate all equivalent binary search trees
   (i.e. tree representing equivalent ordered lists).
 
-  TODO: Define
+  We define binary search trees recursively as either being null,
+  or having exactly two children who are binary search trees.
+  Let $\mathrm{list}$ be the function from a binary search trees to 
+  its corresponding list, i.e. the function giving the in-order traversal of the
+  tree's nodes.
 
-  We repre
-  Then define two (partial) operations $\rho$ and $\theta$ on binary search trees
-  as follows:
+  Define two (partial) operations $\rho$ and $\theta$ on binary search trees
+  as in figure~\ref{fig-rho-theta}.
 
   \begin{figure}[h]
     \centering
@@ -429,6 +432,8 @@ execution traces.
         & \raisebox{-0.5in}{\ \ \ $\xmapsto{\ \ \theta\ \ }$ \!\!\!\!}
         & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
     \end{tabular}
+    \caption{The tree operations $\rho$ and $\theta$}
+    \label{fig-rho-theta}
   \end{figure}
 
   You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
@@ -448,7 +453,7 @@ execution traces.
     Observe that if $P$ is invariant under $\rho$ and $\theta$,
     then $P$ is also invariant under $\rho^{-1}$ and $\theta^{-1}$.
     Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
-    via $\rho$, $\theta$, and their inverses into another tree $t_3$,
+    via $\rho$, $\theta$, $\rho^{-1}$, and $\theta^{-1}$ into another tree $t_3$,
     because then we can transform $t_1$ into $t_3$, then apply the inverse
     transformation to get to $t_2$.
     We proceed by providing an algorithm for transforming to a $t_3$
@@ -540,6 +545,7 @@ execution traces.
             & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
           \end{tabular}
       }
+      \caption{}
     \end{figure}
 
   \end{proof}
