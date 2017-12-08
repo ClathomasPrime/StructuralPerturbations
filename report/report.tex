@@ -31,14 +31,9 @@
 
 \newlength\Colsep
 \setlength\Colsep{10pt}
-\usepackage{lipsum}
 
 \usetikzlibrary{decorations.markings}
 
-\newcommand{\zero}{\mathrm{zero}}
-\newcommand{\const}{\mathrm{const}}
-\newcommand{\afin}{\mathrm{affine\ in\ }}
-\newcommand{\linin}{\mathrm{linear\ in\ }}
 \newcommand{\e}{\emptyset}
 
 \DeclareMathOperator{\Perm}{Perm}
@@ -47,14 +42,7 @@
 \DeclareMathOperator{\len}{length}
 \DeclareMathOperator{\ret}{ret}
 
-\newlength\myindent
-\setlength\myindent{2em}
-\newcommand\bindent{%
-  \begingroup
-  \setlength{\itemindent}{\myindent}
-  \addtolength{\algorithmicindent}{\myindent}
-}
-\newcommand\eindent{\endgroup}
+\setcounter{tocdepth}{1}
 
 \title{Verifying Robustness of Programs Under Structural Perturbations}
 \author{Jacob Bond and Clay Thomas}
@@ -63,6 +51,7 @@
 \begin{document}
 
 \maketitle
+% \tableofcontents
 
 % \begin{abstract}
 % \end{abstract}
@@ -274,6 +263,10 @@ Consider an algorithm for grading a multipart homework problem, which takes as i
 \subsection{Product Programs}
 
 \subsection{Cartesian Hoare Logic}
+
+After discussing with the authors of \cite{sousa16}, it seems that with a lot of
+time and effort, their implementation of Descartes could be used to verify many
+robustness properties.
 
 \section{Invariance under permuting lists}
 \label{permlists}
