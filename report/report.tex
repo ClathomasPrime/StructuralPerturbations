@@ -11,9 +11,16 @@
 
 \usepackage[noend]{algpseudocode}
 \usepackage{algorithm}
+\usepackage{algorithmicx}
 
 \usepackage{amsmath}
+\usepackage{wrapfig}
 \usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage[customcolors]{hf-tikz}
+\usetikzlibrary{positioning,chains,fit,shapes,calc}
+\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{automata}
 \usepackage{tkz-graph}
 \usepackage{varwidth}
 \usepackage{qtree}
@@ -30,6 +37,7 @@
 \newcommand{\const}{\mathrm{const}}
 \newcommand{\afin}{\mathrm{affine\ in\ }}
 \newcommand{\linin}{\mathrm{linear\ in\ }}
+\newcommand{\e}{\emptyset}
 
 \DeclareMathOperator{\Perm}{Perm}
 \DeclareMathOperator{\Conj}{Conj}
@@ -311,7 +319,6 @@ Then $s_1$ simply has transitions to $s_1$,
 reading any $a\in \Sigma$ and writing
 back $a$.
 
-\iffalse % maybe put this back in later
 \subsection{Programs}
 The previous section indicates a method for verifying
 robustness of more general programs under permutation of inputs. 
@@ -319,7 +326,6 @@ robustness of more general programs under permutation of inputs.
 Given a procedure $F$ taking an array as argument, consider the functions $F_\alpha$, which first swaps the first two elements of the array, then computes $F$, and $F_\beta$, which moves the first element of the array to the back, then computes $F$. Then $F$ is invariant under permutation of its input if and only if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
 
 Certainly this method is more efficient than checking invariance under a larger class of permutations. For DFAs, this simplification made the problem of permutation invariance solvable. This indicates that this simplification may aid in our analysis in a profound way. For example, this may be a much easier way of verifying this invariance compared to expressing permutations as a general $2$-safety property.
-\fi
 
 \section{Invariance under permuting binary search trees}
 
@@ -365,58 +371,95 @@ as follows:
   we have $P(t_1) = P(t_2)$.
 \end{theorem}
 \begin{proof}
+  Let $t_1$ and $t_2$ satisfy $\mathrm{list}(t_1) = \mathrm{list}(t_2)$.
   Observe that if $P$ is invariant under $\rho$ and $\theta$,
   then $P$ is also invariant under $\rho^{-1}$ and $\theta^{-1}$.
-  Thus, we need to show that any two binary search trees representing the same
-  ordered list can be transformed into one another using only $\rho$,
-  $\rho^{-1}$, $\theta$, and $\theta^{-1}$.
-  Because these operations are invertible, it suffices to demonstrate that you
-  can use them to transform any binary search tree into a ``degenerate list
-  structure'', in which no subtree has a nonnull left child.
+  Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
+  via $\rho$ and $\theta$ into another tree $t_3$,
+  because then we can transform $t_1$ into $t_3$, then apply the inverse
+  transformation to get to $t_2$.
+  We proceed by providing an algorithm for transforming to a $t_3$
+  in the following form:
 
-  Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$:
+
+  \begin{definition}
+    A tree $t$ is in degenerate list form if either
+    \begin{enumerate}
+      \item $t$ is Nil, or
+      \item $t$ has a Nil left child, and $t$'s right child is in degenerate
+        list form.
+    \end{enumerate}
+  \end{definition}
+
+  \begin{figure}[H]
+    \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
+    \caption{A tree in degenerate list form}
+  \end{figure}
+
+
+  Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$,
+  where invariants and assertions are written inside \{braces\}:
   \begin{algorithm}[H]
     \begin{algorithmic}[1]
       \Function{Listify}{$t$}
-      \While{$t$ has a right child}
-        \State apply $\rho^{-1}$ to $t$
-      \EndWhile
-      \While{$t$ has a left child}
-        \While{$t$'s left child has a right child}
-          \State apply $\theta$ to $t$
+        \While{$t$ has a right child}
+          \State apply $\rho^{-1}$ to $t$
         \EndWhile
-        \State apply $\rho$ to $t$
-      \EndWhile
+        \State{\{$t$ has a null right child\}} \label{null-right}
+        \While{$t$ has a left child}
+          \Comment{\{$t$'s right child is in degenerate list form\}}
+          \While{$t$'s left child has a right child}
+            \State apply $\theta$ to $t$
+          \EndWhile
+          \State{\{$t$'s left child has a null right child\}}
+            \label{null-left-right}
+          \State apply $\rho$ to $t$
+        \EndWhile
+        \State{\{$t$ is in degenerate list form\}}
       \EndFunction
     \end{algorithmic}
   \end{algorithm} 
+  % be more explicit about: 
+  %   * what is a loop invariant
+  %   * what is a consequence of the loop condition being false
 
-  I claim that this algorithm terminates with $t$ in degenerate list form.
-  Proof: the first loop clearly terminates, and leave $t$ with a null right
-  child. Thus, after the first loop, $t$'s right child is in degenerate list
-  form.
+  To verify that this algorithm terminates with $t$ in degenerate list form,
+  we need only verify that each of the assertions hold and that the loop
+  invariant is inductive.
 
-  Consider the inner loop on line 5. This loop clearly always terminates,
-  and leave the right subtree of $t$ unchanged.
-  When this loop finishes, $t$'s left child has a null right child.
-  Observe that if $\rho$ is applied to $t$ when $t$'s left child
-  has a null right child AND $t$'s right child is in degenerate list form,
-  then the resulting tree's right subchild remains in degenerate list form.
-  Thus, at each iteration of the second loop starting at line 4,
-  we have $t$'s right child in degenerate list form.
+  The invariant on line~\ref{null-right} follows from the negation of the
+  condition of the loop before it.
+  The loop invariant holds from line~\ref{null-right} simply because the null
+  tree is in degenerate list form.
+  The invariant on line~\ref{null-left-right} also follows from the negation of
+  the condition of the loop before it.
+  % Proof: the first loop clearly terminates (as $\rho^{-1}$ decreases the depth
+  % of the right subtree) and leaves $t$ with a null right
+  % child. Thus, after the first loop, $t$'s right child is in degenerate list
+  % form.
 
-  Furthermore, upon each iteration of the loop starting at line 4,
-  we move one more node into the right subtree of $t$.
-  Thus, this loop eventually halts, and $t$ is left with a null left child.
-  As $t$'s right subtree is also in degenerate list form,
-  $t$ is left in degenerate list form.
+  % Consider the inner loop on line 5. This loop clearly always terminates,
+  % (as $\theta$ decreases the depth of the left child's right child)
+  % and leave the right subtree of $t$ unchanged.
+  % When this loop finishes, $t$'s left child has a null right child.
+  % Observe that if $\rho$ is applied to $t$ when $t$'s left child
+  % has a null right child AND $t$'s right child is in degenerate list form,
+  % then the resulting tree's right subchild remains in degenerate list form.
+  % Thus, at each iteration of the second loop starting at line 4,
+  % we have $t$'s right child in degenerate list form.
 
-  Clearly, if $t_1$ and $t_2$ are both in degenerate list form,
-  then $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
-  Thus, if $\mathrm{list}(t_1) = \mathrm{list}(t_2)$, then $t_1$ and $t_2$
-  can both be transformed into the same degenerate list structure
-  useing the $\rho$ and $\theta$.
-  Thus, $t_1$ can be transformed into $t_2$.
+  % Furthermore, upon each iteration of the loop starting at line 4,
+  % we move one more node into the right subtree of $t$.
+  % Thus, this loop eventually halts, and $t$ is left with a null left child.
+  % As $t$'s right subtree is also in degenerate list form,
+  % $t$ is left in degenerate list form.
+
+  % Clearly, if $t_1$ and $t_2$ are both in degenerate list form,
+  % then $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
+  % Thus, if $\mathrm{list}(t_1) = \mathrm{list}(t_2)$, then $t_1$ and $t_2$
+  % can both be transformed into the same degenerate list structure
+  % useing the $\rho$ and $\theta$.
+  % Thus, $t_1$ can be transformed into $t_2$.
 
 \end{proof}
 
@@ -442,19 +485,110 @@ We regard this problem as very difficult, because the function $f$ can be
 expressed with arbitrary code and thus encode more complicated properties than
 first order logic. One approach comes from the following observation:
 
-\begin{lemma} Let $P : T \to T'$ and $f : T' \to Z$.
+\begin{lemma} Let $P : S \to T$ and $f : T \to Z$.
   Then $P$ is invariant with respect to $f$ if and only if
-  there exists a program $\widetilde{P} : T'\to Z$
-  such that $P = \widetilde{P} \after f$
+  there exists a program $\widetilde{P} : T\to Z$
+  such that $P = \widetilde{P} \circ f$
 \end{lemma}
-
   \[
     \begin{tikzcd}
-      BSTs \arrow{rr}{P} \arrow{rd}{list} &   & Z \\
-      & Lists \arrow[dashed]{ru}{\widetilde{P}} &   \\
+      S \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
+      & T \arrow[dashed]{ru}{\widetilde{P}} &   \\
     \end{tikzcd}
   \]
+\begin{proof}
+  If $P$ is invariant with respect to $f$, then the function
+  \[ \widetilde{P}(t) = \begin{cases}
+       P(s), & t = f(s) \text{ for some $s\in S$} \\
+       z_0, & \text{otherwise}
+     \end{cases}
+  \]
+  is well defined and clearly satisfies $P = \widetilde{P} \circ f$.
 
+  Conversely, if $\widetilde{P}$ exists, then whenever $f(s)=f(s')$,
+  we have $P(s) = \widetilde{P}(f(s)) = \widetilde{P}(f(s')) = P(s')$,
+  so $P$ is invariant with respect to $f$.
+\end{proof}
+
+Now, the key observation is that $P$ and $f$ together give a full functional
+specification for $\widetilde{P}$.
+We want to either construct such a $\widetilde{P}$ in order to prove our
+property, or provide the programmer with a counterexample to the property in
+order to help them debug.
+Thus, a counterexample guided synthesis loop,
+similar to that present in \cite{solar06},
+seems like a natural candidate for this problem.
+
+
+\begin{figure}[H]
+  \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
+    text centered, draw=black, fill=orange!30,
+    text width=10em ]
+  \tikzstyle{smallprocess} = [rectangle, minimum width=3cm, minimum height=1cm,
+    text centered, draw=black, fill=orange!30,
+    text width=6em ]
+  \tikzstyle{io} = [rectangle, rounded corners,
+    minimum width=3cm, minimum height=1cm,
+    text centered, draw=black, fill=blue!30]
+  \tikzstyle{arrow} = [thick,->,>=stealth]
+
+  \begin{tikzpicture}[node distance=2cm, scale=0.8, every node/.style={scale=0.8}]
+    \node (start) [io] {
+      Input $P$ and $f$.
+      Let $E = \{ \}$.
+    };
+    \node (synth) [process, below of=start, yshift=-0.5cm] {
+      \textbf{Synthesize} a program $\widetilde{P} : S \to Z$
+      given examples $\{ (f(t), P(t)) | t\in E \}$
+    };
+    \node (verify) [process, right of=synth, xshift=4cm] {
+      \textbf{Verify} whether $\widetilde{P}\circ f$
+      is equivalent to $P$
+    };
+    \node (yes) [io, above of=verify] {
+      return YES
+    };
+    \node (check) [process, below of=verify, yshift=-1cm] {
+      Check if there are any $t\in E$ such that
+      $f(t)=f(t_0)$, yet $P(t) \ne P(t_0)$
+    };
+    \node (no) [io, below of=check, yshift=-0.5cm] {
+      return NO
+    };
+    \node (add) [smallprocess, below of=synth, yshift=-1cm] {
+      Add $t_0$ to the example set $E$
+    };
+
+    \draw [arrow] (start) -- (synth);
+    \draw [arrow] (synth) -- (verify);
+    \draw [arrow] (verify) --
+      node[anchor=west, text width=6cm] {No, with \\ counterexample $t_0\in BSTs$}
+      (check);
+    \draw [arrow] (verify) --
+      node[anchor=west, text width=6cm] {Yes, equivalent}
+      (yes);
+    \draw [arrow] (check) --
+      node[anchor=north, text width=2cm, text centered] {No, $t$ does not exists}
+      (add);
+      \draw [arrow] (add) -- (synth);
+    \draw [arrow] (check) --
+      node[anchor=west, text width=6cm] {Yes, $t$ exists}
+      (no);
+  \end{tikzpicture}
+  \caption{Decision procedure for verifying invariance with respect to a
+    function}
+  \label{invarFuncLoop}
+\end{figure}
+
+\begin{theorem}
+  The algorithm~\ref{invarFuncLoop} is sound and relatively complete,
+  relative to a perfect synthesizer and a perfect equivalence-of-programs
+  verifier.
+\end{theorem}
+\begin{proof}
+  If $\widetilde{P}$ exists, then a perfect synthesizer will eventually
+  synthesize $\widetilde{P}$
+\end{proof}
 
 
 %
