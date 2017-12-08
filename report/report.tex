@@ -30,6 +30,7 @@
 \usepackage{tabularx}
 \usepackage{stmaryrd} %for \varoast (circle with asterisk)
 \usepackage{subfig}
+\usepackage[titletoc,title]{appendix}
 
 \newlength\Colsep
 \setlength\Colsep{10pt}
@@ -45,6 +46,8 @@
 \DeclareMathOperator{\ret}{ret}
 
 \setcounter{tocdepth}{1}
+
+\pagestyle{plain}
 
 \title{Verifying Robustness of Programs Under Structural Perturbations}
 \author{Jacob Bond and Clay Thomas}
@@ -324,24 +327,6 @@ execution traces.
     and writing $b$.
     Then for each $a$, there is a transition from
     $s_a$ to $s_1$, reading $\$$ and writing $a\$$.
-    \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-        auto, scale=0.6, every node/.style={scale=0.6}
-    ] 
-      \node[state,initial] (q_0)   {$q_0$}; 
-      \node[state] (q_b) [right=of q_0] {$q_b$}; 
-      \node[state] (q_a) [above=of q_b] {$q_a$}; 
-      \node[state] (q_c) [below=of q_b] {$q_c$}; 
-      \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-      \path[->] 
-      (q_0) edge node {a / $\epsilon$} (q_a)
-            edge node {b / $\epsilon$} (q_b)
-            edge node [below left] {c / $\epsilon$} (q_c)
-      (q_a) edge node {x / xa} (q_1)
-      (q_b) edge node {x / xb} (q_1)
-      (q_c) edge node [below right] {x / xc} (q_1)
-      (q_1) edge [loop right] node {x / x} (q_1)
-            ;
-    \end{tikzpicture}
 
     We now construct $T_\beta$.
     For each symbol $a \in \Sigma$,
@@ -354,27 +339,55 @@ execution traces.
     Then $s_1$ simply has transitions to $s_1$,
     reading any $a\in \Sigma$ and writing
     back $a$.
-    \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-        auto, scale=0.6, every node/.style={scale=0.6}
-    ] 
-      \node[state,initial] (q_0)   {$q_0$}; 
-      \node[state] (q_b) [right=of q_0] {$q_b$}; 
-      \node[state] (q_a) [above=of q_b] {$q_a$}; 
-      \node[state] (q_c) [below=of q_b] {$q_c$}; 
-      \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-      \path[->] 
-      (q_0) edge node {a / $\epsilon$} (q_a)
-            edge node {b / $\epsilon$} (q_b)
-            edge node [below left] {c / $\epsilon$} (q_c)
-      (q_a) edge node {\$ / a\$} (q_1)
-            edge [loop above] node {x / x} (q_a)
-      (q_b) edge node {\$ / b\$} (q_1)
-            edge [loop above] node {x / x} (q_b)
-      (q_c) edge node [below right] {\$ / c\$} (q_1)
-            edge [loop above] node {x / x} (q_c)
-            ;
-    \end{tikzpicture}
 
+    \begin{figure}
+      \centering
+
+      \subfloat[][The automata $T_{\alpha}$ for $|\Sigma|=3$]{
+        \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+            auto, scale=0.6, every node/.style={scale=0.6}
+        ] 
+          \node[state,initial] (q_0)   {$q_0$}; 
+          \node[state] (q_b) [right=of q_0] {$q_b$}; 
+          \node[state] (q_a) [above=of q_b] {$q_a$}; 
+          \node[state] (q_c) [below=of q_b] {$q_c$}; 
+          \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+          \path[->] 
+          (q_0) edge node {a / $\epsilon$} (q_a)
+                edge node {b / $\epsilon$} (q_b)
+                edge node [below left] {c / $\epsilon$} (q_c)
+          (q_a) edge node {x / xa} (q_1)
+          (q_b) edge node {x / xb} (q_1)
+          (q_c) edge node [below right] {x / xc} (q_1)
+          (q_1) edge [loop right] node {x / x} (q_1)
+                ;
+        \end{tikzpicture}
+      }
+      \qquad
+      \qquad
+      \subfloat[][The automata $T_{\beta}$ for $|\Sigma|=3$]{
+        \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+            auto, scale=0.6, every node/.style={scale=0.6}
+        ] 
+          \node[state,initial] (q_0)   {$q_0$}; 
+          \node[state] (q_b) [right=of q_0] {$q_b$}; 
+          \node[state] (q_a) [above=of q_b] {$q_a$}; 
+          \node[state] (q_c) [below=of q_b] {$q_c$}; 
+          \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+          \path[->] 
+          (q_0) edge node {a / $\epsilon$} (q_a)
+                edge node {b / $\epsilon$} (q_b)
+                edge node [below left] {c / $\epsilon$} (q_c)
+          (q_a) edge node {\$ / a\$} (q_1)
+                edge [loop above] node {x / x} (q_a)
+          (q_b) edge node {\$ / b\$} (q_1)
+                edge [loop above] node {x / x} (q_b)
+          (q_c) edge node [below right] {\$ / c\$} (q_1)
+                edge [loop above] node {x / x} (q_c)
+                ;
+        \end{tikzpicture}
+      }
+    \end{figure}
 
   \subsection{Programs}
     The previous section indicates a method for verifying
@@ -402,17 +415,21 @@ execution traces.
   Then define two (partial) operations $\rho$ and $\theta$ on binary search trees
   as follows:
 
-  \qroofx=2
-  \qroofy=1
-  \begin{tabular}{ccc}
-   \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-      & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \!\!\!\!}
-      & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
-    \\
-    \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
-      & \raisebox{-0.5in}{\ \ \ $\xmapsto{\ \ \theta\ \ }$ \!\!\!\!}
-      & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
-  \end{tabular}
+  \begin{figure}[h]
+    \centering
+
+    \qroofx=2
+    \qroofy=1
+    \begin{tabular}{ccc}
+     \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
+        & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \!\!\!\!}
+        & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
+      \\
+      \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
+        & \raisebox{-0.5in}{\ \ \ $\xmapsto{\ \ \theta\ \ }$ \!\!\!\!}
+        & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
+    \end{tabular}
+  \end{figure}
 
   You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
   by observing that the subtrees in the above diagrams remain in the same order
@@ -478,30 +495,6 @@ execution traces.
     %   * what is a loop invariant
     %   * what is a consequence of the loop condition being false
 
-    To verify that this algorithm terminates with $t$ in degenerate list form,
-
-    \begin{figure}[H]%
-      \centering
-
-      \subfloat[][A tree in degenerate list form]{
-        \hspace{0.8in}
-        \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
-        \hspace{0.8in}
-      }
-      \qquad
-      \qquad
-      \subfloat[][Applying $\rho$ to a tree as in line~\ref{apply-rho}]{
-        % \label{fig-apply-rho}
-        \qroofx=2
-        \qroofy=1
-          \begin{tabular}{ccc}
-            \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
-            & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
-            & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
-          \end{tabular}
-      }
-    \end{figure}
-
 
     To verify that this algorithm terminates with $t$ in degenerate list form,
     we need only verify that each of the assertions hold and that the loop
@@ -526,6 +519,28 @@ execution traces.
     Finally, we see that our conclusion on line~\ref{postcond} follows from the
     loop invariant and the negation of the condition, by the definition of
     degenerate list form.
+
+    \begin{figure}
+      \centering
+
+      \subfloat[][A tree in degenerate list form]{
+        \hspace{0.8in}
+        \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
+        \hspace{0.8in}
+      }
+      \qquad
+      \qquad
+      \subfloat[][Applying $\rho$ to a tree as in line~\ref{apply-rho}]{
+        % \label{fig-apply-rho}
+        \qroofx=2
+        \qroofy=1
+          \begin{tabular}{ccc}
+            \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
+            & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
+            & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
+          \end{tabular}
+      }
+    \end{figure}
 
   \end{proof}
 
@@ -586,7 +601,7 @@ execution traces.
   similar to that present in \cite{solar06},
   seems like a natural candidate for this problem.
 
-  \begin{figure}[H]
+  \begin{figure}[h]
     \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
       text centered, draw=black, fill=orange!30,
       text width=10em ]
@@ -641,8 +656,7 @@ execution traces.
         node[anchor=west, text width=6cm] {Yes, $t$ exists}
         (no);
     \end{tikzpicture}
-    \caption{Decision procedure for verifying invariance with respect to a
-      function}
+    \caption{Decision procedure for verifying $f$-class invariance}
     \label{invarFuncLoop}
   \end{figure}
 
