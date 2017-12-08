@@ -61,15 +61,11 @@
 
 The question of robustness is fundamental to the subject of programming by example (PBE).  Robustness of a program is the property that the program behaves predictably on uncertain inputs \cite{chaudhuri12}.  In the PBE paradigm, there is, by definition, an uncertainty about the intent of the user, and therefore, it is desirable that a program synthesizer behave predictably with regards to this uncertainty.
 
-Consider an attempt to specify the \(\max\) function by providing to a program synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and \((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the result will likely be the program \verb!P(a,b):=return b;!.  Two issues are at play here: the program syntehsizer is not robust and the synthesized program is also not robust.
+Consider an attempt to specify the \(\max\) function by providing to a program synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and \((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the result will be the program \verb!P(a,b):=return b;!.  The issue that arises here is that neither the program syntehsizer, nor the synthesized program, are robust.
 
-First, the program synthesizer is not robust as transposing the inputs of all of the examples would result in the program \verb!P(a,b):=return a;!, while transposing just a single input would result in the correct program
+The program synthesizer is not robust, as transposing the inputs of each example would result in the program \verb!P(a,b):=return a;!, while transposing just a single input would result in the correct program \verb!P(a,b):=return a>b?a:b;!.
 
-\hspace{2\parindent}\verb!P(a,b):=return a>b?a:b;!.
-
-Second, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty of the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return
-
-\hspace{2\parindent}\verb!P(a,b):=return a>b?a:b;!.
+Additionally, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty in the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return \verb!P(a,b):=return a>b?a:b;!.
 
 Moreover, a synthesizer which returns robust programs will itself be more robust.  Let \(\mathcal{I}_{1} = (I_{1}, O_{1})\) and \(\mathcal{I}_{2} = (I_{2}, O_{2})\) be two input-output pairs for a program synthesizer which differ by a small perturbation.  If the program \(\mathcal{P}_{1}\) returned by the synthesizer on input \(\mathcal{I}_{1}\) is robust, then \(\mathcal{P}_{1}(I_{2})\) will approximate \(O_{2}\) because \(I_{2}\) approximates \(I_{1}\).  For this reason, \(\mathcal{P}_{2}\), the program returned on input \(\mathcal{I}_{2}\), should only differ from \(\mathcal{P}_{1}\) by a small amount.
 
@@ -77,21 +73,26 @@ Thus, the issue of robustness in PBE can be addressed by verifying robustness, e
 
 \section{Related Work}
 
-\paragraph{Relational Logics} Benton \cite{benton} established a Relational Hoare Logic in order to reason about relational properties, properties which consider two, usually distinct, programs.  Barthe et al. \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to probabalistic programs in order to reason about cryptographic protocols and differential privacy.
+\noindent{\it Relational Logics}\space\space Benton \cite{benton} established a Relational Hoare Logic in order to reason about relational properties, properties which consider two, usually distinct, programs.  Barthe et al. \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to probabalistic programs in order to reason about cryptographic protocols and differential privacy.
+\smallskip
 
-\paragraph{Self-Composition} Barthe et al. \cite{barthecomposition} applied self-composition, sequential running of renamed copies of the original program, to study secure information flow.  Terauchi \& Aiken \cite{terauchi05} built on this work by applying a type-based approach to complement self-composition.
+\noindent{\it Self-Composition}\space\space Barthe et al. \cite{barthecomposition} applied self-composition, sequential running of renamed copies of the original program, to study secure information flow.  Terauchi \& Aiken \cite{terauchi05} built on this work by applying a type-based approach to complement self-composition.
+\smallskip
 
-\paragraph{\(2\)-Safety Properties} In \cite{terauchi05}, Terauchi \& Aiken introduced the term \(2\)-safety property.  A general approach to the verification of \(2\)-safety properties is the creation of a product program \cite{bartheproduct}, a program which interleaves two copies of a given program to create a new program.  It \cite{bartheanalysis}, Barthe et al. analyzes various relational program logics, as well as different notions of product programs.
+\noindent{\it \(2\)-Safety Properties}\space\space In \cite{terauchi05}, Terauchi \& Aiken introduced the term \(2\)-safety property.  A general approach to the verification of \(2\)-safety properties is the creation of a product program \cite{bartheproduct}, a program which interleaves two copies of a given program to create a new program.  It \cite{bartheanalysis}, Barthe et al. analyzes various relational program logics, as well as different notions of product programs.
+\smallskip
 
-\paragraph{Continuity} Hamlet \cite{hamlet02} considered the concept of program continuity, but declared that automating verification of continuity for programs with loops was infeasible.  Chaudhuri et al. \cite{chaudhuri10,chaudhuri11} consider the continuity and Lipschitz continuity of programs over the real numbers. Samanta et al. \cite{samanta13} and Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity for proving robustness in the context of transducers.
+\noindent{\(k\)-Safety Properties}\space\space Clarkson and Schneider \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this idea.  Sousa and Dillig \cite{sousa16} formulated a verification algorithm in order to automate checking of \(k\)-safety properties.
+\smallskip 
 
-\paragraph{Robustness} Robustness for control systems was investigated by Majumdar and Saha \cite{majumdar09} and for general programs by \cite{chaudhuri11}.  Additionally, the robustness of networked systems was explored by Samanta et al. \cite{samanta13a}.
+\noindent{\it Continuity}\space\space Hamlet \cite{hamlet02} considered the concept of program continuity, but declared that automating verification of continuity for programs with loops was infeasible.  However, Chaudhuri et al. \cite{chaudhuri10} was able to establish a program logic which allowed such automatica verification of continuity.
+\smallskip
 
-\paragraph{\(k\)-Safety Properties} Clarkson and Schneider \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this idea.  Sousa and Dillig \cite{sousa16} formulated a verification algorithm in order to automate checking of \(k\)-safety properties.
+\noindent{\it Robustness}\space\space Robustness for control systems was investigated by Majumdar and Saha \cite{majumdar09}.  For programs operating on real numbers, robustness was considered by \cite{chaudhuri11} using the concept of Lipschitz continuity.  Additionally, Samanta et al. \cite{samanta13} and Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity for proving robustness in the context of transducers.
 
 \section{Preliminaries}
 
-\subsection{Continuity and Lipschitz Continuity}
+\subsection{Lipschitz Robustness}
 
 %Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of input variables \(In\), a state \(\sigma'\) is an \(\varepsilon\) perturbation of a state \(\sigma\), denoted \(Pert_{\varepsilon,In}(\sigma, \sigma')\),  if
 %\begin{enumerate}
@@ -101,20 +102,20 @@ Thus, the issue of robustness in PBE can be addressed by verifying robustness, e
 %
 %Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of variables \(V\), a state \(\sigma'\) is \(\varepsilon\)-close to a state \(\sigma\), denoted \(\sigma \approx_{\varepsilon,V} \sigma'\), if for all \(x \in V\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) \cite{chaudhuri10}.
 %
-A program \(\mathcal{P}\) is continuous at a state \(\sigma\) with respect to input variables \(In\) and observable variables \(Obs\) if for all \(\varepsilon \in \mathbb{R}^{+}\), there is a \(\delta \in \mathbb{R}^{+}\) so that if \(\sigma'\) satisfies
-%\(Pert_{\delta,In}(\sigma,\sigma')\) implies \(P(\sigma)\approx_{\varepsilon,Obs}\mathcal{P}(\sigma')\) \cite{chaudhuri10}.
-\begin{enumerate}
-    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) and
-    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\),
-\end{enumerate}
-then for all \(x \in Obs\), \(d\big(\mathcal{P}(\sigma)(x), \mathcal{P}(\sigma')(x)\big)\) \cite{chaudhuri10}.
+%A program \(\mathcal{P}\) is continuous at a state \(\sigma\) with respect to input variables \(In\) and observable variables \(Obs\) if for all \(\varepsilon \in \mathbb{R}^{+}\), there is a \(\delta \in \mathbb{R}^{+}\) so that if \(\sigma'\) satisfies
+%%\(Pert_{\delta,In}(\sigma,\sigma')\) implies \(P(\sigma)\approx_{\varepsilon,Obs}\mathcal{P}(\sigma')\) \cite{chaudhuri10}.
+%\begin{enumerate}
+%    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) and
+%    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\),
+%\end{enumerate}
+%then for all \(x \in Obs\), \(d\big(\mathcal{P}(\sigma)(x), \mathcal{P}(\sigma')(x)\big)\) \cite{chaudhuri10}.
 
-Lipschitz continuity of a mathematical function \(f\) is the property that there exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\), \(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program \(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in \mathbb{R}^{+}\),
+Lipschitz continuity of a mathematical function \(f\) is the property that there exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\), \(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program \(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in \mathbb{R}^{+}\), if \(\sigma'\) satisfies
 \begin{enumerate}
     \item \(d\big(\sigma(x_{in}), \sigma'(x_{in})\big) < \varepsilon\) and
-    \item for all \(y \not= x\), \(\sigma(y) = \sigma'(y)\)
+    \item for all \(y \not= x\), \(\sigma(y) = \sigma'(y)\),
 \end{enumerate}
-implies that \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) < K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\) \cite{chaudhuri11}.
+then \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) < K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\) \cite{chaudhuri11}.
 
 \subsection{Permutations}
 \label{perms}
@@ -125,13 +126,13 @@ A permutation is a bijection from a set \(\Omega\) to itself \cite{dummitfoote}.
 \begin{center}
 \begin{tabular*}{0.5\textwidth}{c@{\extracolsep{\fill}}c}
 \(\sigma\):
-\begin{tabular}{cccccc}
+\begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
 0 & 1 & 2 & 3 & 4 & 5\\
 5 & 2 & 3 & 1 & 4 & 0
 \end{tabular}
 &
-\(\sigma\):
-\begin{tabular}{ccc}
+\(\tau\):
+\begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c}
 a & b & c\\
 a & c & b
 \end{tabular}
@@ -140,24 +141,24 @@ a & c & b
 
 Similar to two-line notation, a permutation on \(\{0, \dotsc, N-1\}\) can be encoded in an array \(a\) of length \(N\) by placing the image of \(i\) in \(a[i]\).  The example \(\sigma\) above is encoded in an array as \(\sigma = [5, 2, 3, 1, 4, 0]\), so that \(\sigma(i) = \sigma[i]\).
 
-The inverse \(\sigma^{-1}\) of a permutation \(\sigma\) is the permutation defined by
-\[\sigma(i) = j \Longleftrightarrow \sigma^{-1}(j) = i.\]
-For the permutation \(\sigma\) above,
-\[\sigma^{-1}:\begin{tabular}{cccccc}
-0 & 1 & 2 & 3 & 4 & 5\\
-5 & 3 & 1 & 2 & 4 & 0
-\end{tabular}.\]
-
-% give first-order formula for being a permutation
-\paragraph{First-Order Formula for a Permutation}
-The property of being a permutation on \(\{0, \dotsc, N-1\}\) is encoded in the theory of arrays as
-\begin{multline*}\Perm(a, N): N = \len(a) \wedge (\forall i. 0 \leq i < N \rightarrow 0 \leq a[i] < N) \wedge\\(\forall i,j. 0 \leq i < j < N \rightarrow a[i] \not= a[j]).\end{multline*}
+%The inverse \(\sigma^{-1}\) of a permutation \(\sigma\) is the permutation defined by
+%\[\sigma(i) = j \Longleftrightarrow \sigma^{-1}(j) = i.\]
+%For the permutation \(\sigma\) above,
+%\[\sigma^{-1}:\begin{tabular}{cccccc}
+%0 & 1 & 2 & 3 & 4 & 5\\
+%5 & 3 & 1 & 2 & 4 & 0
+%\end{tabular}.\]
+%
+%% give first-order formula for being a permutation
+%\paragraph{First-Order Formula for a Permutation}
+%The property of being a permutation on \(\{0, \dotsc, N-1\}\) is encoded in the theory of arrays as
+%\begin{multline*}\Perm(a, N): N = \len(a) \wedge (\forall i. 0 \leq i < N \rightarrow 0 \leq a[i] < N) \wedge\\(\forall i,j. 0 \leq i < j < N \rightarrow a[i] \not= a[j]).\end{multline*}
 
 \paragraph{Action on an Array}
 
 Given a permutation \(\sigma\), \(\sigma\) can {\it act} on an array \(a\) as follows.  Let \(a = [37, 25, 19, 49, 81, 21]\) and \(\sigma\) be as above.  Then \(\sigma(3) = \sigma[3] = 1\) and applying \(\sigma\) to \(a\) results in the element of \(a\) at index \(3\), \(49\), being moved to index \(1\) in \(\sigma a\).  That is, \(\sigma a[1] = 49\) and \(a[3] = \sigma a[1] = \sigma a[\sigma[3]]\).  More generally,
 \begin{equation}
-\sigma a[\sigma[i]] = a[i] \Longleftrightarrow \sigma a[i] = a[\sigma^{-1}[i]].
+\sigma a[\sigma[i]] = a[i].% \Longleftrightarrow \sigma a[i] = a[\sigma^{-1}[i]].
 \label{action}
 \end{equation}
 
@@ -169,19 +170,19 @@ Information on permutation groups can be found in \S1.3 of \cite{dummitfoote}.
 \makeatother
 The permutations on \(N\) elements, \(S_{N}\), can all be expressed as compositions of the permutations [Exercises 3-4, \S3.5, \cite{dummitfoote}]
 % increase the intercolumn spacing
-\[\begin{tabular}{ccccc}
+\[\begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
 0 & 1 & 2 & \(\dotsm\) & \(N-1\)\\
 1 & 0 & 2 & \(\dotsm\) & \(N-1\)
 \end{tabular}
 \qquad\textrm{and}\qquad
-\begin{tabular}{ccccc}
+\begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
 0 & 1 & 2 & \(\dotsm\) & \(N-1\)\\
 1 & 2 & 3 & \(\dotsm\) & 0
 \end{tabular},\]
+where the first permutation is a transposition of \(0\) and \(1\) and the second permutation is a rotation of all of the elements by one position.
 \makeatletter
 \renewcommand{\@cite}[1]{[#1]}
 \makeatother
-where the first permutation is a transposition of \(0\) and \(1\) and the second permutation is a rotation of all of the elements by one position.
 
 \subsection{Automata}
 We consider two classes of automata: finite state machines (FSM) and finite
