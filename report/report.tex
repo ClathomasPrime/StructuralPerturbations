@@ -561,7 +561,6 @@ Thus, a counterexample guided synthesis loop,
 similar to that present in \cite{solar06},
 seems like a natural candidate for this problem.
 
-
 \begin{figure}[H]
   \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
     text centered, draw=black, fill=orange!30,
@@ -628,8 +627,24 @@ seems like a natural candidate for this problem.
   verifier.
 \end{theorem}
 \begin{proof}
+  In order to prove this formally, we need an even stronger condition on the
+  equivalence-of-programs verifier.
+  Namely, we suppose there is some total order on the elements in $T$,
+  and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
+  the verifier outputs the smallest counterexample with respect to this
+  ordering.
+
   If $\widetilde{P}$ exists, then a perfect synthesizer will eventually
-  synthesize $\widetilde{P}$
+  synthesize $\widetilde{P}$ given some set of examples, say $E$.
+  Because the verifier gives back counterexamples in a fixed order,
+  a superset of $E$ will eventually be fed into the synthesizer,
+  resulting in $\widetilde{P}$.
+  Then the idealized verifier will output ``YES''.
+
+  If no $\widetilde{P}$ exists, then some pair $t, t_0$ exist
+  such that $f(t)=f(t_0)$ yet $P(t)\ne P(t_0)$.
+  Because the verifier outputs counterexamples in some order,
+  $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
 \end{proof}
 
 
