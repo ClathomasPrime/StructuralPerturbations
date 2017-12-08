@@ -108,7 +108,7 @@ execution traces.
 
 \section{Related Work}
 
-  \subsection{Early Work}
+  \subsection{Initial Approaches}
     \noindent{\it Relational Logics}\space\space Benton \cite{benton} established a
     Relational Hoare Logic in order to reason about relational properties,
     properties which consider two, usually distinct, programs.  Barthe et al.
@@ -125,61 +125,41 @@ execution traces.
     \smallskip
 
   \subsection{Continuity and Lipschitz Robustness}
-    \noindent{\it Continuity}\space\space Hamlet \cite{hamlet02} considered the
+    \noindent{\it Continuity}\space\space Robustness in the setting of numerical perturbations
+    is realized by the property of continuity.  Hamlet \cite{hamlet02} considered the
     concept of program continuity, but declared that automating verification of
     continuity for programs with loops was infeasible.  However, Chaudhuri et al.
     \cite{chaudhuri10} was able to establish a program logic which allowed such
-    automatica verification of continuity.
+    automatic verification of continuity.
     \smallskip
 
-    TODO: incorporate above and below. Below needs work to fit in this section
-
-    Robustness in the setting of numerical perturbations is realized by the property
-    of continuity.  In many situations, the result of a program should be relatively
+    \noindent{\it Lipschitz Robustness}\space\space 
+    In many situations, the result of a program should be relatively
     stable with respect to any uncertainty in the input.  That is, if the input is
     perturbed, the output should vary only slightly, relative to the input
-    perturbation.  This is exactly the concept of Lipschitz continuity.  If it is
-    possible that the input has been slightly perturbed, the result of the program
-    should not be drastically different.  
-
-    \noindent{\it Lipschitz Robustness}\space\space Robustness for control systems was
-    investigated by Majumdar and Saha \cite{majumdar09}.  For programs operating on
-    real numbers, robustness was considered by \cite{chaudhuri11} using the concept
-    of Lipschitz continuity.  Additionally, Samanta et al. \cite{samanta13} and
-    Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity
-    for proving robustness in the context of transducers.
-
-    TODO: incorporate above and below
+    perturbation.  This is exactly the concept of Lipschitz continuity (see Appendix A.1).
 
     Verifying the property of Lipschitz continuity is considered by Chaudhuri et al.
-    \cite{chaudhuri10,chaudhuri11}.  The approach taken is to verify continuity of
+    \cite{chaudhuri11}.  The approach taken is to verify continuity of
     the program as a whole and then verify that each control flow path of the
     program is piecewise Lipschitz continuous by showing that it is piecewise
     linear.  The continuity verification is performed using a program logic for
     reasoning about continuity \cite{chaudhuri10}.  In order to establish that each
     control flow path is piecewise linear, an abstract interpretation is applied in
     which an abstract state, referred to as a robustness matrix, is used to
-    determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).  One
-    advantage of this approach, similar to other relational program logics, is that
-    branches of \verb!if! blocks can be reasoned about independently and then it is
-    verified that the branches are compatible.  As this compatibility is transitive,
-    this prevents have to make a pairwise comparison of each branch as in approaches
-    based on product programs.  However, the approach used in
+    determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).
+    However, the approach used in
     \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations. 
+
+    Additionally, Samanta et al. \cite{samanta13} and
+    Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity
+    for proving robustness in the context of transducers.
 
   \subsection{$k$-Safety Properties}
     \noindent{\it \(2\)-Safety Properties}\space\space In \cite{terauchi05},
-    Terauchi \& Aiken introduced the term \(2\)-safety property.  A general approach
-    to the verification of \(2\)-safety properties is the creation of a product
-    program \cite{bartheproduct}, a program which interleaves two copies of a given
-    program to create a new program.  It \cite{bartheanalysis}, Barthe et al.
-    analyzes various relational program logics, as well as different notions of
-    product programs.
-    \smallskip
+    Terauchi \& Aiken introduced the term \(2\)-safety property.
 
-    TODO: incorporate
-
-    A more general approach to verifying robustness properties is the creation of a
+    A general approach to verifying \(2\)-safety properties is the creation of a
     product program which is then provided as input to a standard program verifier
     \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\)
     of two programs \(\mathcal{P}_{1}, \mathcal{P}_{2}\) is a program which is
@@ -193,17 +173,16 @@ execution traces.
     established by providing \(\mathcal{P} \varoast \mathcal{P}\) to any standard
     program verifier.
 
+    In \cite{bartheanalysis}, Barthe et al.
+    analyzes various relational program logics, as well as different notions of
+    product programs.
+
     \noindent{\(k\)-Safety Properties}\space\space Clarkson and Schneider
     \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this
-    idea.  Sousa and Dillig \cite{sousa16} formulated a verification algorithm in
-    order to automate checking of \(k\)-safety properties.
-    \smallskip 
-
-    TODO: incorporate
-
-    After discussing with the authors of \cite{sousa16}, it seems that with a lot of
-    time and effort, their implementation of Descartes could be used to verify many
-    robustness properties.
+    idea.  Sousa \& Dillig \cite{sousa16} formulated a verification algorithm in
+    order to automate checking of \(k\)-safety properties.  Sousa \& Dillig developed
+    an implementation of their algorithm, though it is limited to the verification
+    of Java comparators.
 
 \section{Example Robustness Properties}
 
@@ -407,12 +386,12 @@ execution traces.
     computes $F$. Then $F$ is invariant under permutation of its input if and only
     if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
 
-    Certainly this method is more efficient than checking invariance under a
-    larger class of permutations. For DFAs, this simplification made the problem
-    of permutation invariance solvable. This indicates that this simplification
-    may aid in our analysis in a profound way. For example, this may be a much
-    easier way of verifying this invariance compared to expressing permutations
-    as a general $2$-safety property.
+%    Certainly this method is more efficient than checking invariance under a
+%    larger class of permutations. For DFAs, this simplification made the problem
+%    of permutation invariance solvable. This indicates that this simplification
+%    may aid in our analysis in a profound way. For example, this may be a much
+%    easier way of verifying this invariance compared to expressing permutations
+%    as a general $2$-safety property.
 
 \section{Invariance under permuting binary search trees}
 
