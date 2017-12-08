@@ -59,68 +59,673 @@
 
 \section{Introduction}
 
-The question of robustness is fundamental to the subject of programming by example (PBE).  Robustness of a program is the property that the program behaves predictably on uncertain inputs \cite{chaudhuri12}.  In the PBE paradigm, there is, by definition, an uncertainty about the intent of the user, and therefore, it is desirable that a program synthesizer behave predictably with regards to this uncertainty.
+The question of robustness is fundamental to the subject of programming by
+example (PBE).  Robustness of a program is the property that the program behaves
+predictably on uncertain inputs \cite{chaudhuri12}.  In the PBE paradigm, there
+is, by definition, an uncertainty about the intent of the user, and therefore,
+it is desirable that a program synthesizer behave predictably with regards to
+this uncertainty.
 
-Consider an attempt to specify the \(\max\) function by providing to a program synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and \((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the result will be the program \verb!P(a,b):=return b;!.  The issue that arises here is that neither the program syntehsizer, nor the synthesized program, are robust.
+Consider an attempt to specify the \(\max\) function by providing to a program
+synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and
+\((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the
+result will be the program \verb!P(a,b):=return b;!.  The issue that arises here
+is that neither the program syntehsizer, nor the synthesized program, are
+robust.
 
-The program synthesizer is not robust, as transposing the inputs of each example would result in the program \verb!P(a,b):=return a;!, while transposing just a single input would result in the correct program \verb!P(a,b):=return a>b?a:b;!.
+The program synthesizer is not robust, as transposing the inputs of each example
+would result in the program \verb!P(a,b):=return a;!, while transposing just a
+single input would result in the correct program \verb!P(a,b):=return a>b?a:b;!.
 
-Additionally, the program which is synthesized is not robust as \verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave predictably under uncertainty in the order of the arguments.  If the program which is synthesized is required to be robust with respect to uncertainty in the order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b! would be viable candidates, and the synthesizer would be forced to return \verb!P(a,b):=return a>b?a:b;!.
+Additionally, the program which is synthesized is not robust as
+\verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave
+predictably under uncertainty in the order of the arguments.  If the program
+which is synthesized is required to be robust with respect to uncertainty in the
+order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b!
+would be viable candidates, and the synthesizer would be forced to return
+\verb!P(a,b):=return a>b?a:b;!.
 
-Moreover, a synthesizer which returns robust programs will itself be more robust.  Let \(\mathcal{I}_{1} = (I_{1}, O_{1})\) and \(\mathcal{I}_{2} = (I_{2}, O_{2})\) be two input-output pairs for a program synthesizer which differ by a small perturbation.  If the program \(\mathcal{P}_{1}\) returned by the synthesizer on input \(\mathcal{I}_{1}\) is robust, then \(\mathcal{P}_{1}(I_{2})\) will approximate \(O_{2}\) because \(I_{2}\) approximates \(I_{1}\).  For this reason, \(\mathcal{P}_{2}\), the program returned on input \(\mathcal{I}_{2}\), should only differ from \(\mathcal{P}_{1}\) by a small amount.
+Moreover, a synthesizer which returns robust programs will itself be more
+robust.  Let \(\mathcal{I}_{1} = (I_{1}, O_{1})\) and \(\mathcal{I}_{2} =
+(I_{2}, O_{2})\) be two input-output pairs for a program synthesizer which
+differ by a small perturbation.  If the program \(\mathcal{P}_{1}\) returned by
+the synthesizer on input \(\mathcal{I}_{1}\) is robust, then
+\(\mathcal{P}_{1}(I_{2})\) will approximate \(O_{2}\) because \(I_{2}\)
+approximates \(I_{1}\).  For this reason, \(\mathcal{P}_{2}\), the program
+returned on input \(\mathcal{I}_{2}\), should only differ from
+\(\mathcal{P}_{1}\) by a small amount.
 
-Thus, the issue of robustness in PBE can be addressed by verifying robustness, either of the synthesized programs or even of the synthesizer as a whole.  However, verification of robustness requires the ability to reason about robustness.  Standard program verifiers are unable to verify robustness properties as they are an example of a \(2\)-safety property, a property which requires reasoning about two execution traces simultaneously.  In particular, robustness is the property that given two inputs which are related by some form of uncertainty, the outputs should be related in a predictable way.  As such, verifying robustness requires reasoning about the relationship between two execution traces.
+Thus, the issue of robustness in PBE can be addressed by verifying robustness,
+either of the synthesized programs or even of the synthesizer as a whole.
+However, verification of robustness requires the ability to reason about
+robustness.  Standard program verifiers are unable to verify robustness
+properties as they are an example of a \(2\)-safety property, a property which
+requires reasoning about two execution traces simultaneously.  In particular,
+robustness is the property that given two inputs which are related by some form
+of uncertainty, the outputs should be related in a predictable way.  As such,
+verifying robustness requires reasoning about the relationship between two
+execution traces.
 
 \section{Related Work}
 
-\noindent{\it Relational Logics}\space\space Benton \cite{benton} established a Relational Hoare Logic in order to reason about relational properties, properties which consider two, usually distinct, programs.  Barthe et al. \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to probabalistic programs in order to reason about cryptographic protocols and differential privacy.
-\smallskip
+  \subsection{Early Work}
+    \noindent{\it Relational Logics}\space\space Benton \cite{benton} established a
+    Relational Hoare Logic in order to reason about relational properties,
+    properties which consider two, usually distinct, programs.  Barthe et al.
+    \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to
+    probabalistic programs in order to reason about cryptographic protocols and
+    differential privacy.
+    \smallskip
 
-\noindent{\it Self-Composition}\space\space Barthe et al. \cite{barthecomposition} applied self-composition, sequential running of renamed copies of the original program, to study secure information flow.  Terauchi \& Aiken \cite{terauchi05} built on this work by applying a type-based approach to complement self-composition.
-\smallskip
+    \noindent{\it Self-Composition}\space\space Barthe et al.
+    \cite{barthecomposition} applied self-composition, sequential running of renamed
+    copies of the original program, to study secure information flow.  Terauchi \&
+    Aiken \cite{terauchi05} built on this work by applying a type-based approach to
+    complement self-composition.
+    \smallskip
 
-\noindent{\it \(2\)-Safety Properties}\space\space In \cite{terauchi05}, Terauchi \& Aiken introduced the term \(2\)-safety property.  A general approach to the verification of \(2\)-safety properties is the creation of a product program \cite{bartheproduct}, a program which interleaves two copies of a given program to create a new program.  It \cite{bartheanalysis}, Barthe et al. analyzes various relational program logics, as well as different notions of product programs.
-\smallskip
+  \subsection{Continuity and Lipschitz Robustness}
+    \noindent{\it Continuity}\space\space Hamlet \cite{hamlet02} considered the
+    concept of program continuity, but declared that automating verification of
+    continuity for programs with loops was infeasible.  However, Chaudhuri et al.
+    \cite{chaudhuri10} was able to establish a program logic which allowed such
+    automatica verification of continuity.
+    \smallskip
 
-\noindent{\(k\)-Safety Properties}\space\space Clarkson and Schneider \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this idea.  Sousa and Dillig \cite{sousa16} formulated a verification algorithm in order to automate checking of \(k\)-safety properties.
-\smallskip 
+    TODO: incorporate above and below. Below needs work to fit in this section
 
-\noindent{\it Continuity}\space\space Hamlet \cite{hamlet02} considered the concept of program continuity, but declared that automating verification of continuity for programs with loops was infeasible.  However, Chaudhuri et al. \cite{chaudhuri10} was able to establish a program logic which allowed such automatica verification of continuity.
-\smallskip
+    Robustness in the setting of numerical perturbations is realized by the property
+    of continuity.  In many situations, the result of a program should be relatively
+    stable with respect to any uncertainty in the input.  That is, if the input is
+    perturbed, the output should vary only slightly, relative to the input
+    perturbation.  This is exactly the concept of Lipschitz continuity.  If it is
+    possible that the input has been slightly perturbed, the result of the program
+    should not be drastically different.  
 
-\noindent{\it Robustness}\space\space Robustness for control systems was investigated by Majumdar and Saha \cite{majumdar09}.  For programs operating on real numbers, robustness was considered by \cite{chaudhuri11} using the concept of Lipschitz continuity.  Additionally, Samanta et al. \cite{samanta13} and Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity for proving robustness in the context of transducers.
+    \noindent{\it Lipschitz Robustness}\space\space Robustness for control systems was
+    investigated by Majumdar and Saha \cite{majumdar09}.  For programs operating on
+    real numbers, robustness was considered by \cite{chaudhuri11} using the concept
+    of Lipschitz continuity.  Additionally, Samanta et al. \cite{samanta13} and
+    Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity
+    for proving robustness in the context of transducers.
+
+    TODO: incorporate above and below
+
+    Verifying the property of Lipschitz continuity is considered by Chaudhuri et al.
+    \cite{chaudhuri10,chaudhuri11}.  The approach taken is to verify continuity of
+    the program as a whole and then verify that each control flow path of the
+    program is piecewise Lipschitz continuous by showing that it is piecewise
+    linear.  The continuity verification is performed using a program logic for
+    reasoning about continuity \cite{chaudhuri10}.  In order to establish that each
+    control flow path is piecewise linear, an abstract interpretation is applied in
+    which an abstract state, referred to as a robustness matrix, is used to
+    determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).  One
+    advantage of this approach, similar to other relational program logics, is that
+    branches of \verb!if! blocks can be reasoned about independently and then it is
+    verified that the branches are compatible.  As this compatibility is transitive,
+    this prevents have to make a pairwise comparison of each branch as in approaches
+    based on product programs.  However, the approach used in
+    \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations. 
+
+  \subsection{$k$-Safety Properties}
+    \noindent{\it \(2\)-Safety Properties}\space\space In \cite{terauchi05},
+    Terauchi \& Aiken introduced the term \(2\)-safety property.  A general approach
+    to the verification of \(2\)-safety properties is the creation of a product
+    program \cite{bartheproduct}, a program which interleaves two copies of a given
+    program to create a new program.  It \cite{bartheanalysis}, Barthe et al.
+    analyzes various relational program logics, as well as different notions of
+    product programs.
+    \smallskip
+
+    TODO: incorporate
+
+    A more general approach to verifying robustness properties is the creation of a
+    product program which is then provided as input to a standard program verifier
+    \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\)
+    of two programs \(\mathcal{P}_{1}, \mathcal{P}_{2}\) is a program which is
+    equivalent to simultaneously executing both \(\mathcal{P}_{1}\) and
+    \(\mathcal{P}_{2}\).  Because a single program is created with distinct
+    variables corresponding to each variable of \(\mathcal{P}_{1}\) and
+    \(\mathcal{P}_{2}\), relational properties between \(\mathcal{P}_{1}\) and
+    \(\mathcal{P}_{2}\) can be expressed as a standard verification property of the
+    single program \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\).  As a result, a
+    \(2\)-safety property about \(\mathcal{P}\), such as robustness, can be
+    established by providing \(\mathcal{P} \varoast \mathcal{P}\) to any standard
+    program verifier.
+
+    \noindent{\(k\)-Safety Properties}\space\space Clarkson and Schneider
+    \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this
+    idea.  Sousa and Dillig \cite{sousa16} formulated a verification algorithm in
+    order to automate checking of \(k\)-safety properties.
+    \smallskip 
+
+    TODO: incorporate
+
+    After discussing with the authors of \cite{sousa16}, it seems that with a lot of
+    time and effort, their implementation of Descartes could be used to verify many
+    robustness properties.
+
+\section{Example Robustness Properties}
+
+  The uncertainty with respect to which a program is robust can take many
+  different forms.  Some common perturbations include
+  \begin{itemize}
+    \item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
+    \item permutations of arrays and matrices,
+    \item simultaneous permutations of arrays.
+  \end{itemize}
+
+  \subsection{Uniform noise and list sorting}
+
+    TODO: This section talks about sorting functions being 1-robust. existing
+    work for real numbers works fine for integers.
+
+    Next section will mention that continuity work doesn't apply to structural
+    stuff.
+
+    As an example, sorting algorithms are
+    \(1\)-Lipschitz.  If each element of the input array is perturbed by an amount
+    no more than \(1\), then each element of the output array will be changed by no
+    more than \(1\).
+
+  \subsection{Permutations}
+
+    %\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
+
+    TODO: put this discussion in a reasonable place.
+    Break into ``invariance'' and ``respects''
+
+    Let \(F\) and \(G\) be the formulas
+    \begin{gather*}
+        F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
+            G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
+              \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
+    \end{gather*}
+    Then invariance of a program which takes an array as input can be specified
+    in the language of \cite{sousa16} as
+    \[
+      \|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| 
+        \mathcal{P}(a) \|\ret_{1} = \ret_{2}\|.
+    \]
+
+  \subsubsection{Sorting}
+
+    Sorting is one example of a procedure which is robust with respect to permuting
+    the input.  Even in the face of uncertainty regarding the order of the input
+    array, the result of procedure will not be altered.  The \verb!max! function is
+    a special case of this invariance of sorting algorithms under permutation, which
+    is the root of the incorrectness of the attempts to synthesize the \verb!max!
+    function in Section 1.
+
+  \subsubsection{Searching}
+
+    Consider the function \verb!Find(a, x)! which returns the index of the element
+    \verb!x! in the array \verb!a! or \(-1\) if \verb!x! is not an element of
+    \verb!a!.  Let \(\sigma\) be a permutation and suppose that \verb!a[i]=x!.  Then
+    from \eqref{action} \[\sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! =
+    \verb!x!,\] so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).
+    Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
+    -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
+    in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is
+    robust in that perturbing the input array by a permutation \(\sigma\) perturbs
+    the output of \verb!Find! by the same permutation \(\sigma\).
+
+  \subsubsection{Adjacency Matrices}
+
+    Big Q: should we include this??
+
+    The effect of permuting the rows and columns of an adjacency matrix by the same
+    permutation is simply a relabelling of the vertices.  As the labelling of the
+    vertices is arbitrary, a program which takes an adjacency matrix as input should
+    likely satisfy one of two robustness properties.  If the program computes a
+    property of the graph, such as the existence of a Hamiltonian cycle, the program
+    should be invariant under such a relabelling.  If the program computes a result
+    which depends on the labelling, such as finding an explicit Hamiltonian cycle,
+    the program should satisfy the same property as in the case of searching, that
+    the output should be perturbed by the same permutation as the input.
+
+
+\section{Invariance under permuting lists}
+\label{permlists}
+
+  TODO: write intro
+
+  \subsection{Automata}
+    Given a program $P$ which takes a linear data type
+    as input. We may wish to verify that this program
+    is invariant under reordering of the array,
+    in other words, it is invariant under the action of $S_n$.
+    Denote the output of $P$ on input $s$ by $P(s)$.
+    Then we want to test whether $P(\sigma s) = P$
+    for all $\sigma \in S_n$.
+
+    As a first simplification, observe that is
+    suffices to check our condition on a set
+    of generators of $S_n$.
+    Concretely, let $\alpha = (1\ 2\ 3\ ...\ n)$
+    and let $\beta = (1\ 2)$.
+    Then any $\sigma \in S_n$ can be written as
+    a product of elements of $\{\alpha,\beta\}$,
+    say $\sigma = u_1 u_2\ldots u_m$ with
+    $u_i \in \{\alpha,\beta\}$.
+    So if we know that $P(\alpha s) = P(s)$
+    and $P(\beta s) = P(s)$, then
+    $P((u_1 u_2 \ldots u_m)s)
+    = P((u_2 \ldots u_m)s)
+    = \ldots = P(u_ms) = P(s) $.
+
+    For a fixed $n$ and $\sigma \in S_n$,
+    we can construct a finite state transducer
+    $T$ such that $T(s) = \sigma s$ for $|s|=n$.
+    However, this does not give us any
+    reasonable way of checking that a given
+    finite state machine is invariant under permutation
+    of the input string.
+    Instead, we will construct finite state
+    transducers $T_{\alpha}$ and $T_{\beta}$
+    such that for any $n$ and any string $s$
+    with $|s|=n$, we have
+    $T_{\alpha}(s)=(1\ 2\ \ldots\ n) s$ and
+    $T_{\beta}(s) = (1\ 2) s$.
+    Then, determining whether a FSM $M$ is
+    invariant under permutation of its inputs
+    is equivalent to determining whether
+    \[
+      L(M \circ T_\alpha) = L(M) = L(M \circ T_\beta)
+    \]
+
+    We now construct $T_\alpha$.
+    For each symbol $a \in \Sigma$,
+    $T_\alpha$ has a transition from its start
+    state $s_0$ to $s_a$, while reading in put $a$ and
+    writing $\epsilon$ output.
+    For each $a$ and each $b\ne \$$, there is a
+    transition from $s_a$ to $s_a$, reading $b$
+    and writing $b$.
+    Then for each $a$, there is a transition from
+    $s_a$ to $s_1$, reading $\$$ and writing $a\$$.
+    \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+        auto, scale=0.6, every node/.style={scale=0.6}
+    ] 
+      \node[state,initial] (q_0)   {$q_0$}; 
+      \node[state] (q_b) [right=of q_0] {$q_b$}; 
+      \node[state] (q_a) [above=of q_b] {$q_a$}; 
+      \node[state] (q_c) [below=of q_b] {$q_c$}; 
+      \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+      \path[->] 
+      (q_0) edge node {a / $\epsilon$} (q_a)
+            edge node {b / $\epsilon$} (q_b)
+            edge node [below left] {c / $\epsilon$} (q_c)
+      (q_a) edge node {x / xa} (q_1)
+      (q_b) edge node {x / xb} (q_1)
+      (q_c) edge node [below right] {x / xc} (q_1)
+      (q_1) edge [loop right] node {x / x} (q_1)
+            ;
+    \end{tikzpicture}
+
+    We now construct $T_\beta$.
+    For each symbol $a \in \Sigma$,
+    $T_\alpha$ has a transition from its start
+    state $s_0$ to $s_a$, while reading in put $a$ and
+    writing $\epsilon$ output.
+    Each $s_a$ has a transition to $s_1$ while
+    reading input $b$ (for any $b\in \Sigma$)
+    and writing output $ba$.
+    Then $s_1$ simply has transitions to $s_1$,
+    reading any $a\in \Sigma$ and writing
+    back $a$.
+    \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+        auto, scale=0.6, every node/.style={scale=0.6}
+    ] 
+      \node[state,initial] (q_0)   {$q_0$}; 
+      \node[state] (q_b) [right=of q_0] {$q_b$}; 
+      \node[state] (q_a) [above=of q_b] {$q_a$}; 
+      \node[state] (q_c) [below=of q_b] {$q_c$}; 
+      \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+      \path[->] 
+      (q_0) edge node {a / $\epsilon$} (q_a)
+            edge node {b / $\epsilon$} (q_b)
+            edge node [below left] {c / $\epsilon$} (q_c)
+      (q_a) edge node {\$ / a\$} (q_1)
+            edge [loop above] node {x / x} (q_a)
+      (q_b) edge node {\$ / b\$} (q_1)
+            edge [loop above] node {x / x} (q_b)
+      (q_c) edge node [below right] {\$ / c\$} (q_1)
+            edge [loop above] node {x / x} (q_c)
+            ;
+    \end{tikzpicture}
+
+
+  \subsection{Programs}
+    The previous section indicates a method for verifying
+    robustness of more general programs under permutation of inputs.
+    % The framework of \cite{sousa16} is constructed in order to verify properties
+    % of related runs of the same program. However, their proof rules also give
+    Given a procedure $F$ taking an array as argument, consider the functions
+    $F_\alpha$, which first swaps the first two elements of the array, then computes
+    $F$, and $F_\beta$, which moves the first element of the array to the back, then
+    computes $F$. Then $F$ is invariant under permutation of its input if and only
+    if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
+
+    Certainly this method is more efficient than checking invariance under a
+    larger class of permutations. For DFAs, this simplification made the problem
+    of permutation invariance solvable. This indicates that this simplification
+    may aid in our analysis in a profound way. For example, this may be a much
+    easier way of verifying this invariance compared to expressing permutations
+    as a general $2$-safety property.
+
+\section{Invariance under permuting binary search trees}
+
+  In the previous section~\ref{permlists}, we found a reduction
+  from checking \emph{all} permutations of a list to checking a small set of
+  permutations. It is natural to ask if there are other data types for which we
+  can do this. Binary search trees are one such case, where just like lists,
+  two permutations suffice to generate all equivalent binary search trees
+  (i.e. tree representing equivalent ordered lists).
+
+  TODO: Define
+
+  We repre
+  Then define two (partial) operations $\rho$ and $\theta$ on binary search trees
+  as follows:
+
+  \qroofx=2
+  \qroofy=1
+  \begin{tabular}{ccc}
+   \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
+      & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \!\!\!\!}
+      & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
+    \\
+    \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
+      & \raisebox{-0.5in}{\ \ \ $\xmapsto{\ \ \theta\ \ }$ \!\!\!\!}
+      & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
+  \end{tabular}
+
+  You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
+  by observing that the subtrees in the above diagrams remain in the same order
+  before and after applying the transformations.
+  We will show in the next theorem that $\rho$ and $\theta$ additionally suffice
+  to generate all transformations of any tree into another tree with an equal
+  underlying list.
+
+  \begin{theorem}
+    If a program $P$ on binary search trees is invariant under $\rho$
+    and $\theta$, then whenever $\mathrm{list}(t_1) = \mathrm{list}(t_2)$,
+    we have $P(t_1) = P(t_2)$.
+  \end{theorem}
+  \begin{proof}
+    Let $t_1$ and $t_2$ satisfy $\mathrm{list}(t_1) = \mathrm{list}(t_2)$.
+    Observe that if $P$ is invariant under $\rho$ and $\theta$,
+    then $P$ is also invariant under $\rho^{-1}$ and $\theta^{-1}$.
+    Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
+    via $\rho$ and $\theta$ into another tree $t_3$,
+    because then we can transform $t_1$ into $t_3$, then apply the inverse
+    transformation to get to $t_2$.
+    We proceed by providing an algorithm for transforming to a $t_3$
+    in the following form:
+
+    \begin{definition}
+      A tree $t$ is in degenerate list form if either
+      \begin{enumerate}
+        \item $t$ is Nil, or
+        \item $t$ has a Nil left child, and $t$'s right child is in degenerate
+          list form.
+      \end{enumerate}
+    \end{definition}
+
+    \begin{figure}[H]
+      \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
+      \caption{A tree in degenerate list form}
+    \end{figure}
+
+    It is clear that if $t_1$ and $t_2$ are in degenerate list form, then
+    $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
+    Thus, if we can show that $t_1$ and $t_2$ can both be transformed into
+    degenerate list form, say $t_1'$ and $t_2'$, then we will have $t_1' = t_2'$
+    and we will be done.
+
+    Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$,
+    where invariants and assertions are written inside \{braces\}:
+    \begin{algorithm}[H]
+      \begin{algorithmic}[1]
+        \Function{Listify}{$t$}
+          \While{$t$ has a right child}
+            \State apply $\rho^{-1}$ to $t$
+          \EndWhile
+          \State{\{$t$ has a null right child\}} \label{null-right}
+          \While{$t$ has a left child}
+            \Comment{\{$t$'s right child is in degenerate list form\}}
+            \While{$t$'s left child has a right child}\label{inner-loop}
+              \State apply $\theta$ to $t$
+            \EndWhile
+            \State{\{$t$'s left child has a null right child\}}
+              \label{null-left-right}
+            \State apply $\rho$ to $t$ \label{apply-rho}
+          \EndWhile
+          \State{\{$t$ is in degenerate list form\}} \label{postcond}
+        \EndFunction
+      \end{algorithmic}
+    \end{algorithm} 
+    % be more explicit about: 
+    %   * what is a loop invariant
+    %   * what is a consequence of the loop condition being false
+
+    To verify that this algorithm terminates with $t$ in degenerate list form,
+    we need only verify that each of the assertions hold and that the loop
+    invariant is inductive.
+
+    The invariant on line~\ref{null-right} follows from the negation of the
+    condition of the loop before it.
+    The loop invariant holds from line~\ref{null-right} simply because the null
+    tree is in degenerate list form.
+    The invariant on line~\ref{null-left-right} also follows from the negation of
+    the condition of the loop before it.
+
+    Next we show that the loop invariant is inductive.
+    The inner loop on line~\ref{inner-loop} does not change $t$'s right child,
+    so it remain in degenerate list form.
+    Thus, when we apply $\rho$ to $t$, it's left child has a null right child, and
+    $t$'s right child is in degenerate list form.
+    As shown in figure~\ref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
+    in degenerate list form. 
+    Thus, the invariant is inductive.
+    \begin{figure}
+      \qroofx=2
+      \qroofy=1
+      \begin{center}
+        \begin{tabular}{ccc}
+          \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
+          & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
+          & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
+        \end{tabular}
+      \end{center}
+      \caption{Applying $\rho$ to a tree as in line~\ref{apply-rho}}
+      \label{fig-apply-rho}
+    \end{figure}
+
+    Finally, we see that our conclusion on line~\ref{postcond} follows from the
+    loop invariant and the negation of the condition, by the definition of
+    degenerate list form.
+
+  \end{proof}
+
+  \section{Invariance with respect to a function}
+
+  All previous work on these topics share one downside: they require programmers
+  to express their invariants in formal logic. This could potentially be
+  difficult. One class of invariants that can be expressed through codes is
+  \emph{invariance with respect to a function}.
+
+  \begin{definition} We say that a program $P$ is invariant with respect to a
+    function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
+  \end{definition}
+
+  For example, if a programmer defines a tree or heap data type with a function
+  $\mathrm{list}$ mapping the data type to lists,
+  then nearly every function written on this data type should be invariant with
+  respect to the $\mathrm{list}$ function,
+  as these data types are meant to represent the lists perfectly (while allowing
+  for faster algorithms).
+
+  We regard this problem as very difficult, because the function $f$ can be
+  expressed with arbitrary code and thus encode more complicated properties than
+  first order logic. One approach comes from the following observation:
+
+  \begin{lemma} Let $P : S \to T$ and $f : T \to Z$.
+    Then $P$ is invariant with respect to $f$ if and only if
+    there exists a program $\widetilde{P} : T\to Z$
+    such that $P = \widetilde{P} \circ f$
+  \end{lemma}
+    \[
+      \begin{tikzcd}
+        S \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
+        & T \arrow[dashed]{ru}{\widetilde{P}} &   \\
+      \end{tikzcd}
+    \]
+  \begin{proof}
+    If $P$ is invariant with respect to $f$, then the function
+    \[ \widetilde{P}(t) = \begin{cases}
+         P(s), & t = f(s) \text{ for some $s\in S$} \\
+         z_0, & \text{otherwise}
+       \end{cases}
+    \]
+    for any $z_0 \in Z$
+    is well defined and clearly satisfies $P = \widetilde{P} \circ f$.
+
+    Conversely, if $\widetilde{P}$ exists, then whenever $f(s)=f(s')$,
+    we have $P(s) = \widetilde{P}(f(s)) = \widetilde{P}(f(s')) = P(s')$,
+    so $P$ is invariant with respect to $f$.
+  \end{proof}
+
+  Now, the key observation is that $P$ and $f$ together give a full functional
+  specification for $\widetilde{P}$.
+  We want to either construct such a $\widetilde{P}$ in order to prove our
+  property, or provide the programmer with a counterexample to the property in
+  order to help them debug.
+  Thus, a counterexample guided synthesis loop,
+  similar to that present in \cite{solar06},
+  seems like a natural candidate for this problem.
+
+  \begin{figure}[H]
+    \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
+      text centered, draw=black, fill=orange!30,
+      text width=10em ]
+    \tikzstyle{smallprocess} = [rectangle, minimum width=3cm, minimum height=1cm,
+      text centered, draw=black, fill=orange!30,
+      text width=6em ]
+    \tikzstyle{io} = [rectangle, rounded corners,
+      minimum width=3cm, minimum height=1cm,
+      text centered, draw=black, fill=blue!30]
+    \tikzstyle{arrow} = [thick,->,>=stealth]
+
+    \begin{tikzpicture}[node distance=2cm, scale=0.8, every node/.style={scale=0.8}]
+      \node (start) [io] {
+        Input $P$ and $f$.
+        Let $E = \{ \}$.
+      };
+      \node (synth) [process, below of=start, yshift=-0.5cm] {
+        \textbf{Synthesize} a program $\widetilde{P} : S \to Z$
+        given examples $\{ (f(t), P(t)) | t\in E \}$
+      };
+      \node (verify) [process, right of=synth, xshift=4cm] {
+        \textbf{Verify} whether $\widetilde{P}\circ f$
+        is equivalent to $P$
+      };
+      \node (yes) [io, above of=verify] {
+        return YES
+      };
+      \node (check) [process, below of=verify, yshift=-1cm] {
+        Check if there are any $t\in E$ such that
+        $f(t)=f(t_0)$, yet $P(t) \ne P(t_0)$
+      };
+      \node (no) [io, below of=check, yshift=-0.5cm] {
+        return NO
+      };
+      \node (add) [smallprocess, below of=synth, yshift=-1cm] {
+        Add $t_0$ to the example set $E$
+      };
+
+      \draw [arrow] (start) -- (synth);
+      \draw [arrow] (synth) -- (verify);
+      \draw [arrow] (verify) --
+        node[anchor=west, text width=6cm] {No, with \\ counterexample $t_0\in BSTs$}
+        (check);
+      \draw [arrow] (verify) --
+        node[anchor=west, text width=6cm] {Yes, equivalent}
+        (yes);
+      \draw [arrow] (check) --
+        node[anchor=north, text width=2cm, text centered] {No, $t$ does not exists}
+        (add);
+        \draw [arrow] (add) -- (synth);
+      \draw [arrow] (check) --
+        node[anchor=west, text width=6cm] {Yes, $t$ exists}
+        (no);
+    \end{tikzpicture}
+    \caption{Decision procedure for verifying invariance with respect to a
+      function}
+    \label{invarFuncLoop}
+  \end{figure}
+
+  \begin{theorem}
+    The algorithm~\ref{invarFuncLoop} is sound and relatively complete,
+    relative to a perfect synthesizer and a perfect equivalence-of-programs
+    verifier.
+  \end{theorem}
+  \begin{proof}
+    In order to prove this formally, we need an even stronger condition on the
+    equivalence-of-programs verifier.
+    Namely, we suppose there is some total order on the elements in $T$,
+    and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
+    the verifier outputs the smallest counterexample with respect to this
+    ordering.
+
+    If $\widetilde{P}$ exists, then a perfect synthesizer will eventually
+    synthesize $\widetilde{P}$ given some set of examples, say $E$.
+    Because the verifier gives back counterexamples in a fixed order,
+    a superset of $E$ will eventually be fed into the synthesizer,
+    resulting in $\widetilde{P}$.
+    Then the idealized verifier will output ``YES''.
+
+    If no $\widetilde{P}$ exists, then some pair $t, t_0$ exist
+    such that $f(t)=f(t_0)$ yet $P(t)\ne P(t_0)$.
+    Because the verifier outputs counterexamples in some order,
+    $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
+  \end{proof}
+
+%
+% ---- Bibliography ----
+%
+\bibliographystyle{splncs}
+\bibliography{robustness}
+
+
+\appendix
 
 \section{Preliminaries}
 
 \subsection{Lipschitz Robustness}
 
-%Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of input variables \(In\), a state \(\sigma'\) is an \(\varepsilon\) perturbation of a state \(\sigma\), denoted \(Pert_{\varepsilon,In}(\sigma, \sigma')\),  if
-%\begin{enumerate}
-%    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\), and
-%    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\) \cite{chaudhuri10}.
-%\end{enumerate}
-%
-%Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of variables \(V\), a state \(\sigma'\) is \(\varepsilon\)-close to a state \(\sigma\), denoted \(\sigma \approx_{\varepsilon,V} \sigma'\), if for all \(x \in V\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) \cite{chaudhuri10}.
-%
-%A program \(\mathcal{P}\) is continuous at a state \(\sigma\) with respect to input variables \(In\) and observable variables \(Obs\) if for all \(\varepsilon \in \mathbb{R}^{+}\), there is a \(\delta \in \mathbb{R}^{+}\) so that if \(\sigma'\) satisfies
-%%\(Pert_{\delta,In}(\sigma,\sigma')\) implies \(P(\sigma)\approx_{\varepsilon,Obs}\mathcal{P}(\sigma')\) \cite{chaudhuri10}.
-%\begin{enumerate}
-%    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) and
-%    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\),
-%\end{enumerate}
-%then for all \(x \in Obs\), \(d\big(\mathcal{P}(\sigma)(x), \mathcal{P}(\sigma')(x)\big)\) \cite{chaudhuri10}.
-
-Lipschitz continuity of a mathematical function \(f\) is the property that there exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\), \(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program \(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in \mathbb{R}^{+}\), if \(\sigma'\) satisfies
+Lipschitz continuity of a mathematical function \(f\) is the property that there
+exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\),
+\(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program
+\(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input
+variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in
+\mathbb{R}^{+}\), if \(\sigma'\) satisfies
 \begin{enumerate}
     \item \(d\big(\sigma(x_{in}), \sigma'(x_{in})\big) < \varepsilon\) and
     \item for all \(y \not= x\), \(\sigma(y) = \sigma'(y)\),
 \end{enumerate}
-then \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) < K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\) \cite{chaudhuri11}.
+then \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) <
+K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\)
+\cite{chaudhuri11}.
 
 \subsection{Permutations}
 \label{perms}
 
-A permutation is a bijection from a set \(\Omega\) to itself \cite{dummitfoote}.  When \(\Omega\) is a finite set, a permutation can be specified using two-line notation by placing the elements of \(\Omega\) on one line, and their images under \(\sigma\) beneath them:
+A permutation is a bijection from a set \(\Omega\) to itself \cite{dummitfoote}.
+When \(\Omega\) is a finite set, a permutation can be specified using two-line
+notation by placing the elements of \(\Omega\) on one line, and their images
+under \(\sigma\) beneath them:
 
 % increase the intercolumn spacing
 \begin{center}
@@ -141,18 +746,6 @@ a & c & b
 
 Similar to two-line notation, a permutation on \(\{0, \dotsc, N-1\}\) can be encoded in an array \(a\) of length \(N\) by placing the image of \(i\) in \(a[i]\).  The example \(\sigma\) above is encoded in an array as \(\sigma = [5, 2, 3, 1, 4, 0]\), so that \(\sigma(i) = \sigma[i]\).
 
-%The inverse \(\sigma^{-1}\) of a permutation \(\sigma\) is the permutation defined by
-%\[\sigma(i) = j \Longleftrightarrow \sigma^{-1}(j) = i.\]
-%For the permutation \(\sigma\) above,
-%\[\sigma^{-1}:\begin{tabular}{cccccc}
-%0 & 1 & 2 & 3 & 4 & 5\\
-%5 & 3 & 1 & 2 & 4 & 0
-%\end{tabular}.\]
-%
-%% give first-order formula for being a permutation
-%\paragraph{First-Order Formula for a Permutation}
-%The property of being a permutation on \(\{0, \dotsc, N-1\}\) is encoded in the theory of arrays as
-%\begin{multline*}\Perm(a, N): N = \len(a) \wedge (\forall i. 0 \leq i < N \rightarrow 0 \leq a[i] < N) \wedge\\(\forall i,j. 0 \leq i < j < N \rightarrow a[i] \not= a[j]).\end{multline*}
 
 \paragraph{Action on an Array}
 
@@ -204,507 +797,6 @@ where $S_A$ and $S_T$ are the states of $A$ and $T$.
 % \[ \delta_{A\after T}((a,t), c) = (\delta_A( , \delta_T(t,c))
 % \]
 We will assume that all input strings are terminated by a special end-of-input character \$.
-
-\section{Robustness Properties}
-
-The uncertainty with respect to which a program is robust can take many different forms.  Some common perturbations include
-\begin{itemize}
-\item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
-\item permutations of arrays and matrices,
-\item simultaneous permutations of arrays.
-\end{itemize}
-
-\subsection{Continuity}
-
-Robustness in the setting of numerical perturbations is realized by the property of continuity.  In many situations, the result of a program should be relatively stable with respect to any uncertainty in the input.  That is, if the input is perturbed, the output should vary only slightly, relative to the input perturbation.  This is exactly the concept of Lipschitz continuity.  if it is possible that the input has been slightly perturbed, the result of the program should not be drastically different.  As an example, sorting algorithms are \(1\)-Lipschitz.  If each element of the input array is perturbed by an amount no more than \(1\), then each element of the output array will be changed by no more than \(1\).
-
-\subsection{Permutations}
-
-%\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
-
-Let \(F\) and \(G\) be the formulas
-\begin{gather*}
-    F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
-        G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
-\end{gather*}
-Then invariace of a program which takes an array as input can be specified by
-\[\|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| \mathcal{P}(a) \|\ret_{1} = \ret_{2}\|.\]
-
-\subsubsection{Sorting}
-
-Sorting is one example of a procedure which is robust with respect to permuting the input.  Even in the face of uncertainty regarding the order of the input array, the result of procedure will not be altered.  The \verb!max! function is a special case of this invariance of sorting algorithms under permutation, which is the root of the incorrectness of the attempts to synthesize the \verb!max! function in Section 1.
-
-\subsubsection{Searching}
-
-Consider the function \verb!Find(a, x)! which returns the index of the element \verb!x! in the array \verb!a! or \(-1\) if \verb!x! is not an element of \verb!a!.  Let \(\sigma\) be a permutation and suppose that \verb!a[i]=x!.  Then from \eqref{action}
-\[\sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! = \verb!x!,\]
-so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).  Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) = -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is robust in that perturbing the input array by a permutation \(\sigma\) perturbs the output of \verb!Find! by the same permutation \(\sigma\).
-
-\subsubsection{Adjacency Matrices}
-
-The effect of permuting the rows and columns of an adjacency matrix by the same permutation is simply a relabelling of the vertices.  As the labelling of the vertices is arbitrary, a program which takes an adjacency matrix as input should likely satisfy one of two robustness properties.  If the program computes a property of the graph, such as the existence of a Hamiltonian cycle, the program should be invariant under such a relabelling.  If the program computes a result which depends on the labelling, such as finding an explicit Hamiltonian cycle, the program should satisfy the same property as in the case of searching, that the output should be perturbed by the same permutation as the input.
-
-\subsection{Simultaneous Permutation}
-
-Consider an algorithm for grading a multipart homework problem, which takes as input three arrays:  the student's responses, the correct answers, and the credit to be awarded for each part.  A reordering of the parts of the problem should not affect the credit which a student is awarded.  As reordering the parts of the problem corresponds to simultaneously permuting the three input arrays, the grading algorithm should be invariant under simultaneous permutations of the input arrays.  This property can be expressed using ideas from Section \ref{perms} by applying a transposition and a rotation simultaneously to each array.%  Using ideas from Section \ref{perms}, this property can be expressed as the conjunction of the following two formulas:
-%
-%\begin{multline*}x_{2}[1] = x_{1}[0] \wedge y_{2}[1] = y_{1}[0] \wedge z_{2}[1] = z_{1}[0] \wedge\\
-%x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge\\
-%\forall i.\, 2 \leq i < \len(y_{1}) \rightarrow (x_{2}[i] = x_{1}[i] \wedge y_{2}[i] = y_{1}[i] \wedge z_{2}[i] = z_{1}[i])
-%\end{multline*}
-%\begin{multline*}\len(y_{1}) = N \wedge (x_{2}[0] = x_{1}[N-1] \wedge y_{2}[0] = y_{1}[N-1] \wedge z_{2}[0] = z_{1}[N-1]) \wedge\\ \forall i.\, 1 \leq i < N \rightarrow (x_{2}[i] = x_{1}[i-1] \wedge y_{2}[i] = y_{1}[i-1] \wedge z_{2}[i] = z_{1}[i-1])
-%\end{multline*}
-
-%The first formula specifies that the first two parts of the problem are transposed, while the rest of the parts remain unchanged.  The second specifies a rotation by one of the parts of the problem.
-
-\begin{algorithm}
-\begin{algorithmic}
-\Function{Grade}{responses, answers, credits}
-\State points \(\gets\) 0
-\For{0 \(\leq\) i \(\leq\) length(answers)}
-\If{responses[i] \(-\) answers[i] \(=\) 0}
-\State points \(\gets\) points \(+\) credits[i]
-\EndIf
-\EndFor
-\Return{points}
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-\section{Verifying Robustness}
-
-\subsection{Lipschitz Continuity}
-
-Verifying the property of Lipschitz continuity is considered by Chaudhuri et al. \cite{chaudhuri10,chaudhuri11}.  The approach taken is to verify continuity of the program as a whole and then verify that each control flow path of the program is piecewise Lipschitz continuous by showing that it is piecewise linear.  The continuity verification is performed using a program logic for reasoning about continuity \cite{chaudhuri10}.  In order to establish that each control flow path is piecewise linear, an abstract interpretation is applied in which an abstract state, referred to as a robustness matrix, is used to determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).  One advantage of this approach, similar to other relational program logics, is that branches of \verb!if! blocks can be reasoned about independently and then it is verified that the branches are compatible.  As this compatibility is transitive, this prevents have to make a pairwise comparison of each branch as in approaches based on product programs.  However, the approach used in \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations. 
-
-\subsection{Product Programs}
-
-A more general approach to verifying robustness properties is the creation of a product program which is then provided as input to a standard program verifier \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\) of two programs \(\mathcal{P}_{1}, \mathcal{P}_{2}\) is a program which is equivalent to simultaneously executing both \(\mathcal{P}_{1}\) and \(\mathcal{P}_{2}\).  Because a single program is created with distinct variables corresponding to each variable of \(\mathcal{P}_{1}\) and \(\mathcal{P}_{2}\), relational properties between \(\mathcal{P}_{1}\) and \(\mathcal{P}_{2}\) can be expressed as a standard verification property of the single program \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\).  As a result, a \(2\)-safety property about \(\mathcal{P}\), such as robustness, can be established by providing \(\mathcal{P} \varoast \mathcal{P}\) to any standard program verifier.
-
-\subsection{Cartesian Hoare Logic}
-
-
-After discussing with the authors of \cite{sousa16}, it seems that with a lot of
-time and effort, their implementation of Descartes could be used to verify many
-robustness properties.
-
-\section{Invariance under permuting lists}
-\label{permlists}
-
-A different problem we have been thinking about is more discrete
-and algebraic in nature.
-We want to verify that programs are invariant under
-permutations of their input arrays.
-
-\subsection{Automata}
-Given a program $P$ which takes a linear data type
-as input. We may wish to verify that this program
-is invariant under reordering of the array,
-in other words, it is invariant under the action of $S_n$.
-Denote the output of $P$ on input $s$ by $P(s)$.
-Then we want to test whether $P(\sigma s) = P$
-for all $\sigma \in S_n$.
-
-As a first simplification, observe that is
-suffices to check our condition on a set
-of generators of $S_n$.
-Concretely, let $\alpha = (1\ 2\ 3\ ...\ n)$
-and let $\beta = (1\ 2)$.
-Then any $\sigma \in S_n$ can be written as
-a product of elements of $\{\alpha,\beta\}$,
-say $\sigma = u_1 u_2\ldots u_m$ with
-$u_i \in \{\alpha,\beta\}$.
-So if we know that $P(\alpha s) = P(s)$
-and $P(\beta s) = P(s)$, then
-$P((u_1 u_2 \ldots u_m)s)
-= P((u_2 \ldots u_m)s)
-= \ldots = P(u_ms) = P(s) $.
-
-For a fixed $n$ and $\sigma \in S_n$,
-we can construct a finite state transducer
-$T$ such that $T(s) = \sigma s$ for $|s|=n$.
-However, this does not give us any
-reasonable way of checking that a given
-finite state machine is invariant under permutation
-of the input string.
-Instead, we will construct finite state
-transducers $T_{\alpha}$ and $T_{\beta}$
-such that for any $n$ and any string $s$
-with $|s|=n$, we have
-$T_{\alpha}(s)=(1\ 2\ \ldots\ n) s$ and
-$T_{\beta}(s) = (1\ 2) s$.
-Then, determining whether a FSM $M$ is
-invariant under permutation of its inputs
-is equivalent to determining whether
-\[
-  L(M \circ T_\alpha) = L(M) = L(M \circ T_\beta)
-\]
-
-We now construct $T_\alpha$.
-For each symbol $a \in \Sigma$,
-$T_\alpha$ has a transition from its start
-state $s_0$ to $s_a$, while reading in put $a$ and
-writing $\epsilon$ output.
-For each $a$ and each $b\ne \$$, there is a
-transition from $s_a$ to $s_a$, reading $b$
-and writing $b$.
-Then for each $a$, there is a transition from
-$s_a$ to $s_1$, reading $\$$ and writing $a\$$.
-\begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-    auto, scale=0.6, every node/.style={scale=0.6}
-] 
-  \node[state,initial] (q_0)   {$q_0$}; 
-  \node[state] (q_b) [right=of q_0] {$q_b$}; 
-  \node[state] (q_a) [above=of q_b] {$q_a$}; 
-  \node[state] (q_c) [below=of q_b] {$q_c$}; 
-  \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-  \path[->] 
-  (q_0) edge node {a / $\epsilon$} (q_a)
-        edge node {b / $\epsilon$} (q_b)
-        edge node [below left] {c / $\epsilon$} (q_c)
-  (q_a) edge node {x / xa} (q_1)
-  (q_b) edge node {x / xb} (q_1)
-  (q_c) edge node [below right] {x / xc} (q_1)
-  (q_1) edge [loop right] node {x / x} (q_1)
-        ;
-\end{tikzpicture}
-
-We now construct $T_\beta$.
-For each symbol $a \in \Sigma$,
-$T_\alpha$ has a transition from its start
-state $s_0$ to $s_a$, while reading in put $a$ and
-writing $\epsilon$ output.
-Each $s_a$ has a transition to $s_1$ while
-reading input $b$ (for any $b\in \Sigma$)
-and writing output $ba$.
-Then $s_1$ simply has transitions to $s_1$,
-reading any $a\in \Sigma$ and writing
-back $a$.
-\begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-    auto, scale=0.6, every node/.style={scale=0.6}
-] 
-  \node[state,initial] (q_0)   {$q_0$}; 
-  \node[state] (q_b) [right=of q_0] {$q_b$}; 
-  \node[state] (q_a) [above=of q_b] {$q_a$}; 
-  \node[state] (q_c) [below=of q_b] {$q_c$}; 
-  \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-  \path[->] 
-  (q_0) edge node {a / $\epsilon$} (q_a)
-        edge node {b / $\epsilon$} (q_b)
-        edge node [below left] {c / $\epsilon$} (q_c)
-  (q_a) edge node {\$ / a\$} (q_1)
-        edge [loop above] node {x / x} (q_a)
-  (q_b) edge node {\$ / b\$} (q_1)
-        edge [loop above] node {x / x} (q_b)
-  (q_c) edge node [below right] {\$ / c\$} (q_1)
-        edge [loop above] node {x / x} (q_c)
-        ;
-\end{tikzpicture}
-
-
-\subsection{Programs}
-The previous section indicates a method for verifying
-robustness of more general programs under permutation of inputs.
-% The framework of \cite{sousa16} is constructed in order to verify properties of related runs of the same program. However, their proof rules also give
-Given a procedure $F$ taking an array as argument, consider the functions $F_\alpha$, which first swaps the first two elements of the array, then computes $F$, and $F_\beta$, which moves the first element of the array to the back, then computes $F$. Then $F$ is invariant under permutation of its input if and only if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
-
-Certainly this method is more efficient than checking invariance under a larger class of permutations. For DFAs, this simplification made the problem of permutation invariance solvable. This indicates that this simplification may aid in our analysis in a profound way. For example, this may be a much easier way of verifying this invariance compared to expressing permutations as a general $2$-safety property.
-
-\section{Invariance under permuting binary search trees}
-
-In the previous section~\ref{permlists}, we found a reduction
-from checking \emph{all} permutations of a list to checking a small set of
-permutations. It is natural to ask if there are other data types for which we
-can do this. Binary search trees are one such case, where just like lists,
-two permutations suffice to generate all equivalent binary search trees
-(i.e. tree representing equivalent ordered lists).
-
-Represent binary search trees by the algebraic data type
-Then define two (partial) operations $\rho$ and $\theta$ on binary search trees
-as follows:
-
-\begin{algorithm}
-  data Tree = Nil $|$ Branch Tree Int Tree
-  \\ \\
-  list Nil = [\ ] \\
-  list (Branch left a right) = list(left) ++ [a] ++ list(right)
-  \\ \\
-  $\rho$(Branch (Branch LL a LR) b R)
-  \\ \hphantom{df} = Branch LL a (Branch LR b R)
-  \\ \\
-  $\theta$(Branch (Branch LL a (Branch LRL b LRR)) c R)
-  \\ \hphantom{df} = Branch LL a (Branch LR b R)
-\end{algorithm}
-
-\qroofx=2
-\qroofy=1
-\begin{tabular}{ccc}
- \Tree [.b [.a \qroof{LL}. \qroof{LR}. ] \qroof{R}. ]
-    & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \!\!\!\!}
-    & \Tree [.a \qroof{LL}. [.b \qroof{LR}. \qroof{R}. ]  ]
-  \\
-  \Tree [.c [.a \qroof{LL}. [.b \qroof{LRL}. \qroof{LRR}. ]] \qroof{R}. ]
-    & \raisebox{-0.5in}{\ \ \ $\xmapsto{\ \ \theta\ \ }$ \!\!\!\!}
-    & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
-\end{tabular}
-
-You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
-by observing that the subtrees in the above diagrams remain in the same order
-before and after applying the transformations.
-We will show in the next theorem that $\rho$ and $\theta$ additionally suffice
-to generate all transformations of any tree into another tree with an equal
-underlying list.
-
-\begin{theorem}
-  If a program $P$ on binary search trees is invariant under $\rho$
-  and $\theta$, then whenever $\mathrm{list}(t_1) = \mathrm{list}(t_2)$,
-  we have $P(t_1) = P(t_2)$.
-\end{theorem}
-\begin{proof}
-  Let $t_1$ and $t_2$ satisfy $\mathrm{list}(t_1) = \mathrm{list}(t_2)$.
-  Observe that if $P$ is invariant under $\rho$ and $\theta$,
-  then $P$ is also invariant under $\rho^{-1}$ and $\theta^{-1}$.
-  Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
-  via $\rho$ and $\theta$ into another tree $t_3$,
-  because then we can transform $t_1$ into $t_3$, then apply the inverse
-  transformation to get to $t_2$.
-  We proceed by providing an algorithm for transforming to a $t_3$
-  in the following form:
-
-  \begin{definition}
-    A tree $t$ is in degenerate list form if either
-    \begin{enumerate}
-      \item $t$ is Nil, or
-      \item $t$ has a Nil left child, and $t$'s right child is in degenerate
-        list form.
-    \end{enumerate}
-  \end{definition}
-
-  \begin{figure}[H]
-    \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
-    \caption{A tree in degenerate list form}
-  \end{figure}
-
-  It is clear that if $t_1$ and $t_2$ are in degenerate list form, then
-  $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
-  Thus, if we can show that $t_1$ and $t_2$ can both be transformed into
-  degenerate list form, say $t_1'$ and $t_2'$, then we will have $t_1' = t_2'$
-  and we will be done.
-
-  Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$,
-  where invariants and assertions are written inside \{braces\}:
-  \begin{algorithm}[H]
-    \begin{algorithmic}[1]
-      \Function{Listify}{$t$}
-        \While{$t$ has a right child}
-          \State apply $\rho^{-1}$ to $t$
-        \EndWhile
-        \State{\{$t$ has a null right child\}} \label{null-right}
-        \While{$t$ has a left child}
-          \Comment{\{$t$'s right child is in degenerate list form\}}
-          \While{$t$'s left child has a right child}\label{inner-loop}
-            \State apply $\theta$ to $t$
-          \EndWhile
-          \State{\{$t$'s left child has a null right child\}}
-            \label{null-left-right}
-          \State apply $\rho$ to $t$ \label{apply-rho}
-        \EndWhile
-        \State{\{$t$ is in degenerate list form\}} \label{postcond}
-      \EndFunction
-    \end{algorithmic}
-  \end{algorithm} 
-  % be more explicit about: 
-  %   * what is a loop invariant
-  %   * what is a consequence of the loop condition being false
-
-  To verify that this algorithm terminates with $t$ in degenerate list form,
-  we need only verify that each of the assertions hold and that the loop
-  invariant is inductive.
-
-  The invariant on line~\ref{null-right} follows from the negation of the
-  condition of the loop before it.
-  The loop invariant holds from line~\ref{null-right} simply because the null
-  tree is in degenerate list form.
-  The invariant on line~\ref{null-left-right} also follows from the negation of
-  the condition of the loop before it.
-
-  Next we show that the loop invariant is inductive.
-  The inner loop on line~\ref{inner-loop} does not change $t$'s right child,
-  so it remain in degenerate list form.
-  Thus, when we apply $\rho$ to $t$, it's left child has a null right child, and
-  $t$'s right child is in degenerate list form.
-  As shown in figure~\ref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
-  in degenerate list form. 
-  Thus, the invariant is inductive.
-  \begin{figure}
-    \qroofx=2
-    \qroofy=1
-    \begin{center}
-      \begin{tabular}{ccc}
-        \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
-        & \raisebox{-0.3in}{\ \ \ $\xmapsto{\ \ \rho\ \ }$ \ }
-        & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
-      \end{tabular}
-    \end{center}
-    \caption{Applying $\rho$ to a tree as in line~\ref{apply-rho}}
-    \label{fig-apply-rho}
-  \end{figure}
-
-  Finally, we see that our conclusion on line~\ref{postcond} follows from the
-  loop invariant and the negation of the condition, by the definition of
-  degenerate list form.
-
-\end{proof}
-
-\section{Invariance with respect to a function}
-
-All previous work on these topics share one downside: they require programmers
-to express their invariants in formal logic. This could potentially be
-difficult. One class of invariants that can be expressed through codes is
-\emph{invariance with respect to a function}.
-
-\begin{definition} We say that a program $P$ is invariant with respect to a
-  function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
-\end{definition}
-
-For example, if a programmer defines a tree or heap data type with a function
-$\mathrm{list}$ mapping the data type to lists,
-then nearly every function written on this data type should be invariant with
-respect to the $\mathrm{list}$ function,
-as these data types are meant to represent the lists perfectly (while allowing
-for faster algorithms).
-
-We regard this problem as very difficult, because the function $f$ can be
-expressed with arbitrary code and thus encode more complicated properties than
-first order logic. One approach comes from the following observation:
-
-\begin{lemma} Let $P : S \to T$ and $f : T \to Z$.
-  Then $P$ is invariant with respect to $f$ if and only if
-  there exists a program $\widetilde{P} : T\to Z$
-  such that $P = \widetilde{P} \circ f$
-\end{lemma}
-  \[
-    \begin{tikzcd}
-      S \arrow{rr}{P} \arrow{rd}{f} &   & Z \\
-      & T \arrow[dashed]{ru}{\widetilde{P}} &   \\
-    \end{tikzcd}
-  \]
-\begin{proof}
-  If $P$ is invariant with respect to $f$, then the function
-  \[ \widetilde{P}(t) = \begin{cases}
-       P(s), & t = f(s) \text{ for some $s\in S$} \\
-       z_0, & \text{otherwise}
-     \end{cases}
-  \]
-  for any $z_0 \in Z$
-  is well defined and clearly satisfies $P = \widetilde{P} \circ f$.
-
-  Conversely, if $\widetilde{P}$ exists, then whenever $f(s)=f(s')$,
-  we have $P(s) = \widetilde{P}(f(s)) = \widetilde{P}(f(s')) = P(s')$,
-  so $P$ is invariant with respect to $f$.
-\end{proof}
-
-Now, the key observation is that $P$ and $f$ together give a full functional
-specification for $\widetilde{P}$.
-We want to either construct such a $\widetilde{P}$ in order to prove our
-property, or provide the programmer with a counterexample to the property in
-order to help them debug.
-Thus, a counterexample guided synthesis loop,
-similar to that present in \cite{solar06},
-seems like a natural candidate for this problem.
-
-\begin{figure}[H]
-  \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
-    text centered, draw=black, fill=orange!30,
-    text width=10em ]
-  \tikzstyle{smallprocess} = [rectangle, minimum width=3cm, minimum height=1cm,
-    text centered, draw=black, fill=orange!30,
-    text width=6em ]
-  \tikzstyle{io} = [rectangle, rounded corners,
-    minimum width=3cm, minimum height=1cm,
-    text centered, draw=black, fill=blue!30]
-  \tikzstyle{arrow} = [thick,->,>=stealth]
-
-  \begin{tikzpicture}[node distance=2cm, scale=0.8, every node/.style={scale=0.8}]
-    \node (start) [io] {
-      Input $P$ and $f$.
-      Let $E = \{ \}$.
-    };
-    \node (synth) [process, below of=start, yshift=-0.5cm] {
-      \textbf{Synthesize} a program $\widetilde{P} : S \to Z$
-      given examples $\{ (f(t), P(t)) | t\in E \}$
-    };
-    \node (verify) [process, right of=synth, xshift=4cm] {
-      \textbf{Verify} whether $\widetilde{P}\circ f$
-      is equivalent to $P$
-    };
-    \node (yes) [io, above of=verify] {
-      return YES
-    };
-    \node (check) [process, below of=verify, yshift=-1cm] {
-      Check if there are any $t\in E$ such that
-      $f(t)=f(t_0)$, yet $P(t) \ne P(t_0)$
-    };
-    \node (no) [io, below of=check, yshift=-0.5cm] {
-      return NO
-    };
-    \node (add) [smallprocess, below of=synth, yshift=-1cm] {
-      Add $t_0$ to the example set $E$
-    };
-
-    \draw [arrow] (start) -- (synth);
-    \draw [arrow] (synth) -- (verify);
-    \draw [arrow] (verify) --
-      node[anchor=west, text width=6cm] {No, with \\ counterexample $t_0\in BSTs$}
-      (check);
-    \draw [arrow] (verify) --
-      node[anchor=west, text width=6cm] {Yes, equivalent}
-      (yes);
-    \draw [arrow] (check) --
-      node[anchor=north, text width=2cm, text centered] {No, $t$ does not exists}
-      (add);
-      \draw [arrow] (add) -- (synth);
-    \draw [arrow] (check) --
-      node[anchor=west, text width=6cm] {Yes, $t$ exists}
-      (no);
-  \end{tikzpicture}
-  \caption{Decision procedure for verifying invariance with respect to a
-    function}
-  \label{invarFuncLoop}
-\end{figure}
-
-\begin{theorem}
-  The algorithm~\ref{invarFuncLoop} is sound and relatively complete,
-  relative to a perfect synthesizer and a perfect equivalence-of-programs
-  verifier.
-\end{theorem}
-\begin{proof}
-  In order to prove this formally, we need an even stronger condition on the
-  equivalence-of-programs verifier.
-  Namely, we suppose there is some total order on the elements in $T$,
-  and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
-  the verifier outputs the smallest counterexample with respect to this
-  ordering.
-
-  If $\widetilde{P}$ exists, then a perfect synthesizer will eventually
-  synthesize $\widetilde{P}$ given some set of examples, say $E$.
-  Because the verifier gives back counterexamples in a fixed order,
-  a superset of $E$ will eventually be fed into the synthesizer,
-  resulting in $\widetilde{P}$.
-  Then the idealized verifier will output ``YES''.
-
-  If no $\widetilde{P}$ exists, then some pair $t, t_0$ exist
-  such that $f(t)=f(t_0)$ yet $P(t)\ne P(t_0)$.
-  Because the verifier outputs counterexamples in some order,
-  $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
-\end{proof}
-
-
-%
-% ---- Bibliography ----
-%
-\bibliographystyle{splncs}
-\bibliography{robustness}
 
 \end{document}
 
