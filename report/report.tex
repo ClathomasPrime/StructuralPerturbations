@@ -400,6 +400,13 @@ as follows:
   & \Tree [.c [.b [.a \qroof{LL}. \qroof{LRL}. ] \qroof{LRR}. ] \qroof{R}. ]
 \end{tabular}
 
+You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
+by observing that the subtrees in the above diagrams remain in the same order
+before and after applying the transformations.
+We will show in the next theorem that $\rho$ and $\theta$ additionally suffice
+to generate all transformations of any tree into another tree with an equal
+underlying list.
+
 \begin{theorem}
   If a program $P$ on binary search trees is invariant under $\rho$
   and $\theta$, then whenever $\mathrm{list}(t_1) = \mathrm{list}(t_2)$,
@@ -416,7 +423,6 @@ as follows:
   We proceed by providing an algorithm for transforming to a $t_3$
   in the following form:
 
-
   \begin{definition}
     A tree $t$ is in degenerate list form if either
     \begin{enumerate}
@@ -431,6 +437,11 @@ as follows:
     \caption{A tree in degenerate list form}
   \end{figure}
 
+  It is clear that if $t_1$ and $t_2$ are in degenerate list form, then
+  $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
+  Thus, if we can show that $t_1$ and $t_2$ can both be transformed into
+  degenerate list form, say $t_1'$ and $t_2'$, then we will have $t_1' = t_2'$
+  and we will be done.
 
   Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$,
   where invariants and assertions are written inside \{braces\}:
@@ -443,14 +454,14 @@ as follows:
         \State{\{$t$ has a null right child\}} \label{null-right}
         \While{$t$ has a left child}
           \Comment{\{$t$'s right child is in degenerate list form\}}
-          \While{$t$'s left child has a right child}
+          \While{$t$'s left child has a right child}\label{inner-loop}
             \State apply $\theta$ to $t$
           \EndWhile
           \State{\{$t$'s left child has a null right child\}}
             \label{null-left-right}
-          \State apply $\rho$ to $t$
+          \State apply $\rho$ to $t$ \label{apply-rho}
         \EndWhile
-        \State{\{$t$ is in degenerate list form\}}
+        \State{\{$t$ is in degenerate list form\}} \label{postcond}
       \EndFunction
     \end{algorithmic}
   \end{algorithm} 
@@ -468,33 +479,32 @@ as follows:
   tree is in degenerate list form.
   The invariant on line~\ref{null-left-right} also follows from the negation of
   the condition of the loop before it.
-  % Proof: the first loop clearly terminates (as $\rho^{-1}$ decreases the depth
-  % of the right subtree) and leaves $t$ with a null right
-  % child. Thus, after the first loop, $t$'s right child is in degenerate list
-  % form.
 
-  % Consider the inner loop on line 5. This loop clearly always terminates,
-  % (as $\theta$ decreases the depth of the left child's right child)
-  % and leave the right subtree of $t$ unchanged.
-  % When this loop finishes, $t$'s left child has a null right child.
-  % Observe that if $\rho$ is applied to $t$ when $t$'s left child
-  % has a null right child AND $t$'s right child is in degenerate list form,
-  % then the resulting tree's right subchild remains in degenerate list form.
-  % Thus, at each iteration of the second loop starting at line 4,
-  % we have $t$'s right child in degenerate list form.
+  Next we show that the loop invariant is inductive.
+  The inner loop on line~\ref{inner-loop} does not change $t$'s right child,
+  so it remain in degenerate list form.
+  Thus, when we apply $\rho$ to $t$, it's left child has a null right child, and
+  $t$'s right child is in degenerate list form.
+  As shown in figure~\ref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
+  in degenerate list form. 
+  Thus, the invariant is inductive.
+  \begin{figure}
+    \qroofx=2
+    \qroofy=1
+    \begin{center}
+      \begin{tabular}{ccc}
+        \Tree [.b [.a \qroof{LL}. $\e$ ] \qroof{R}. ]
+        & $\xmapsto{\ \ \rho\ \ }$
+        & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
+      \end{tabular}
+    \end{center}
+    \caption{Applying $\rho$ to a tree as in line~\ref{apply-rho}}
+    \label{fig-apply-rho}
+  \end{figure}
 
-  % Furthermore, upon each iteration of the loop starting at line 4,
-  % we move one more node into the right subtree of $t$.
-  % Thus, this loop eventually halts, and $t$ is left with a null left child.
-  % As $t$'s right subtree is also in degenerate list form,
-  % $t$ is left in degenerate list form.
-
-  % Clearly, if $t_1$ and $t_2$ are both in degenerate list form,
-  % then $\mathrm{list}(t_1) = \mathrm{list}(t_2)$ if and only if $t_1 = t_2$.
-  % Thus, if $\mathrm{list}(t_1) = \mathrm{list}(t_2)$, then $t_1$ and $t_2$
-  % can both be transformed into the same degenerate list structure
-  % useing the $\rho$ and $\theta$.
-  % Thus, $t_1$ can be transformed into $t_2$.
+  Finally, we see that our conclusion on line~\ref{postcond} follows from the
+  loop invariant and the negation of the condition, by the definition of
+  degenerate list form.
 
 \end{proof}
 
@@ -538,6 +548,7 @@ first order logic. One approach comes from the following observation:
        z_0, & \text{otherwise}
      \end{cases}
   \]
+  for any $z_0 \in Z$
   is well defined and clearly satisfies $P = \widetilde{P} \circ f$.
 
   Conversely, if $\widetilde{P}$ exists, then whenever $f(s)=f(s')$,
@@ -553,7 +564,6 @@ order to help them debug.
 Thus, a counterexample guided synthesis loop,
 similar to that present in \cite{solar06},
 seems like a natural candidate for this problem.
-
 
 \begin{figure}[H]
   \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
@@ -621,8 +631,24 @@ seems like a natural candidate for this problem.
   verifier.
 \end{theorem}
 \begin{proof}
+  In order to prove this formally, we need an even stronger condition on the
+  equivalence-of-programs verifier.
+  Namely, we suppose there is some total order on the elements in $T$,
+  and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
+  the verifier outputs the smallest counterexample with respect to this
+  ordering.
+
   If $\widetilde{P}$ exists, then a perfect synthesizer will eventually
-  synthesize $\widetilde{P}$
+  synthesize $\widetilde{P}$ given some set of examples, say $E$.
+  Because the verifier gives back counterexamples in a fixed order,
+  a superset of $E$ will eventually be fed into the synthesizer,
+  resulting in $\widetilde{P}$.
+  Then the idealized verifier will output ``YES''.
+
+  If no $\widetilde{P}$ exists, then some pair $t, t_0$ exist
+  such that $f(t)=f(t_0)$ yet $P(t)\ne P(t_0)$.
+  Because the verifier outputs counterexamples in some order,
+  $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
 \end{proof}
 
 
