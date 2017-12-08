@@ -126,7 +126,6 @@ execution traces.
     copies of the original program, to study secure information flow.  Terauchi \&
     Aiken \cite{terauchi05} built on this work by applying a type-based approach to
     complement self-composition.
-    \smallskip
 
   \subsection{Continuity and Lipschitz Robustness}
     \noindent{\it Continuity}\space\space Robustness in the setting of numerical perturbations
@@ -180,11 +179,24 @@ execution traces.
     In \cite{bartheanalysis}, Barthe et al.
     analyzes various relational program logics, as well as different notions of
     product programs.
+    \smallskip
 
-    \noindent{\(k\)-Safety Properties}\space\space Clarkson and Schneider
+    \noindent{\(k\)-Safety Properties}\space\space Clarkson \& Schneider
     \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this
-    idea.  Sousa \& Dillig \cite{sousa16} formulated a verification algorithm in
-    order to automate checking of \(k\)-safety properties.  Sousa \& Dillig developed
+    idea.
+
+    Sousa \& Dillig \cite{sousa16} developed a program logic based on product programs
+    to reason about \(k\)-safety properties.  Their approach is more efficient than
+    using product programs as they avoid creation of an actual product program, while
+    still being able to reason about the product program.  Moreover, rather than
+    considering a single product program, their approach considers the equivalence
+    class of programs which are equivalent to the product program
+    \(\mathcal{P}_{1} \varoast \dotsb \varoast \mathcal{P}_{k}\) and attempts to
+    find an element of this equivalence class which is particularly easy
+    to reason about.
+    
+    However, the result of these improvements is that their method is not compatible
+    with a standard program verifier.  Sousa \& Dillig developed
     an implementation of their algorithm, though it is limited to the verification
     of Java comparators.
 
