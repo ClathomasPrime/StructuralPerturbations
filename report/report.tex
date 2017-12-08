@@ -15,6 +15,7 @@
 
 \usepackage{amsmath}
 \usepackage{wrapfig}
+\usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usepackage[customcolors]{hf-tikz}
@@ -22,6 +23,7 @@
 \usetikzlibrary{shapes.geometric, arrows}
 \usetikzlibrary{automata}
 \usepackage{tkz-graph}
+\usepackage{tikz-cd}
 \usepackage{varwidth}
 \usepackage{qtree}
 \usepackage{mathtools}
@@ -43,6 +45,7 @@
 \DeclareMathOperator{\Conj}{Conj}
 \DeclareMathOperator{\SimultConj}{SimultConj}
 \DeclareMathOperator{\len}{length}
+\DeclareMathOperator{\ret}{ret}
 
 \newlength\myindent
 \setlength\myindent{2em}
@@ -59,7 +62,7 @@
 
 \begin{document}
 
-\maketitle 
+\maketitle
 
 % \begin{abstract}
 % \end{abstract}
@@ -98,9 +101,30 @@ Thus, the issue of robustness in PBE can be addressed by verifying robustness, e
 
 \section{Preliminaries}
 
-\subsection{Continuity and Lipschitz-Continuity}
+\subsection{Continuity and Lipschitz Continuity}
 
-% define continuity and LIpschitz-continuity of a program
+%Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of input variables \(In\), a state \(\sigma'\) is an \(\varepsilon\) perturbation of a state \(\sigma\), denoted \(Pert_{\varepsilon,In}(\sigma, \sigma')\),  if
+%\begin{enumerate}
+%    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\), and
+%    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\) \cite{chaudhuri10}.
+%\end{enumerate}
+%
+%Given \(\varepsilon \in \mathbb{R}^{+}\) and a set of variables \(V\), a state \(\sigma'\) is \(\varepsilon\)-close to a state \(\sigma\), denoted \(\sigma \approx_{\varepsilon,V} \sigma'\), if for all \(x \in V\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) \cite{chaudhuri10}.
+%
+A program \(\mathcal{P}\) is continuous at a state \(\sigma\) with respect to input variables \(In\) and observable variables \(Obs\) if for all \(\varepsilon \in \mathbb{R}^{+}\), there is a \(\delta \in \mathbb{R}^{+}\) so that if \(\sigma'\) satisfies
+%\(Pert_{\delta,In}(\sigma,\sigma')\) implies \(P(\sigma)\approx_{\varepsilon,Obs}\mathcal{P}(\sigma')\) \cite{chaudhuri10}.
+\begin{enumerate}
+    \item for all \(x \in In\), \(d\big(\sigma(x), \sigma'(x)\big) < \varepsilon\) and
+    \item for all \(y \notin In\), \(\sigma(y) = \sigma'(y)\),
+\end{enumerate}
+then for all \(x \in Obs\), \(d\big(\mathcal{P}(\sigma)(x), \mathcal{P}(\sigma')(x)\big)\) \cite{chaudhuri10}.
+
+Lipschitz continuity of a mathematical function \(f\) is the property that there exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\), \(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program \(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in \mathbb{R}^{+}\),
+\begin{enumerate}
+    \item \(d\big(\sigma(x_{in}), \sigma'(x_{in})\big) < \varepsilon\) and
+    \item for all \(y \not= x\), \(\sigma(y) = \sigma'(y)\)
+\end{enumerate}
+implies that \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) < K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\) \cite{chaudhuri11}.
 
 \subsection{Permutations}
 \label{perms}
@@ -172,28 +196,38 @@ where the first permutation is a transposition of \(0\) and \(1\) and the second
 \subsection{Automata}
 We consider two classes of automata: finite state machines (FSM) and finite state transducers (FST). All automata we consider are deterministic. Given an automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is an FSM, we represent "accept" by $1$ and "reject" by $0$. Otherwise, $A$ is a finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$ denote the set of strings accepted by $A$. (We do not define the language of an FST).
 
-Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM. 
+Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) = L(B)$ is decidable. We can compose an FST $T$ and a FSM $A$, denoted $A \circ T$, to get another FSM.
 
 We will assume that all input strings are terminated by a special end-of-input character \$.
 
 \section{Robustness Properties}
 
-Some settings in which programs should be robust:
+The uncertainty with respect to which a program is robust can take many different forms.  Some common perturbations include
 \begin{itemize}
 \item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
 \item permutations of arrays and matrices,
-\item simultaneous permutations of arrays,
+\item simultaneous permutations of arrays.
 \end{itemize}
 
 \subsection{Continuity}
 
-% discuss sorting being 1-Lipschitz
+Robustness in the setting of numerical perturbations is realized by the property of continuity.  In many situations, the result of a program should be relatively stable with respect to any uncertainty in the input.  That is, if the input is perturbed, the output should vary only slightly, relative to the input perturbation.  This is exactly the concept of Lipschitz continuity.  if it is possible that the input has been slightly perturbed, the result of the program should not be drastically different.  As an example, sorting algorithms are \(1\)-Lipschitz.  If each element of the input array is perturbed by an amount no more than \(1\), then each element of the output array will be changed by no more than \(1\).
 
 \subsection{Permutations}
 
+%\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
+
+Let \(F\) and \(G\) be the formulas
+\begin{gather*}
+    F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
+        G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
+\end{gather*}
+Then invariace of a program which takes an array as input can be specified by
+\[\|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| \mathcal{P}(a) \|\ret_{1} = \ret_{2}\|.\]
+
 \subsubsection{Sorting}
 
-% discuss maximum function being invariant under permutations
+Sorting is one example of a procedure which is robust with respect to permuting the input.  Even in the face of uncertainty regarding the order of the input array, the result of procedure will not be altered.  The \verb!max! function is a special case of this invariance of sorting algorithms under permutation, which is the root of the incorrectness of the attempts to synthesize the \verb!max! function in Section 1.
 
 \subsubsection{Searching}
 
@@ -207,17 +241,16 @@ so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).  Considerin
 
 \subsection{Simultaneous Permutation}
 
-Consider an algorithm for grading a multipart homework problem, which takes as input three arrays:  the student's responses, the correct answers, and the credit to be awarded for each part.  A reordering of the parts of the problem should not affect the credit which a student is awarded.  As reordering the parts of the problem corresponds to simultaneously permuting the three input arrays, the grading algorithm should be invariant under simultaneous permutations of the input arrays.  Using ideas from Section \ref{perms}, this property can be expressed as the conjunction of the following two formulas:
+Consider an algorithm for grading a multipart homework problem, which takes as input three arrays:  the student's responses, the correct answers, and the credit to be awarded for each part.  A reordering of the parts of the problem should not affect the credit which a student is awarded.  As reordering the parts of the problem corresponds to simultaneously permuting the three input arrays, the grading algorithm should be invariant under simultaneous permutations of the input arrays.  This property can be expressed using ideas from Section \ref{perms} by applying a transposition and a rotation simultaneously to each array.%  Using ideas from Section \ref{perms}, this property can be expressed as the conjunction of the following two formulas:
+%
+%\begin{multline*}x_{2}[1] = x_{1}[0] \wedge y_{2}[1] = y_{1}[0] \wedge z_{2}[1] = z_{1}[0] \wedge\\
+%x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge\\
+%\forall i.\, 2 \leq i < \len(y_{1}) \rightarrow (x_{2}[i] = x_{1}[i] \wedge y_{2}[i] = y_{1}[i] \wedge z_{2}[i] = z_{1}[i])
+%\end{multline*}
+%\begin{multline*}\len(y_{1}) = N \wedge (x_{2}[0] = x_{1}[N-1] \wedge y_{2}[0] = y_{1}[N-1] \wedge z_{2}[0] = z_{1}[N-1]) \wedge\\ \forall i.\, 1 \leq i < N \rightarrow (x_{2}[i] = x_{1}[i-1] \wedge y_{2}[i] = y_{1}[i-1] \wedge z_{2}[i] = z_{1}[i-1])
+%\end{multline*}
 
-\begin{multline*}x_{2}[1] = x_{1}[0] \wedge y_{2}[1] = y_{1}[0] \wedge z_{2}[1] = z_{1}[0] \wedge\\
-x_{2}[0] = x_{1}[1] \wedge y_{2}[0] = y_{1}[1] \wedge z_{2}[0] = z_{1}[1] \wedge\\
-\forall i.\, 2 \leq i < \len(y_{1}) \rightarrow (x_{2}[i] = x_{1}[i] \wedge y_{2}[i] = y_{1}[i] \wedge z_{2}[i] = z_{1}[i])
-\end{multline*}
-\begin{multline*}\len(y_{1}) = N \wedge (x_{2}[0] = x_{1}[N-1] \wedge y_{2}[0] = y_{1}[N-1] \wedge z_{2}[0] = z_{1}[N-1]) \wedge\\ \forall i.\, 1 \leq i < N \rightarrow (x_{2}[i] = x_{1}[i-1] \wedge y_{2}[i] = y_{1}[i-1] \wedge z_{2}[i] = z_{1}[i-1])
-\end{multline*}
-
-The first formula specifies that the first two parts of the problem are transposed, while the rest of the parts remain unchanged.  The second specifies a rotation by one of the parts of the problem.
-%\begin{multline*}N = \len(y_{1}) \wedge \exists a. \Perm(a, N) \wedge \forall i. 0 \leq i < N \rightarrow\\(x_{2}[a[i]] = x_{1}[i] \wedge y_{2}[a[i]] = y_{1}[i] \wedge z_{2}[a[i]] = z_{1}[i])\end{multline*}
+%The first formula specifies that the first two parts of the problem are transposed, while the rest of the parts remain unchanged.  The second specifies a rotation by one of the parts of the problem.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -285,32 +318,32 @@ finite state machine is invariant under permutation
 of the input string.
 Instead, we will construct finite state
 transducers $T_{\alpha}$ and $T_{\beta}$
-such that for any $n$ and any string $s$ 
-with $|s|=n$, we have 
+such that for any $n$ and any string $s$
+with $|s|=n$, we have
 $T_{\alpha}(s)=(1\ 2\ \ldots\ n) s$ and
 $T_{\beta}(s) = (1\ 2) s$.
 Then, determining whether an FSM $M$ is
 invariant under permutation of its inputs
 is equivalent to determining whether
-\[ 
+\[
   L(M \circ T_\alpha) = L(M) = L(M \circ T_\beta)
 \]
 
 We now construct $T_\alpha$.
 For each symbol $a \in \Sigma$,
 $T_\alpha$ has a transition from its start
-state $s_0$ to $s_a$, while reading in put $a$ and 
+state $s_0$ to $s_a$, while reading in put $a$ and
 writing $\epsilon$ output.
 For each $a$ and each $b\ne \$$, there is a
 transition from $s_a$ to $s_a$, reading $b$
 and writing $b$.
-Then for each $a$, there is a transition from 
+Then for each $a$, there is a transition from
 $s_a$ to $s_1$, reading $\$$ and writing $a\$$.
 
 We now construct $T_\beta$.
 For each symbol $a \in \Sigma$,
 $T_\alpha$ has a transition from its start
-state $s_0$ to $s_a$, while reading in put $a$ and 
+state $s_0$ to $s_a$, while reading in put $a$ and
 writing $\epsilon$ output.
 Each $s_a$ has a transition to $s_1$ while
 reading input $b$ (for any $b\in \Sigma$)
@@ -321,7 +354,7 @@ back $a$.
 
 \subsection{Programs}
 The previous section indicates a method for verifying
-robustness of more general programs under permutation of inputs. 
+robustness of more general programs under permutation of inputs.
 % The framework of \cite{sousa16} is constructed in order to verify properties of related runs of the same program. However, their proof rules also give
 Given a procedure $F$ taking an array as argument, consider the functions $F_\alpha$, which first swaps the first two elements of the array, then computes $F$, and $F_\beta$, which moves the first element of the array to the back, then computes $F$. Then $F$ is invariant under permutation of its input if and only if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
 
@@ -474,7 +507,7 @@ difficult. One class of invariants that can be expressed through codes is
   function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
 \end{definition}
 
-For example, if a programmer defines a tree or heap data type with a function 
+For example, if a programmer defines a tree or heap data type with a function
 $\mathrm{list}$ mapping the data type to lists,
 then nearly every function written on this data type should be invariant with
 respect to the $\mathrm{list}$ function,
@@ -599,7 +632,7 @@ seems like a natural candidate for this problem.
 
 \end{document}
 
-%\titlerunning{Verifying Alegebraic Proper} 
+%\titlerunning{Verifying Alegebraic Proper}
 % abbreviated title (for running head)
 % also used for the TOC unless \toctitle is used
 %\authorrunning{Ivar Ekeland et al.} % abbreviated author list (for running head)
