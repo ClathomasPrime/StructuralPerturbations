@@ -113,7 +113,7 @@ execution traces.
 \section{Related Work}
 
   \subsection{Initial Approaches}
-    \noindent{\it Relational Logics}\space\space Benton \cite{benton} established a
+    \noindent{\it\bf Relational Logics:}\space\space Benton \cite{benton} established a
     Relational Hoare Logic in order to reason about relational properties,
     properties which consider two, usually distinct, programs.  Barthe et al.
     \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to
@@ -121,14 +121,14 @@ execution traces.
     differential privacy.
     \smallskip
 
-    \noindent{\it Self-Composition}\space\space Barthe et al.
+    \noindent{\it\bf Self-Composition:}\space\space Barthe et al.
     \cite{barthecomposition} applied self-composition, sequential running of renamed
     copies of the original program, to study secure information flow.  Terauchi \&
     Aiken \cite{terauchi05} built on this work by applying a type-based approach to
     complement self-composition.
 
   \subsection{Continuity and Lipschitz Robustness}
-    \noindent{\it Continuity}\space\space Robustness in the setting of numerical perturbations
+    \noindent{\it\bf Continuity:}\space\space Robustness in the setting of numerical perturbations
     is realized by the property of continuity.  Hamlet \cite{hamlet02} considered the
     concept of program continuity, but declared that automating verification of
     continuity for programs with loops was infeasible.  However, Chaudhuri et al.
@@ -136,11 +136,11 @@ execution traces.
     automatic verification of continuity.
     \smallskip
 
-    \noindent{\it Lipschitz Robustness}\space\space 
+    \noindent{\it\bf Lipschitz Robustness:}\space\space 
     In many situations, the result of a program should be relatively
-    stable with respect to any uncertainty in the input.  That is, if the input is
+    stable with respect to uncertainty in the input.  That is, if the input is
     perturbed, the output should vary only slightly, relative to the input
-    perturbation.  This is exactly the concept of Lipschitz continuity (see Appendix A.1).
+    perturbation. This is exactly the concept of Lipschitz continuity (see Appendix A.1).
 
     Verifying the property of Lipschitz continuity is considered by Chaudhuri et al.
     \cite{chaudhuri11}.  The approach taken is to verify continuity of
@@ -152,16 +152,16 @@ execution traces.
     which an abstract state, referred to as a robustness matrix, is used to
     determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).
     However, the approach used in
-    \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations. 
+    \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations,
+    and it is not clear how to adapt them to structural changes in the input.
 
     Additionally, Samanta et al. \cite{samanta13} and
     Henzinger et al. \cite{samanta14} investigate the use of Lipschitz continuity
     for proving robustness in the context of transducers.
 
   \subsection{$k$-Safety Properties}
-    \noindent{\it \(2\)-Safety Properties}\space\space In \cite{terauchi05},
+    \noindent{\it\bf \(2\)-Safety Properties:}\space\space In \cite{terauchi05},
     Terauchi \& Aiken introduced the term \(2\)-safety property.
-
     A general approach to verifying \(2\)-safety properties is the creation of a
     product program which is then provided as input to a standard program verifier
     \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\)
@@ -181,11 +181,9 @@ execution traces.
     product programs.
     \smallskip
 
-    \noindent{\(k\)-Safety Properties}\space\space Clarkson \& Schneider
-    \cite{clarkson08} introduced \(k\)-safety properties as a generalization of this
-    idea.
-
-    Sousa \& Dillig \cite{sousa16} developed a program logic based on product programs
+    \noindent{\it\bf \(k\)-Safety Properties:}\space\space Clarkson \& Schneider
+    \cite{clarkson08} introduced \(k\)-safety properties as a generalization of 
+    these ideas. Sousa \& Dillig \cite{sousa16} developed a program logic based on product programs
     to reason about \(k\)-safety properties.  Their approach is more efficient than
     using product programs as they avoid creation of an actual product program, while
     still being able to reason about the product program.  Moreover, rather than
@@ -194,11 +192,15 @@ execution traces.
     \(\mathcal{P}_{1} \varoast \dotsb \varoast \mathcal{P}_{k}\) and attempts to
     find an element of this equivalence class which is particularly easy
     to reason about.
-    
+
     However, the result of these improvements is that their method is not compatible
-    with a standard program verifier.  Sousa \& Dillig developed
+    with a standard program verifier. Sousa \& Dillig developed
     an implementation of their algorithm, though it is limited to the verification
     of Java comparators.
+    Discussion with the authors indicated that many structural invariants could
+    be verified with this framework, but that the existing implementation is
+    heavily specialized and would require new features to handle objects like
+    arrays or trees.
 
 \section{Example Robustness Properties}
 
@@ -228,38 +230,43 @@ execution traces.
 
     %\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
 
-  \subsubsection{Sorting}
+    \subsubsection{Sorting}
 
-    Sorting is one example of a procedure which is robust with respect to permuting
-    the input.  Even in the face of uncertainty regarding the order of the input
-    array, the result of procedure will not be altered.  The \verb!max! function is
-    a special case of this invariance of sorting algorithms under permutation, which
-    is the root of the incorrectness of the attempts to synthesize the \verb!max!
-    function in Section 1.
+      Sorting is one example of a procedure which is robust with respect to permuting
+      the input.  Even in the face of uncertainty regarding the order of the input
+      array, the result of procedure will not be altered.  The \verb!max! function is
+      a special case of this invariance of sorting algorithms under permutation, which
+      is the root of the incorrectness of the attempts to synthesize the \verb!max!
+      function in Section 1.
 
-  \subsubsection{Searching}
+    \vspace{-0.2in}
+    \subsubsection{Searching}
 
-    Consider the function \verb!Find(a, x)! which returns the index of the element
-    \verb!x! in the array \verb!a! or \(-1\) if \verb!x! is not an element of
-    \verb!a!.  Let \(\sigma\) be a permutation and suppose that \verb!a[i]=x!.  Then
-    from \eqref{action} \[\sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! =
-    \verb!x!,\] so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).
-    Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
-    -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
-    in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is
-    robust in that perturbing the input array by a permutation \(\sigma\) perturbs
-    the output of \verb!Find! by the same permutation \(\sigma\).
+      Consider the function \verb!Find(a, x)! which returns the index of the element
+      \verb!x! in the array \verb!a! or \(-1\) if \verb!x! is not an element of
+      \verb!a!.  Let \(\sigma\) be a permutation and suppose that \verb!a[i]=x!.
+      As discussed in Appendix A.2, we have
+      \[
+        \sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! = \verb!x!,
+      \] 
+      so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).
+      Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
+      -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
+      in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is
+      robust in that perturbing the input array by a permutation \(\sigma\) perturbs
+      the output of \verb!Find! by the same permutation \(\sigma\).
 
-  \subsubsection{Adjacency Matrices}
+    \vspace{-0.2in}
+    \subsubsection{Adjacency Matrices}
 
-    The effect of permuting the rows and columns of an adjacency matrix by the same
-    permutation is simply a relabelling of the vertices.  This leads to the following
-    two robustness properties.  If the program computes a
-    property of the graph, such as the existence of a Hamiltonian cycle, the program
-    should be invariant under such a relabelling.  If the program computes a result
-    which depends on the labelling, such as finding an explicit Hamiltonian cycle,
-    the program should satisfy the same property as in the case of searching, that
-    the output should be perturbed by the same permutation as the input.
+      The effect of permuting the rows and columns of an adjacency matrix by the same
+      permutation is simply a relabelling of the vertices.  This leads to the following
+      two robustness properties.  If the program computes a
+      property of the graph, such as the existence of a Hamiltonian cycle, the program
+      should be invariant under such a relabelling.  If the program computes a result
+      which depends on the labelling, such as finding an explicit Hamiltonian cycle,
+      the program should satisfy the same property as in the case of searching, that
+      the output should be perturbed by the same permutation as the input.
 
 
 \section{Invariance under permuting lists}
@@ -270,109 +277,96 @@ execution traces.
   reduction from checking invariance of a list under all permutations
   to invariance under a set of just two permutations.
   Some background is discussed in Appendix A.2.
+  In the languages discussed there, we want to verify that
+  $\mathcal{P}(\sigma a) = \mathcal{P}(a)$ for every $\sigma\in S_n$.
 
   For any $n$, define
   \[
     \alpha = 
       \begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
-      0 & 1 & 2 & 3 & \ldots & n\\
-      1 & 0 & 2 & 3 & \ldots & n
+      0 & 1 & 2 & \ldots & n-2 & n-1\\
+      1 & 2 & 3 & \ldots & n-1 & 0
       \end{tabular}
     \qquad \qquad
     \beta = 
       \begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
-      0 & 1 & 2 & \ldots & n-1 & n\\
-      1 & 2 & 3 & \ldots & n & 0
+      0 & 1 & 2 & 3 & \ldots & n-1\\
+      1 & 0 & 2 & 3 & \ldots & n-1
       \end{tabular}
   \]
 
-  \begin{lemma}
+  \begin{lemma} \label{lem-generated}
     Every permutation is a composition of some sequence of $\alpha$ and $\beta$.
   \end{lemma}
   \begin{proof}
     This is a standard exercise in courses on group theory,
     where it is expressed by saying ``$\{\alpha,\beta\}$ generates 
-    the group $S_n$.
+    the group $S_n$''.
     See, for example, [Exercises 3-4, \S3.5, \cite{dummitfoote}].
   \end{proof}
+
+  Thus, each $\sigma \in S_n$ is of the form $\sigma = $
+  $\sigma = u_1 \circ u_2 \circ \ldots \circ u_m$ with
+  $u_i \in \{\alpha,\beta\}$.
+  So if we know that $P(\alpha s) = P(s)$ and $P(\beta s) = P(s)$,
+  then 
+  \[ P((u_1\circ u_2\circ \ldots u_m)s)
+    = P((u_2 \circ \ldots \circ u_m)s)
+    = \ldots = P(u_ms) = P(s)
+  \]
+
 
   \subsection{Application to programs}
 
     Let \(F\) and \(G\) be the formulas
     \begin{gather*}
-        F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
-            G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
-              \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
+        G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
+          \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big) \\
+        F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})]
     \end{gather*}
-    Then invariance of a program which takes an array as input can be specified
-    in the language of \cite{sousa16} as
+    $F$ expresses that $a_2 = \alpha a_1$ and $G$ expresses that 
+    $a_2 = \beta a_1$.
+    Thus, lemma~\ref{lem-generated} tells us that
+    invariance of a program with respect to permuting its input
+    can be expressed in the language of \cite{sousa16} as
     \[
-      \|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| 
-        \mathcal{P}(a) \|\ret_{1} = \ret_{2}\|.
+      \|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| \ 
+        \mathcal{P}(a) \  \|\ret_{1} = \ret_{2}\|.
     \]
 
-    BLEH
-
-    The previous section indicates a method for verifying
-    robustness of more general programs under permutation of inputs.
-    % The framework of \cite{sousa16} is constructed in order to verify properties
-    % of related runs of the same program. However, their proof rules also give
-    Given a procedure $F$ taking an array as argument, consider the functions
-    $F_\alpha$, which first swaps the first two elements of the array, then computes
-    $F$, and $F_\beta$, which moves the first element of the array to the back, then
-    computes $F$. Then $F$ is invariant under permutation of its input if and only
-    if $F$ is functionally equivalent to $F_\alpha$ and $F_\beta$.
-
   \subsection{Automata}
-    Given a program $P$ which takes a linear data type
-    as input. We may wish to verify that this program
-    is invariant under reordering of the array,
-    in other words, it is invariant under the action of $S_n$.
-    Denote the output of $P$ on input $s$ by $P(s)$.
-    Then we want to test whether $P(\sigma s) = P$
-    for all $\sigma \in S_n$.
+    In this subsection, we show that this reduction is especially powerful for
+    analyzing deterministic finite automata.
 
-    As a first simplification, observe that is
-    suffices to check our condition on a set
-    of generators of $S_n$.
-    Concretely, let $\alpha = (1\ 2\ 3\ ...\ n)$
-    and let $\beta = (1\ 2)$.
-    Then any $\sigma \in S_n$ can be written as
-    a product of elements of $\{\alpha,\beta\}$,
-    say $\sigma = u_1 u_2\ldots u_m$ with
-    $u_i \in \{\alpha,\beta\}$.
-    So if we know that $P(\alpha s) = P(s)$
-    and $P(\beta s) = P(s)$, then
-    $P((u_1 u_2 \ldots u_m)s)
-    = P((u_2 \ldots u_m)s)
-    = \ldots = P(u_ms) = P(s) $.
-
-    For a fixed $n$ and $\sigma \in S_n$,
-    we can construct a finite state transducer
-    $T$ such that $T(s) = \sigma s$ for $|s|=n$.
-    However, this does not give us any
-    reasonable way of checking that a given
-    finite state machine is invariant under permutation
-    of the input string.
-    Instead, we will construct finite state
-    transducers $T_{\alpha}$ and $T_{\beta}$
-    such that for any $n$ and any string $s$
-    with $|s|=n$, we have
-    $T_{\alpha}(s)=(1\ 2\ \ldots\ n) s$ and
-    $T_{\beta}(s) = (1\ 2) s$.
-    Then, determining whether a FSM $M$ is
-    invariant under permutation of its inputs
-    is equivalent to determining whether
+    For a fixed $n$ and $\sigma \in S_n$, we can construct a finite state
+    transducer $T$ such that $T(s) = \sigma s$ for $|s|=n$.  However, this does
+    not give us any reasonable way of checking that a given finite state machine
+    is invariant under permutation of the input string.  Instead, we will
+    construct finite state transducers $T_{\alpha}$ and $T_{\beta}$ such that
+    for any $n$ and any string $s$ with $|s|=n$, we have $T_{\alpha}(s)=\alpha s$
+    and $T_{\beta}(s) =\beta s$. Then, determining whether a FSM $M$ is
+    invariant under permutation of its inputs is equivalent to determining
+    whether
     \[
       L(M \circ T_\alpha) = L(M) = L(M \circ T_\beta)
     \]
 
-    We now construct $T_\alpha$.
+    \begin{theorem}
+      There is an algorithm for determining whether a deterministic finite state
+      machine $M$ is invariant under permuting it input.
+      The algorithm runs in time $O(n|\Sigma|^2\log(n|\Sigma|))$,
+      where $n$ is the number of states of $M$.
+    \end{theorem}
+
+    As discussed, it suffices to construct $T_\alpha$ and $T_\beta$
+    and check language equality.
+
+    We first construct $T_\alpha$.
     For each symbol $a \in \Sigma$,
     $T_\alpha$ has a transition from its start
     state $s_0$ to $s_a$, while reading in put $a$ and
     writing $\epsilon$ output.
-    For each $a$ and each $b\ne \$$, there is a
+    For each $a\in \Sigma$ and each $b\in\Sigma$ with $b\ne \$$, there is a
     transition from $s_a$ to $s_a$, reading $b$
     and writing $b$.
     Then for each $a$, there is a transition from
@@ -390,34 +384,19 @@ execution traces.
     reading any $a\in \Sigma$ and writing
     back $a$.
 
-    \begin{figure}
-      \centering
+    The automata $T_\alpha$ and $T_\beta$ each have $O(|\Sigma|)$ states.
+    Now, as discussed in Appendix A.2, the automata 
+    $M \circ T_\alpha$ and $M \circ T_\beta$ have $O(n|\Sigma|)$ states.
+    Determining language equality can then be done by minimizing the number of
+    states of each of these FSMs, because minimal FSMs are unique \cite{hopcroft71}.
+    This can be done, for example, by Hopcroft's algorithm \cite{hopcroft71},
+    yielding a total runtime of $O(n|\Sigma|^2\log(n|\Sigma|))$.
 
-      \subfloat[][The automata $T_{\alpha}$ for $|\Sigma|=3$]{
+    \begin{figure}[h]
+      \centering
+      \subfloat[][The automata $T_{\alpha}$]{
         \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-            auto, scale=0.6, every node/.style={scale=0.6}
-        ] 
-          \node[state,initial] (q_0)   {$q_0$}; 
-          \node[state] (q_b) [right=of q_0] {$q_b$}; 
-          \node[state] (q_a) [above=of q_b] {$q_a$}; 
-          \node[state] (q_c) [below=of q_b] {$q_c$}; 
-          \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
-          \path[->] 
-          (q_0) edge node {a / $\epsilon$} (q_a)
-                edge node {b / $\epsilon$} (q_b)
-                edge node [below left] {c / $\epsilon$} (q_c)
-          (q_a) edge node {x / xa} (q_1)
-          (q_b) edge node {x / xb} (q_1)
-          (q_c) edge node [below right] {x / xc} (q_1)
-          (q_1) edge [loop right] node {x / x} (q_1)
-                ;
-        \end{tikzpicture}
-      }
-      \qquad
-      \qquad
-      \subfloat[][The automata $T_{\beta}$ for $|\Sigma|=3$]{
-        \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
-            auto, scale=0.6, every node/.style={scale=0.6}
+            auto, scale=0.8, every node/.style={scale=0.7}
         ] 
           \node[state,initial] (q_0)   {$q_0$}; 
           \node[state] (q_b) [right=of q_0] {$q_b$}; 
@@ -437,7 +416,31 @@ execution traces.
                 ;
         \end{tikzpicture}
       }
+      \qquad
+      \qquad
+      \subfloat[][The automata $T_{\beta}$]{
+        \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, on grid,
+            auto, scale=0.8, every node/.style={scale=0.7}
+        ] 
+          \node[state,initial] (q_0)   {$q_0$}; 
+          \node[state] (q_b) [right=of q_0] {$q_b$}; 
+          \node[state] (q_a) [above=of q_b] {$q_a$}; 
+          \node[state] (q_c) [below=of q_b] {$q_c$}; 
+          \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+          \path[->] 
+          (q_0) edge node {a / $\epsilon$} (q_a)
+                edge node {b / $\epsilon$} (q_b)
+                edge node [below left] {c / $\epsilon$} (q_c)
+          (q_a) edge node {x / xa} (q_1)
+          (q_b) edge node {x / xb} (q_1)
+          (q_c) edge node [below right] {x / xc} (q_1)
+          (q_1) edge [loop right] node {x / x} (q_1)
+                ;
+        \end{tikzpicture}
+      }
+      \caption{Examples of our transducers when $\Sigma = \{a,b,c\}$}
     \end{figure}
+
 
 \section{Invariance under permuting binary search trees}
 
@@ -516,7 +519,9 @@ execution traces.
 
     Consider the following algorithm for adjusting a tree via $\rho$ and $\theta$,
     where invariants and assertions are written inside \{braces\}:
-    \begin{algorithm}[H]
+
+    \vspace{-0.2in}
+    \begin{algorithm}
       \begin{algorithmic}[1]
         \Function{Listify}{$t$}
           \While{$t$ has a right child}
@@ -536,10 +541,7 @@ execution traces.
         \EndFunction
       \end{algorithmic}
     \end{algorithm} 
-    % be more explicit about: 
-    %   * what is a loop invariant
-    %   * what is a consequence of the loop condition being false
-
+    \vspace{-0.1in}
 
     To verify that this algorithm terminates with $t$ in degenerate list form,
     we need only verify that each of the assertions hold and that the loop
@@ -591,14 +593,17 @@ execution traces.
       \caption{}
       \label{fig-tree-ops}
     \end{figure}
+    \vspace{-0.4in}
 
   \end{proof}
 
   \section{Invariance with respect to a function}
 
   All previous work on these topics share one downside: they require programmers
-  to express their invariants in formal logic. This could potentially be
-  difficult. One class of invariants that can be expressed through codes is
+  to express their invariants in formal logic. 
+  This could potentially be difficult,
+  especially if the programmer is not formally trained.
+  One class of invariants that can be expressed through codes is
   \emph{invariance with respect to a function}.
 
   \begin{definition} We say that a program $P$ is invariant with respect to a
@@ -627,6 +632,7 @@ execution traces.
         & T \arrow[dashed]{ru}{\widetilde{P}} &   \\
       \end{tikzcd}
     \]
+    \vspace{-0.3in}
   \begin{proof}
     If $P$ is $f$-class invariant, then the function
     \[ \widetilde{P}(t) = \begin{cases}
@@ -740,83 +746,87 @@ execution traces.
 
 \section{Appendix: Background}
 
-\subsection{Lipschitz Robustness}
+  \subsection{Lipschitz Robustness}
 
-Lipschitz continuity of a mathematical function \(f\) is the property that there
-exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\),
-\(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program
-\(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input
-variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in
-\mathbb{R}^{+}\), if \(\sigma'\) satisfies
-\begin{enumerate}
-    \item \(d\big(\sigma(x_{in}), \sigma'(x_{in})\big) < \varepsilon\) and
-    \item for all \(y \not= x\), \(\sigma(y) = \sigma'(y)\),
-\end{enumerate}
-then \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) <
-K\varepsilon\), where \(K\) is a real-valued function of the size of \(x_{in}\)
-\cite{chaudhuri11}.
+    Lipschitz continuity of a mathematical function \(f\) is the property that there
+    exists a real number \(K \in \mathbb{R}^{+}\) so that for all \(x_{1}, x_{2}\),
+    \(d\big(f(x_{1}), f(x_{2})\big) \leq K\,d(x_{1}, x_{2})\).  Similarly, a program
+    \(\mathcal{P}\) is robust at a state \(\sigma\)  with respect to the input
+    variable \(x_{in}\) and output variable \(x_{out}\) if for all \(\varepsilon \in
+    \mathbb{R}^{+}\), whenever \(\sigma'\) satisfies
+    \(d\big(\sigma(x_{in}), \sigma'(x_{in})\big) < \varepsilon\) and
+    for all \(y \not= x_{in}\), \(\sigma(y) = \sigma'(y)\),
+    we have \(d\big(\mathcal{P}(\sigma)(x_{out}), \mathcal{P}(\sigma')(x_{out})\big) < K\varepsilon\),
+    where \(K\) is a real-valued function of the size of \(x_{in}\)
+    \cite{chaudhuri11}.
 
-\subsection{Permutations}
-\label{perms}
+  \subsection{Permutations}
+  \label{perms}
 
-A permutation is a bijection from a set \(\Omega\) to itself \cite{dummitfoote}.
-When \(\Omega\) is a finite set, a permutation can be specified using two-line
-notation by placing the elements of \(\Omega\) on one line, and their images
-under \(\sigma\) beneath them:
+    A permutation is a bijection from a set \(\Omega\) to itself \cite{dummitfoote}.
+    When \(\Omega\) is a finite set, a permutation can be specified using two-line
+    notation by placing the elements of \(\Omega\) on one line, and their images
+    under \(\sigma\) beneath them:
 
-% increase the intercolumn spacing
-\begin{center}
-\begin{tabular*}{0.5\textwidth}{c@{\extracolsep{\fill}}c}
-\(\sigma\):
-\begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
-0 & 1 & 2 & 3 & 4 & 5\\
-5 & 2 & 3 & 1 & 4 & 0
-\end{tabular}
-&
-\(\tau\):
-\begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c}
-a & b & c\\
-a & c & b
-\end{tabular}
-\end{tabular*}
-\end{center}
+    % increase the intercolumn spacing
+    \begin{center}
+    \begin{tabular*}{0.5\textwidth}{c@{\extracolsep{\fill}}c}
+    \(\sigma\):
+    \begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
+    0 & 1 & 2 & 3 & 4 & 5\\
+    5 & 2 & 3 & 1 & 4 & 0
+    \end{tabular}
+    &
+    \(\tau\):
+    \begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c}
+    a & b & c\\
+    a & c & b
+    \end{tabular}
+    \end{tabular*}
+    \end{center}
 
-Similar to two-line notation, a permutation on \(\{0, \dotsc, N-1\}\) can be encoded in an array \(a\) of length \(N\) by placing the image of \(i\) in \(a[i]\).  The example \(\sigma\) above is encoded in an array as \(\sigma = [5, 2, 3, 1, 4, 0]\), so that \(\sigma(i) = \sigma[i]\).
+    Similar to two-line notation, a permutation on \(\{0, \dotsc, N-1\}\) can be
+    encoded in an array \(a\) of length \(N\) by placing the image of \(i\) in
+    \(a[i]\).  The example \(\sigma\) above is encoded in an array as \(\sigma = [5,
+    2, 3, 1, 4, 0]\), so that \(\sigma(i) = \sigma[i]\).
+    The inverse of a permutation is defined as for general inverse functions,
+    so $\sigma^{-1}$ sends $\sigma(i)$ to $i$.
 
+  \paragraph{Action on an Array:}
 
-\paragraph{Action on an Array:}
+    Given a permutation \(\sigma\), \(\sigma\) can {\it act} on an array or list \(a\)
+    by permuting the entries of $a$.
+    For example, let \(a = [37, 25, 19, 49, 81, 21]\) and \(\sigma\) be as above.  
+    Then \(\sigma(3) = \sigma[3] = 1\) and applying \(\sigma\) to \(a\) results in the
+    element of \(a\) at index \(3\), \(49\), being moved to index \(1\) in \(\sigma
+    a\).  That is, \(\sigma a[1] = 49\) and \(a[3] = \sigma a[1] = \sigma
+    a[\sigma[3]]\).  More generally,
+    \begin{equation}
+    \sigma a[\sigma[i]] = a[i] \qquad 
+      \Longleftrightarrow \qquad \sigma a[i] = a[\sigma^{-1}[i]]
+    \label{action}
+    \end{equation}
 
-Given a permutation \(\sigma\), \(\sigma\) can {\it act} on an array or list \(a\) as
-follows.  Let \(a = [37, 25, 19, 49, 81, 21]\) and \(\sigma\) be as above.  Then
-\(\sigma(3) = \sigma[3] = 1\) and applying \(\sigma\) to \(a\) results in the
-element of \(a\) at index \(3\), \(49\), being moved to index \(1\) in \(\sigma
-a\).  That is, \(\sigma a[1] = 49\) and \(a[3] = \sigma a[1] = \sigma
-a[\sigma[3]]\).  More generally,
-\begin{equation}
-\sigma a[\sigma[i]] = a[i].% \Longleftrightarrow \sigma a[i] = a[\sigma^{-1}[i]].
-\label{action}
-\end{equation}
+  \subsection{Automata}
+    We consider two classes of automata: finite state machines (FSM) and finite
+    state transducers (FST). All automata we consider are deterministic. Given an
+    automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is a
+    FSM, we represent ``accept'' by $1$ and ``reject'' by $0$. Otherwise, $A$ is a
+    finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$
+    denote the set of strings accepted by $A$. (We do not define the language of a
+    FST).
 
-\subsection{Automata}
-We consider two classes of automata: finite state machines (FSM) and finite
-state transducers (FST). All automata we consider are deterministic. Given an
-automata $A$, we denote by $A(s)$ the output of $A$ on input $s$. If $A$ is a
-FSM, we represent ``accept'' by $1$ and ``reject'' by $0$. Otherwise, $A$ is a
-finite state transducer (FST), and $A(s)$ is a string. For a FSM $A$, let $L(A)$
-denote the set of strings accepted by $A$. (We do not define the language of a
-FST).
-
-Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) =
-L(B)$ is decidable. We can compose a FST $T$ and a FSM $A$, denoted $A \circ T$,
-to get another FSM such that $(A\circ T)(s) = A(T(s))$.
-Furthermore, $A\circ T$ can be constructed with $|S_A||S_T|$ states,
-where $S_A$ and $S_T$ are the states of $A$ and $T$.
-% For example, $A\circ T$ can be constructed with set of
-% states $S_A \times S_T$, where $S_A$ and $S_T$ are the states of $A$ and $T$,
-% and with transition function
-% \[ \delta_{A\after T}((a,t), c) = (\delta_A( , \delta_T(t,c))
-% \]
-We will assume that all input strings are terminated by a special end-of-input character \$.
+    Recall that for any FSMs $A$ and $B$, the problem of determining whether $L(A) =
+    L(B)$ is decidable. We can compose a FST $T$ and a FSM $A$, denoted $A \circ T$,
+    to get another FSM such that $(A\circ T)(s) = A(T(s))$.
+    Furthermore, $A\circ T$ can be constructed with $|S_A||S_T|$ states,
+    where $S_A$ and $S_T$ are the states of $A$ and $T$.
+    % For example, $A\circ T$ can be constructed with set of
+    % states $S_A \times S_T$, where $S_A$ and $S_T$ are the states of $A$ and $T$,
+    % and with transition function
+    % \[ \delta_{A\after T}((a,t), c) = (\delta_A( , \delta_T(t,c))
+    % \]
+    We will assume that all input strings are terminated by a special end-of-input character \$.
 
 %
 % ---- Bibliography ----
