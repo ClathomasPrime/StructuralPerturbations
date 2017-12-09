@@ -66,13 +66,13 @@
 The question of robustness is fundamental to the subject of programming by
 example (PBE).  Robustness of a program is the property that the program behaves
 predictably on uncertain inputs \cite{chaudhuri12}.  In the PBE paradigm, there
-is, by definition, an uncertainty about the intent of the user, and therefore,
-it is desirable that a program synthesizer behave predictably with regards to
+is, by definition, an uncertainty regarding the intent of the user.  Therefore,
+it is desirable that a program synthesizer behave predictably with regard to
 this uncertainty.
 
 Consider an attempt to specify the \(\max\) function by providing to a program
-synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and
-\((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the
+synthesizer the examples \((3, 5) \mapsto 5\), \((-7, 9) \mapsto 9\), and
+\((-5, -8) \mapsto -8\).  In order to synthesize a simpler program, the
 result will be the program \verb!P(a,b):=return b;!.  The issue that arises here
 is that neither the program syntehsizer, nor the synthesized program, are
 robust.
@@ -82,7 +82,7 @@ would result in the program \verb!P(a,b):=return a;!, while transposing just a
 single input would result in the correct program \verb!P(a,b):=return a>b?a:b;!.
 
 Additionally, the program which is synthesized is not robust as
-\verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave
+\verb!P(a,b)!\(\not=\) \verb!P(b,a)!.  That is, the program does not behave
 predictably under uncertainty in the order of the arguments.  If the program
 which is synthesized is required to be robust with respect to uncertainty in the
 order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b!
@@ -104,12 +104,13 @@ either of the synthesized programs or even of the synthesizer as a whole.
 However, verification of robustness requires the ability to reason about
 robustness.  Standard program verifiers are unable to verify robustness
 properties as they are an example of a \(2\)-safety property, a property which
-requires reasoning about two execution traces simultaneously.  In particular,
+requires reasoning about two execution traces simultaneously.  Rephrasing the definition,
 robustness is the property that given two inputs which are related by some form
 of uncertainty, the outputs should be related in a predictable way.  As such,
 verifying robustness requires reasoning about the relationship between two
 execution traces.
 
+\vspace{-0.1in}
 \section{Related Work}
 
   \subsection{Initial Approaches}
@@ -127,6 +128,7 @@ execution traces.
     Aiken \cite{terauchi05} built on this work by applying a type-based approach to
     complement self-composition.
 
+    \vspace{-0.1in}
   \subsection{Continuity and Lipschitz Robustness}
     \noindent{\it\bf Continuity:}\space\space Robustness in the setting of numerical perturbations
     is realized by the property of continuity.  Hamlet \cite{hamlet02} considered the
@@ -144,12 +146,12 @@ execution traces.
 
     Verifying the property of Lipschitz continuity is considered by Chaudhuri et al.
     \cite{chaudhuri11}.  The approach taken is to verify continuity of
-    the program as a whole and then verify that each control flow path of the
+    the program as a whole using \cite{chaudhuri11} and then verify that each control flow path of the
     program is piecewise Lipschitz continuous by showing that it is piecewise
     linear.  The continuity verification is performed using a program logic for
     reasoning about continuity \cite{chaudhuri10}.  In order to establish that each
     control flow path is piecewise linear, an abstract interpretation is applied in
-    which an abstract state, referred to as a robustness matrix, is used to
+    which an abstract state, referred to as a robustness matrix, is propagated to
     determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).
     However, the approach used in
     \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations,
@@ -161,7 +163,7 @@ execution traces.
 
   \subsection{$k$-Safety Properties}
     \noindent{\it\bf \(2\)-Safety Properties:}\space\space In \cite{terauchi05},
-    Terauchi \& Aiken introduced the term \(2\)-safety property.
+    Terauchi \& Aiken introduced the term \(2\)-safety property in the study of secure information flow.
     A general approach to verifying \(2\)-safety properties is the creation of a
     product program which is then provided as input to a standard program verifier
     \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\)
@@ -177,8 +179,7 @@ execution traces.
     program verifier.
 
     In \cite{bartheanalysis}, Barthe et al.
-    analyzes various relational program logics, as well as different notions of
-    product programs.
+    analyzes different notions of product programs, as well as various relational program logics and relationships between them.
     \smallskip
 
     \noindent{\it\bf \(k\)-Safety Properties:}\space\space Clarkson \& Schneider
@@ -186,7 +187,7 @@ execution traces.
     these ideas. Sousa \& Dillig \cite{sousa16} developed a program logic based on product programs
     to reason about \(k\)-safety properties.  Their approach is more efficient than
     using product programs as they avoid creation of an actual product program, while
-    still being able to reason about the product program.  Moreover, rather than
+    still being able to reason about properties of such a program.  Moreover, rather than
     considering a single product program, their approach considers the equivalence
     class of programs which are equivalent to the product program
     \(\mathcal{P}_{1} \varoast \dotsb \varoast \mathcal{P}_{k}\) and attempts to
@@ -199,20 +200,16 @@ execution traces.
     of Java comparators.
     Discussion with the authors indicated that many structural invariants could
     be verified with this framework, but that the existing implementation is
-    heavily specialized and would require new features to handle objects like
+    heavily specialized and would require new features in order to handle objects like
     arrays or trees.
 
 \section{Example Robustness Properties}
 
   The uncertainty with respect to which a program is robust can take many
-  different forms.  Some common perturbations include
-  \begin{itemize}
-    \item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
-    \item permutations of arrays and matrices,
-    \item simultaneous permutations of arrays.
-  \end{itemize}
+  different forms.  Some common perturbations include numerical perturbations
+  \cite{samanta14,chaudhuri10,chaudhuri11} and permutations of arrays and matrices.
   As the case of continuous robustness is handled in \cite{chaudhuri10,chaudhuri11},
-  the focus will be discrete perturbations.
+  the focus will be discrete perturbations.  In the context of discrete perturbations, it makes sense to consider perturbations of the input which leave the output invariant, as this situation is more common than in the case of continuous perturbations.
 
   \subsection{Integer Perturbations}
 
@@ -222,24 +219,24 @@ execution traces.
   respect to \(\mathbb{Z}\), this problem is a special case of the approach in
   \cite{chaudhuri10,chaudhuri11}.  As an example, sorting algorithms are
   \(1\)-Lipschitz robust by \cite{chaudhuri10,chaudhuri11}.
-  If each element of the input array is perturbed by an amount
-  no more than \(1\), then each element of the output array will be changed by no
-  more than \(1\).
+  If each element of the input array is perturbed by at most
+  \(1\), then each element of the output array will be perturbed by at most \(1\).
 
+  \vspace{-0.1in}
   \subsection{Permutations}
 
     %\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
 
     \subsubsection{Sorting}
 
-      Sorting is one example of a procedure which is robust with respect to permuting
+      Sorting gives an example of a procedure which is robust with respect to permuting
       the input.  Even in the face of uncertainty regarding the order of the input
       array, the result of procedure will not be altered.  The \verb!max! function is
       a special case of this invariance of sorting algorithms under permutation, which
-      is the root of the incorrectness of the attempts to synthesize the \verb!max!
+      is the root of the failures to synthesize the \verb!max!
       function in Section 1.
 
-    \vspace{-0.2in}
+    \vspace{-0.1in}
     \subsubsection{Searching}
 
       Consider the function \verb!Find(a, x)! which returns the index of the element
@@ -250,13 +247,14 @@ execution traces.
         \sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! = \verb!x!,
       \] 
       so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).
-      Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
-      -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
-      in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is
+%      Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
+%      -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
+%      in the case that \verb!x! is not an element of \verb!a!.  
+      Thus, \verb!Find! is
       robust in that perturbing the input array by a permutation \(\sigma\) perturbs
-      the output of \verb!Find! by the same permutation \(\sigma\).
+      the output of \verb!Find! by the same permutation.% \(\sigma\).
 
-    \vspace{-0.2in}
+    \vspace{-0.1in}
     \subsubsection{Adjacency Matrices}
 
       The effect of permuting the rows and columns of an adjacency matrix by the same
@@ -265,14 +263,13 @@ execution traces.
       property of the graph, such as the existence of a Hamiltonian cycle, the program
       should be invariant under such a relabelling.  If the program computes a result
       which depends on the labelling, such as finding an explicit Hamiltonian cycle,
-      the program should satisfy the same property as in the case of searching, that
-      the output should be perturbed by the same permutation as the input.
-
+      the program should satisfy the that
+      the output will be perturbed by the same permutation as the input.
 
 \section{Invariance under permuting lists}
 \label{permlists}
 
-  As discussed above, many programs are invariant under the ordering of a list.
+  As discussed above, many programs are invariant under the reordering of a list.
   Results from group theory  suggest a powerful 
   reduction from checking invariance of a list under all permutations
   to invariance under a set of just two permutations.
@@ -311,8 +308,8 @@ execution traces.
   So if we know that $P(\alpha s) = P(s)$ and $P(\beta s) = P(s)$,
   then 
   \[ P((u_1\circ u_2\circ \ldots u_m)s)
-    = P((u_2 \circ \ldots \circ u_m)s)
-    = \ldots = P(u_ms) = P(s)
+      = P((u_1 \circ \ldots \circ u_{m-1})s)
+    = \ldots = P(u_1s) = P(s)
   \]
 
 
@@ -320,9 +317,9 @@ execution traces.
 
     Let \(F\) and \(G\) be the formulas
     \begin{gather*}
-        G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
+        F: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
           \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big) \\
-        F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})]
+          G:  a_{1}[\len(a_{1})-1] = a_{2}[0] \wedge \forall i. 0 \leq i < \len(a_{1})-1 \rightarrow a_{1}[i] = a_{2}[i+1]
     \end{gather*}
     $F$ expresses that $a_2 = \alpha a_1$ and $G$ expresses that 
     $a_2 = \beta a_1$.
@@ -340,8 +337,8 @@ execution traces.
 
     For a fixed $n$ and $\sigma \in S_n$, we can construct a finite state
     transducer $T$ such that $T(s) = \sigma s$ for $|s|=n$.  However, this does
-    not give us any reasonable way of checking that a given finite state machine
-    is invariant under permutation of the input string.  Instead, we will
+    not provide any reasonable way of checking that a given finite state machine
+    is invariant under any permutation of the input string.  Instead, we will
     construct finite state transducers $T_{\alpha}$ and $T_{\beta}$ such that
     for any $n$ and any string $s$ with $|s|=n$, we have $T_{\alpha}(s)=\alpha s$
     and $T_{\beta}(s) =\beta s$. Then, determining whether a FSM $M$ is
@@ -364,8 +361,8 @@ execution traces.
     We first construct $T_\alpha$.
     For each symbol $a \in \Sigma$,
     $T_\alpha$ has a transition from its start
-    state $s_0$ to $s_a$, while reading in put $a$ and
-    writing $\epsilon$ output.
+    state $s_0$ to $s_a$, while reading input $a$ and
+    writing output $\epsilon$.
     For each $a\in \Sigma$ and each $b\in\Sigma$ with $b\ne \$$, there is a
     transition from $s_a$ to $s_a$, reading $b$
     and writing $b$.
@@ -374,9 +371,9 @@ execution traces.
 
     We now construct $T_\beta$.
     For each symbol $a \in \Sigma$,
-    $T_\alpha$ has a transition from its start
-    state $s_0$ to $s_a$, while reading in put $a$ and
-    writing $\epsilon$ output.
+    $T_\beta$ has a transition from its start
+    state $s_0$ to $s_a$, while reading input $a$ and
+    writing output $\epsilon$.
     Each $s_a$ has a transition to $s_1$ while
     reading input $b$ (for any $b\in \Sigma$)
     and writing output $ba$.
@@ -442,23 +439,25 @@ execution traces.
     \end{figure}
 
 
+    \vspace{-0.05in}
 \section{Invariance under permuting binary search trees}
+\vspace{-0.05in}
 
-  In the previous section~\ref{permlists}, we found a reduction
+  In the previous section, we found a reduction
   from checking \emph{all} permutations of a list to checking a small set of
   permutations. It is natural to ask if there are other data types for which we
   can do this. Binary search trees are one such case, where just like lists,
   two permutations suffice to generate all equivalent binary search trees
-  (i.e. tree representing equivalent ordered lists).
+  (i.e. trees representing equivalent ordered lists).
 
   We define binary search trees recursively as either being null,
   or having exactly two children who are binary search trees.
-  Let $\mathrm{list}$ be the function from a binary search trees to 
+  Let \verb!list! be the function from a binary search trees to 
   its corresponding list, i.e. the function giving the in-order traversal of the
   tree's nodes.
 
   Define two (partial) operations $\rho$ and $\theta$ on binary search trees
-  as in figure~\ref{fig-rho-theta}.
+  as in Figure~\ref{fig-rho-theta}.
 
   \begin{figure}[h]
     \centering
@@ -478,11 +477,11 @@ execution traces.
     \label{fig-rho-theta}
   \end{figure}
 
-  You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
+  One can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
   by observing that the subtrees in the above diagrams remain in the same order
   before and after applying the transformations.
-  We will show in the next theorem that $\rho$ and $\theta$ additionally suffice
-  to generate all transformations of any tree into another tree with an equal
+  We will show in the next theorem that $\rho$ and $\theta$ suffice
+  to generate all transformations of one tree into any other tree with the same 
   underlying list.
 
   \begin{theorem}
@@ -497,7 +496,7 @@ execution traces.
     Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
     via $\rho$, $\theta$, $\rho^{-1}$, and $\theta^{-1}$ into another tree $t_3$,
     because then we can transform $t_1$ into $t_3$, then apply the inverse
-    transformation to get to $t_2$.
+    transformation of $t_2 \rightarrow t_3$.
     We proceed by providing an algorithm for transforming to a $t_3$
     in the following form, as demonstrated in
     figure~\ref{fig-tree-ops}\subref{fig-degenerate-list}:
@@ -557,7 +556,7 @@ execution traces.
     Next we show that the loop invariant is inductive.
     The inner loop on line~\ref{inner-loop} does not change $t$'s right child,
     so it remain in degenerate list form.
-    Thus, when we apply $\rho$ to $t$, it's left child has a null right child, and
+    Thus, when we apply $\rho$ to $t$, its left child has a null right child, and
     $t$'s right child is in degenerate list form.
     As shown in figure~\ref{fig-tree-ops}\subref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
     in degenerate list form. 
@@ -749,6 +748,7 @@ execution traces.
 
 \appendix
 
+\vspace{-0.1in}
 \section{Appendix: Background}
 
   \subsection{Lipschitz Robustness}
@@ -765,6 +765,7 @@ execution traces.
     where \(K\) is a real-valued function of the size of \(x_{in}\)
     \cite{chaudhuri11}.
 
+    \vspace{-0.1in}
   \subsection{Permutations}
   \label{perms}
 
@@ -812,6 +813,7 @@ execution traces.
     \label{action}
     \end{equation}
 
+    \vspace{-0.1in}
   \subsection{Automata}
     We consider two classes of automata: finite state machines (FSM) and finite
     state transducers (FST). All automata we consider are deterministic. Given an
