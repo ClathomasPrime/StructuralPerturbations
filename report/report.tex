@@ -302,14 +302,15 @@ execution traces.
     See, for example, [Exercises 3-4, \S3.5, \cite{dummitfoote}].
   \end{proof}
 
-  Thus, each $\sigma \in S_n$ is of the form $\sigma = $
+  Thus, each $\sigma \in S_n$ is of the form
   $\sigma = u_1 \circ u_2 \circ \ldots \circ u_m$ with
   $u_i \in \{\alpha,\beta\}$.
   So if we know that $P(\alpha s) = P(s)$ and $P(\beta s) = P(s)$,
   then 
-  \[ P((u_1\circ u_2\circ \ldots u_m)s)
-      = P((u_1 \circ \ldots \circ u_{m-1})s)
-    = \ldots = P(u_1s) = P(s)
+  \[ P(\sigma s) 
+    = P((u_1\circ u_2\circ \ldots u_m)s)
+    = P((u_2 \circ \ldots \circ u_{m})s)
+    = \ldots = P(u_ms) = P(s)
   \]
 
 
@@ -317,9 +318,10 @@ execution traces.
 
     Let \(F\) and \(G\) be the formulas
     \begin{gather*}
-        F: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
+        F:  a_{1}[\len(a_{1})-1] = a_{2}[0] 
+          \wedge \forall i. 0 \leq i < \len(a_{1})-1 \rightarrow a_{1}[i] = a_{2}[i+1] \\
+        G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
           \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big) \\
-          G:  a_{1}[\len(a_{1})-1] = a_{2}[0] \wedge \forall i. 0 \leq i < \len(a_{1})-1 \rightarrow a_{1}[i] = a_{2}[i+1]
     \end{gather*}
     $F$ expresses that $a_2 = \alpha a_1$ and $G$ expresses that 
     $a_2 = \beta a_1$.
@@ -351,8 +353,9 @@ execution traces.
     \begin{theorem}
       There is an algorithm for determining whether a deterministic finite state
       machine $M$ is invariant under permuting it input.
-      The algorithm runs in time $O(n|\Sigma|^2\log(n|\Sigma|))$,
-      where $n$ is the number of states of $M$.
+      The algorithm runs in time $O(m|\Sigma|^2\log(m|\Sigma|))$,
+      where $m$ is the number of states of $M$
+      and $\Sigma$ is the alphabet of the machine $M$.
     \end{theorem}
 
     As discussed, it suffices to construct $T_\alpha$ and $T_\beta$
@@ -383,11 +386,11 @@ execution traces.
 
     The automata $T_\alpha$ and $T_\beta$ each have $O(|\Sigma|)$ states.
     Now, as discussed in Appendix A.2, the automata 
-    $M \circ T_\alpha$ and $M \circ T_\beta$ have $O(n|\Sigma|)$ states.
+    $M \circ T_\alpha$ and $M \circ T_\beta$ have $O(m|\Sigma|)$ states.
     Determining language equality can then be done by minimizing the number of
     states of each of these FSMs, because minimal FSMs are unique \cite{hopcroft71}.
     This can be done, for example, by Hopcroft's algorithm \cite{hopcroft71},
-    yielding a total runtime of $O(n|\Sigma|^2\log(n|\Sigma|))$.
+    yielding a total runtime of $O(m|\Sigma|^2\log(m|\Sigma|))$.
 
     \begin{figure}[h]
       \centering
@@ -399,7 +402,7 @@ execution traces.
           \node[state] (q_b) [right=of q_0] {$q_b$}; 
           \node[state] (q_a) [above=of q_b] {$q_a$}; 
           \node[state] (q_c) [below=of q_b] {$q_c$}; 
-          \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+          \node[state, accepting] (q_1) [right=of q_b] {$q_1$};
           \path[->] 
           (q_0) edge node {a / $\epsilon$} (q_a)
                 edge node {b / $\epsilon$} (q_b)
@@ -423,7 +426,7 @@ execution traces.
           \node[state] (q_b) [right=of q_0] {$q_b$}; 
           \node[state] (q_a) [above=of q_b] {$q_a$}; 
           \node[state] (q_c) [below=of q_b] {$q_c$}; 
-          \node[state, accepting] (q_1) [right=of q_b] {$q_3$};
+          \node[state, accepting] (q_1) [right=of q_b] {$q_1$};
           \path[->] 
           (q_0) edge node {a / $\epsilon$} (q_a)
                 edge node {b / $\epsilon$} (q_b)
@@ -451,8 +454,8 @@ execution traces.
   (i.e. trees representing equivalent ordered lists).
 
   We define binary search trees recursively as either being null,
-  or having exactly two children who are binary search trees.
-  Let \verb!list! be the function from a binary search trees to 
+  or having exactly two children which are binary search trees.
+  Let $\mathrm{list}$ be the function from a binary search trees to 
   its corresponding list, i.e. the function giving the in-order traversal of the
   tree's nodes.
 
@@ -481,7 +484,7 @@ execution traces.
   by observing that the subtrees in the above diagrams remain in the same order
   before and after applying the transformations.
   We will show in the next theorem that $\rho$ and $\theta$ suffice
-  to generate all transformations of one tree into any other tree with the same 
+  to generate all transformations of one tree into any other tree with the same
   underlying list.
 
   \begin{theorem}
@@ -589,7 +592,7 @@ execution traces.
             & \Tree [.a \qroof{LL}. [.b $\e$ \qroof{R}. ]]
           \end{tabular}
       }
-      \caption{}
+      \caption{Tree operations. The symbol $\e$ represents a null tree.}
       \label{fig-tree-ops}
     \end{figure}
     \vspace{-0.4in}
@@ -602,21 +605,22 @@ execution traces.
   to express their invariants in formal logic. 
   This could potentially be difficult,
   especially if the programmer is not formally trained.
-  Here is one class of invariants that can be expressed through code:
+  Here is one type of invariant that can be expressed through code:
 
   \begin{definition} We say that a program $P$ is class invariant with respect to a
-    function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
+    function $f$ (or that $P$ is $f$-class invariant)
+    if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
   \end{definition}
 
   For example, if a programmer defines a tree or heap data type with a function
   $\mathrm{list}$ mapping the data type to lists,
-  then nearly every function written on this data type should be invariant with
+  then nearly every function written on this data type should be class invariant with
   respect to the $\mathrm{list}$ function,
-  as these data types are meant to represent the lists perfectly (while allowing
-  for faster algorithms).
+  because these data types are meant to represent the lists
+  (while allowing for faster algorithms).
 
-  We regard this problem as very difficult, because the function $f$ can be
-  expressed with arbitrary code and thus encode more complicated properties than
+  We regard this problem as very difficult, because $f$ can be
+  an arbitrary program and thus encode more complicated properties than
   first order logic. One approach comes from the following observation:
 
   \begin{lemma} Let $P : S \to Z$ and $f : S \to T$.
@@ -639,11 +643,11 @@ execution traces.
        \end{cases}
     \]
     for any $z_0 \in Z$
-    is well defined and clearly satisfies $P = \widetilde{P} \circ f$.
+    is well defined and satisfies $P = \widetilde{P} \circ f$.
 
     Conversely, if $\widetilde{P}$ exists, then whenever $f(s)=f(s')$,
     we have $P(s) = \widetilde{P}(f(s)) = \widetilde{P}(f(s')) = P(s')$,
-    so $P$ is $f$-class invariant.
+    so $P$ is class invariant with respect to $f$.
   \end{proof}
 
   Now, the key observation is that $P$ and $f$ together give a full functional
@@ -654,7 +658,10 @@ execution traces.
   Thus, a counterexample guided synthesis loop,
   similar to that present in \cite{solar06},
   seems like a natural candidate for this problem.
+  We build up more examples $E\subseteq S$, and try to synthesize
+  $\widetilde{P}$ using $E$ or find a counterexample among $E$:
 
+  \vspace{-0.1in}
   \begin{figure}[h]
     \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm,
       text centered, draw=black, fill=orange!30,
@@ -667,14 +674,15 @@ execution traces.
       text centered, draw=black, fill=blue!30]
     \tikzstyle{arrow} = [thick,->,>=stealth]
 
+    \hspace{0.5in}
     \begin{tikzpicture}[node distance=2cm, scale=0.8, every node/.style={scale=0.8}]
       \node (start) [io] {
         Input $P$ and $f$.
         Let $E = \{ \}$.
       };
       \node (synth) [process, below of=start, yshift=-0.5cm] {
-        \textbf{Synthesize} a program $\widetilde{P} : S \to Z$
-        given examples $\{ (f(t), P(t)) | t\in E \}$
+        \textbf{Synthesize} a program $\widetilde{P} : T \to Z$
+        given examples $\{ (f(s), P(s)) | s\in E \}$
       };
       \node (verify) [process, right of=synth, xshift=4cm] {
         \textbf{Verify} whether $\widetilde{P}\circ f$
@@ -684,35 +692,36 @@ execution traces.
         return YES
       };
       \node (check) [process, below of=verify, yshift=-1cm] {
-        Check if there are any $t\in E$ such that
-        $f(t)=f(t_0)$, yet $P(t) \ne P(t_0)$
+        Check if there are any $s\in E$ such that
+        $f(s)=f(s_0)$, yet $P(s) \ne P(s_0)$
       };
       \node (no) [io, below of=check, yshift=-0.5cm] {
         return NO
       };
       \node (add) [smallprocess, below of=synth, yshift=-1cm] {
-        Add $t_0$ to the example set $E$
+        Add $s_0$ to the example set $E$
       };
 
       \draw [arrow] (start) -- (synth);
       \draw [arrow] (synth) -- (verify);
       \draw [arrow] (verify) --
-        node[anchor=west, text width=6cm] {No, with \\ counterexample $t_0\in BSTs$}
+        node[anchor=west, text width=6cm] {No, with \\ counterexample $s_0\in S$}
         (check);
       \draw [arrow] (verify) --
         node[anchor=west, text width=6cm] {Yes, equivalent}
         (yes);
       \draw [arrow] (check) --
-        node[anchor=north, text width=2cm, text centered] {No, $t$ does not exists}
+        node[anchor=north, text width=2cm, text centered] {No, $s$ does not exists}
         (add);
         \draw [arrow] (add) -- (synth);
       \draw [arrow] (check) --
-        node[anchor=west, text width=6cm] {Yes, $t$ exists}
+        node[anchor=west, text width=6cm] {Yes, $s$ exists}
         (no);
     \end{tikzpicture}
-    \caption{Decision procedure for verifying $f$-class invariance}
+    \caption{Decision procedure for verifying class invariance with respect to $f$}
     \label{invarFuncLoop}
   \end{figure}
+  \vspace{-0.2in}
 
   It turns out this algorithm is sound, assuming a sound equivalence-of-programs
   verifier.
@@ -721,13 +730,13 @@ execution traces.
   and verifier, the algorithm is relatively complete.
   However, we need to assume one additional condition on the
   equivalence-of-programs verifier.
-  Namely, we suppose there is some total order on the elements in $T$,
+  Namely, we suppose there is some total order on the elements in $S$,
   and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
   the verifier outputs the smallest counterexample with respect to this
   ordering.
 
   \begin{theorem}
-    The algorithm in figure~\ref{invarFuncLoop} is sound and relatively complete,
+    The algorithm in Figure~\ref{invarFuncLoop} is sound and relatively complete,
     relative to a perfect synthesizer and a perfect equivalence-of-programs
     verifier.
   \end{theorem}
@@ -740,10 +749,10 @@ execution traces.
     resulting in $\widetilde{P}$.
     Then the idealized verifier will output ``YES''.
 
-    If no $\widetilde{P}$ exists, then some pair $t, t_0$ exist
-    such that $f(t)=f(t_0)$ yet $P(t)\ne P(t_0)$.
+    If no $\widetilde{P}$ exists, then some pair $s, s_0$ exist
+    such that $f(s)=f(s_0)$ yet $P(s)\ne P(s_0)$.
     Because the verifier outputs counterexamples in some order,
-    $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
+    $s$ and $s_0$ will eventually be found, and the algorithm will output ``YES''.
   \end{proof}
 
 \appendix
