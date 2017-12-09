@@ -204,14 +204,10 @@ execution traces.
 \section{Example Robustness Properties}
 
   The uncertainty with respect to which a program is robust can take many
-  different forms.  Some common perturbations include
-  \begin{itemize}
-    \item numerical perturbations \cite{samanta14,chaudhuri10,chaudhuri11},
-    \item permutations of arrays and matrices,
-    \item simultaneous permutations of arrays.
-  \end{itemize}
+  different forms.  Some common perturbations include numerical perturbations
+  \cite{samanta14,chaudhuri10,chaudhuri11} and permutations of arrays and matrices.
   As the case of continuous robustness is handled in \cite{chaudhuri10,chaudhuri11},
-  the focus will be discrete perturbations.
+  the focus will be discrete perturbations.  In the context of discrete perturbations, it makes sense to consider perturbations of the input which leave the output invariant, as this situation is more common than in the case of continuous perturbations.
 
   \subsection{Integer Perturbations}
 
@@ -221,9 +217,8 @@ execution traces.
   respect to \(\mathbb{Z}\), this problem is a special case of the approach in
   \cite{chaudhuri10,chaudhuri11}.  As an example, sorting algorithms are
   \(1\)-Lipschitz robust by \cite{chaudhuri10,chaudhuri11}.
-  If each element of the input array is perturbed by an amount
-  no more than \(1\), then each element of the output array will be changed by no
-  more than \(1\).
+  If each element of the input array is perturbed by at most
+  \(1\), then each element of the output array will be perturbed by at most \(1\).
 
   \subsection{Permutations}
 
@@ -231,14 +226,14 @@ execution traces.
 
     \subsubsection{Sorting}
 
-      Sorting is one example of a procedure which is robust with respect to permuting
+      Sorting gives an example of a procedure which is robust with respect to permuting
       the input.  Even in the face of uncertainty regarding the order of the input
       array, the result of procedure will not be altered.  The \verb!max! function is
       a special case of this invariance of sorting algorithms under permutation, which
-      is the root of the incorrectness of the attempts to synthesize the \verb!max!
+      is the root of the failures to synthesize the \verb!max!
       function in Section 1.
 
-    \vspace{-0.2in}
+%    \vspace{-0.2in}
     \subsubsection{Searching}
 
       Consider the function \verb!Find(a, x)! which returns the index of the element
@@ -249,13 +244,14 @@ execution traces.
         \sigma\verb!a[!\sigma(\verb!i!)\verb!]! = \verb!a[i]! = \verb!x!,
       \] 
       so that \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\).
-      Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
-      -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
-      in the case that \verb!x! is not an element of \verb!a!.  Thus, \verb!Find! is
+%      Considering \(\sigma\) as a permutation on nonnegative integers, \(\sigma(-1) =
+%      -1\) and \verb!Find(!\(\sigma\)\verb!a, x)=!\(\sigma(\)\verb!i!\()\) holds even
+%      in the case that \verb!x! is not an element of \verb!a!.  
+      Thus, \verb!Find! is
       robust in that perturbing the input array by a permutation \(\sigma\) perturbs
       the output of \verb!Find! by the same permutation \(\sigma\).
 
-    \vspace{-0.2in}
+%    \vspace{-0.2in}
     \subsubsection{Adjacency Matrices}
 
       The effect of permuting the rows and columns of an adjacency matrix by the same
@@ -264,8 +260,8 @@ execution traces.
       property of the graph, such as the existence of a Hamiltonian cycle, the program
       should be invariant under such a relabelling.  If the program computes a result
       which depends on the labelling, such as finding an explicit Hamiltonian cycle,
-      the program should satisfy the same property as in the case of searching, that
-      the output should be perturbed by the same permutation as the input.
+      the program should satisfy the that
+      the output will be perturbed by the same permutation as the input.
 
 
 \section{Invariance under permuting lists}
