@@ -61,7 +61,9 @@
 % \begin{abstract}
 % \end{abstract}
 
+\vspace{-0.075in}
 \section{Introduction}
+\vspace{-0.05in}
 
 The question of robustness is fundamental to the subject of programming by
 example (PBE).  Robustness of a program is the property that the program behaves
@@ -608,11 +610,12 @@ execution traces.
     function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
   \end{definition}
 
-  For example, if a programmer defines a tree or heap data type with a function
-  $\mathrm{list}$ mapping the data type to lists,
-  then nearly every function written on this data type should be invariant with
-  respect to the $\mathrm{list}$ function,
-  as these data types are meant to represent the lists perfectly (while allowing
+  Invariance under permutations of lists and binary search trees are special cases of this definition.  For lists, the function \(f\) is the \verb!sort!, while for binary search trees, \(f\) can be taken to be the \verb!list! function, which returns the underlying list in sorted order.
+%  General applicability of the definition can be seen if a programmer defines a tree or heap data type with a function
+%  \verb!list! mapping the data type to lists.
+  Nearly every function written on a tree or heap should be invariant with
+  respect to this \verb!list! function,
+  as these data types are meant to represent the lists faithfully (while allowing
   for faster algorithms).
 
   We regard this problem as very difficult, because the function $f$ can be
