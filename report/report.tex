@@ -597,16 +597,15 @@ execution traces.
 
   \end{proof}
 
-  \section{Invariance with respect to a function}
+  \section{Class invariance with respect to a function}
 
   All previous work on these topics share one downside: they require programmers
   to express their invariants in formal logic. 
   This could potentially be difficult,
   especially if the programmer is not formally trained.
-  One class of invariants that can be expressed through codes is
-  \emph{invariance with respect to a function}.
+  Here is one class of invariants that can be expressed through code:
 
-  \begin{definition} We say that a program $P$ is invariant with respect to a
+  \begin{definition} We say that a program $P$ is class invariant with respect to a
     function $f$ if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
   \end{definition}
 
@@ -716,18 +715,24 @@ execution traces.
     \label{invarFuncLoop}
   \end{figure}
 
+  It turns out this algorithm is sound, assuming a sound equivalence-of-programs
+  verifier.
+  If we assume a sound and complete synthesizer (meaning that there is
+  always some set of examples that will result in a successful synthesis)
+  and verifier, the algorithm is relatively complete.
+  However, we need to assume one additional condition on the
+  equivalence-of-programs verifier.
+  Namely, we suppose there is some total order on the elements in $T$,
+  and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
+  the verifier outputs the smallest counterexample with respect to this
+  ordering.
+
   \begin{theorem}
     The algorithm in figure~\ref{invarFuncLoop} is sound and relatively complete,
     relative to a perfect synthesizer and a perfect equivalence-of-programs
     verifier.
   \end{theorem}
   \begin{proof}
-    In order to prove this formally, we need an even stronger condition on the
-    equivalence-of-programs verifier.
-    Namely, we suppose there is some total order on the elements in $T$,
-    and that if $\widetilde{P}\circ f$ is not equivalent to $P$,
-    the verifier outputs the smallest counterexample with respect to this
-    ordering.
 
     If $\widetilde{P}$ exists, then a perfect synthesizer will eventually
     synthesize $\widetilde{P}$ given some set of examples, say $E$.
