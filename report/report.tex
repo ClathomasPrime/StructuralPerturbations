@@ -113,22 +113,22 @@ execution traces.
 \vspace{-0.1in}
 \section{Related Work}
 
-  \subsection{Initial Approaches}
-    \noindent{\it\bf Relational Logics:}\space\space Benton \cite{benton} established a
-    Relational Hoare Logic in order to reason about relational properties,
-    properties which consider two, usually distinct, programs.  Barthe et al.
-    \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to
-    probabalistic programs in order to reason about cryptographic protocols and
-    differential privacy.
-    \smallskip
-
-    \noindent{\it\bf Self-Composition:}\space\space Barthe et al.
-    \cite{barthecomposition} applied self-composition, sequential running of renamed
-    copies of the original program, to study secure information flow.  Terauchi \&
-    Aiken \cite{terauchi05} built on this work by applying a type-based approach to
-    complement self-composition.
-
-    \vspace{-0.1in}
+%  \subsection{Initial Approaches}
+%    \noindent{\it\bf Relational Logics:}\space\space Benton \cite{benton} established a
+%    Relational Hoare Logic in order to reason about relational properties,
+%    properties which consider two, usually distinct, programs.  Barthe et al.
+%    \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to
+%    probabalistic programs in order to reason about cryptographic protocols and
+%    differential privacy.
+%    \smallskip
+%
+%    \noindent{\it\bf Self-Composition:}\space\space Barthe et al.
+%    \cite{barthecomposition} applied self-composition, sequential running of renamed
+%    copies of the original program, to study secure information flow.  Terauchi \&
+%    Aiken \cite{terauchi05} built on this work by applying a type-based approach to
+%    complement self-composition.
+%
+%    \vspace{-0.1in}
   \subsection{Continuity and Lipschitz Robustness}
     \noindent{\it\bf Continuity:}\space\space Robustness in the setting of numerical perturbations
     is realized by the property of continuity.  Hamlet \cite{hamlet02} considered the
@@ -592,7 +592,7 @@ execution traces.
       \caption{}
       \label{fig-tree-ops}
     \end{figure}
-    \vspace{-0.4in}
+%    \vspace{-0.4in}
 
   \end{proof}
 
@@ -745,6 +745,22 @@ execution traces.
     Because the verifier outputs counterexamples in some order,
     $t$ and $t_0$ will eventually be found, and the algorithm will output ``YES''.
   \end{proof}
+
+\section{Conclusion}
+
+While PBE suffers from some amount of uncertainty in a user's intent, synthesizing
+a robust program can mitigate some of this uncertainty.  To this end, we explored
+various approaches related to verifying the robustness of a program, as well as
+different robustness properties a program can possess.  We discovered a reduction
+for the problem of verifying permutation invariance in arrays and binary search trees,
+and proposed a counterexample guided synthesis approach to verifying more general
+invariance properties.
+
+Directions for future research include an implementing methods for verifying robustness
+in order to determine their usability as part of a synthesis procedure.  Specifically,
+we would like to implement the product program approach of \cite{bartheproduct}, the
+Cartesian Hoare Logic method of \cite{sousa16}, and our approach of synthesizing a
+\(\widetilde{P}\) program to verify invariance.
 
 \appendix
 
