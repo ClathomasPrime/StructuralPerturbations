@@ -110,6 +110,7 @@ of uncertainty, the outputs should be related in a predictable way.  As such,
 verifying robustness requires reasoning about the relationship between two
 execution traces.
 
+\vspace{-0.1in}
 \section{Related Work}
 
   \subsection{Initial Approaches}
@@ -127,6 +128,7 @@ execution traces.
     Aiken \cite{terauchi05} built on this work by applying a type-based approach to
     complement self-composition.
 
+    \vspace{-0.1in}
   \subsection{Continuity and Lipschitz Robustness}
     \noindent{\it\bf Continuity:}\space\space Robustness in the setting of numerical perturbations
     is realized by the property of continuity.  Hamlet \cite{hamlet02} considered the
@@ -220,6 +222,7 @@ execution traces.
   If each element of the input array is perturbed by at most
   \(1\), then each element of the output array will be perturbed by at most \(1\).
 
+  \vspace{-0.1in}
   \subsection{Permutations}
 
     %\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
@@ -233,7 +236,7 @@ execution traces.
       is the root of the failures to synthesize the \verb!max!
       function in Section 1.
 
-%    \vspace{-0.2in}
+    \vspace{-0.1in}
     \subsubsection{Searching}
 
       Consider the function \verb!Find(a, x)! which returns the index of the element
@@ -249,9 +252,9 @@ execution traces.
 %      in the case that \verb!x! is not an element of \verb!a!.  
       Thus, \verb!Find! is
       robust in that perturbing the input array by a permutation \(\sigma\) perturbs
-      the output of \verb!Find! by the same permutation \(\sigma\).
+      the output of \verb!Find! by the same permutation.% \(\sigma\).
 
-%    \vspace{-0.2in}
+    \vspace{-0.1in}
     \subsubsection{Adjacency Matrices}
 
       The effect of permuting the rows and columns of an adjacency matrix by the same
@@ -263,11 +266,11 @@ execution traces.
       the program should satisfy the that
       the output will be perturbed by the same permutation as the input.
 
-
 \section{Invariance under permuting lists}
 \label{permlists}
 
-  As discussed above, many programs are invariant under the ordering of a list.
+\vspace{-0.2in}
+  As discussed above, many programs are invariant under the reordering of a list.
   Results from group theory  suggest a powerful 
   reduction from checking invariance of a list under all permutations
   to invariance under a set of just two permutations.
@@ -306,8 +309,8 @@ execution traces.
   So if we know that $P(\alpha s) = P(s)$ and $P(\beta s) = P(s)$,
   then 
   \[ P((u_1\circ u_2\circ \ldots u_m)s)
-    = P((u_2 \circ \ldots \circ u_m)s)
-    = \ldots = P(u_ms) = P(s)
+      = P((u_1 \circ \ldots \circ u_{m-1})s)
+    = \ldots = P(u_1s) = P(s)
   \]
 
 
@@ -315,9 +318,9 @@ execution traces.
 
     Let \(F\) and \(G\) be the formulas
     \begin{gather*}
-        G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
+        F: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
           \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big) \\
-        F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})]
+          G:  a_{1}[\len(a_{1})-1] = a_{2}[0] \wedge \forall i. 0 \leq i < \len(a_{1})-1 \rightarrow a_{1}[i] = a_{2}[i+1]
     \end{gather*}
     $F$ expresses that $a_2 = \alpha a_1$ and $G$ expresses that 
     $a_2 = \beta a_1$.
@@ -335,8 +338,8 @@ execution traces.
 
     For a fixed $n$ and $\sigma \in S_n$, we can construct a finite state
     transducer $T$ such that $T(s) = \sigma s$ for $|s|=n$.  However, this does
-    not give us any reasonable way of checking that a given finite state machine
-    is invariant under permutation of the input string.  Instead, we will
+    not provide any reasonable way of checking that a given finite state machine
+    is invariant under any permutation of the input string.  Instead, we will
     construct finite state transducers $T_{\alpha}$ and $T_{\beta}$ such that
     for any $n$ and any string $s$ with $|s|=n$, we have $T_{\alpha}(s)=\alpha s$
     and $T_{\beta}(s) =\beta s$. Then, determining whether a FSM $M$ is
@@ -359,8 +362,8 @@ execution traces.
     We first construct $T_\alpha$.
     For each symbol $a \in \Sigma$,
     $T_\alpha$ has a transition from its start
-    state $s_0$ to $s_a$, while reading in put $a$ and
-    writing $\epsilon$ output.
+    state $s_0$ to $s_a$, while reading input $a$ and
+    writing output $\epsilon$.
     For each $a\in \Sigma$ and each $b\in\Sigma$ with $b\ne \$$, there is a
     transition from $s_a$ to $s_a$, reading $b$
     and writing $b$.
@@ -369,9 +372,9 @@ execution traces.
 
     We now construct $T_\beta$.
     For each symbol $a \in \Sigma$,
-    $T_\alpha$ has a transition from its start
-    state $s_0$ to $s_a$, while reading in put $a$ and
-    writing $\epsilon$ output.
+    $T_\beta$ has a transition from its start
+    state $s_0$ to $s_a$, while reading input $a$ and
+    writing output $\epsilon$.
     Each $s_a$ has a transition to $s_1$ while
     reading input $b$ (for any $b\in \Sigma$)
     and writing output $ba$.
@@ -437,23 +440,25 @@ execution traces.
     \end{figure}
 
 
+    \vspace{-0.05in}
 \section{Invariance under permuting binary search trees}
+\vspace{-0.05in}
 
-  In the previous section~\ref{permlists}, we found a reduction
+  In the previous section, we found a reduction
   from checking \emph{all} permutations of a list to checking a small set of
   permutations. It is natural to ask if there are other data types for which we
   can do this. Binary search trees are one such case, where just like lists,
   two permutations suffice to generate all equivalent binary search trees
-  (i.e. tree representing equivalent ordered lists).
+  (i.e. trees representing equivalent ordered lists).
 
   We define binary search trees recursively as either being null,
   or having exactly two children who are binary search trees.
-  Let $\mathrm{list}$ be the function from a binary search trees to 
+  Let \verb!list! be the function from a binary search trees to 
   its corresponding list, i.e. the function giving the in-order traversal of the
   tree's nodes.
 
   Define two (partial) operations $\rho$ and $\theta$ on binary search trees
-  as in figure~\ref{fig-rho-theta}.
+  as in Figure~\ref{fig-rho-theta}.
 
   \begin{figure}[h]
     \centering
@@ -473,11 +478,11 @@ execution traces.
     \label{fig-rho-theta}
   \end{figure}
 
-  You can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
+  One can verify that $\rho$ and $\theta$ preserve $\mathrm{list}(t)$
   by observing that the subtrees in the above diagrams remain in the same order
   before and after applying the transformations.
-  We will show in the next theorem that $\rho$ and $\theta$ additionally suffice
-  to generate all transformations of any tree into another tree with an equal
+  We will show in the next theorem that $\rho$ and $\theta$ suffice
+  to generate all transformations of one tree into any other tree with the same 
   underlying list.
 
   \begin{theorem}
@@ -492,7 +497,7 @@ execution traces.
     Thus, it suffices to show that $t_1$ and $t_2$ can both be transformed
     via $\rho$, $\theta$, $\rho^{-1}$, and $\theta^{-1}$ into another tree $t_3$,
     because then we can transform $t_1$ into $t_3$, then apply the inverse
-    transformation to get to $t_2$.
+    transformation of $t_2 \rightarrow t_3$.
     We proceed by providing an algorithm for transforming to a $t_3$
     in the following form, as demonstrated in
     figure~\ref{fig-tree-ops}\subref{fig-degenerate-list}:
@@ -552,7 +557,7 @@ execution traces.
     Next we show that the loop invariant is inductive.
     The inner loop on line~\ref{inner-loop} does not change $t$'s right child,
     so it remain in degenerate list form.
-    Thus, when we apply $\rho$ to $t$, it's left child has a null right child, and
+    Thus, when we apply $\rho$ to $t$, its left child has a null right child, and
     $t$'s right child is in degenerate list form.
     As shown in figure~\ref{fig-tree-ops}\subref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
     in degenerate list form. 
@@ -744,6 +749,7 @@ execution traces.
 
 \appendix
 
+\vspace{-0.1in}
 \section{Appendix: Background}
 
   \subsection{Lipschitz Robustness}
@@ -760,6 +766,7 @@ execution traces.
     where \(K\) is a real-valued function of the size of \(x_{in}\)
     \cite{chaudhuri11}.
 
+    \vspace{-0.1in}
   \subsection{Permutations}
   \label{perms}
 
@@ -807,6 +814,7 @@ execution traces.
     \label{action}
     \end{equation}
 
+    \vspace{-0.1in}
   \subsection{Automata}
     We consider two classes of automata: finite state machines (FSM) and finite
     state transducers (FST). All automata we consider are deterministic. Given an
