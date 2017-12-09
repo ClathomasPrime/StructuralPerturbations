@@ -66,13 +66,13 @@
 The question of robustness is fundamental to the subject of programming by
 example (PBE).  Robustness of a program is the property that the program behaves
 predictably on uncertain inputs \cite{chaudhuri12}.  In the PBE paradigm, there
-is, by definition, an uncertainty about the intent of the user, and therefore,
-it is desirable that a program synthesizer behave predictably with regards to
+is, by definition, an uncertainty regarding the intent of the user.  Therefore,
+it is desirable that a program synthesizer behave predictably with regard to
 this uncertainty.
 
 Consider an attempt to specify the \(\max\) function by providing to a program
-synthesizer the examples \((13, 15) \mapsto 15\), \((-23, 19) \mapsto 19\), and
-\((-75, -13) \mapsto -13\).  In order to synthesize a simpler program, the
+synthesizer the examples \((3, 5) \mapsto 5\), \((-7, 9) \mapsto 9\), and
+\((-5, -8) \mapsto -8\).  In order to synthesize a simpler program, the
 result will be the program \verb!P(a,b):=return b;!.  The issue that arises here
 is that neither the program syntehsizer, nor the synthesized program, are
 robust.
@@ -82,7 +82,7 @@ would result in the program \verb!P(a,b):=return a;!, while transposing just a
 single input would result in the correct program \verb!P(a,b):=return a>b?a:b;!.
 
 Additionally, the program which is synthesized is not robust as
-\verb!P(a,b)!\(\not=\)\verb!P(b,a)!.  That is, the program does not behave
+\verb!P(a,b)!\(\not=\) \verb!P(b,a)!.  That is, the program does not behave
 predictably under uncertainty in the order of the arguments.  If the program
 which is synthesized is required to be robust with respect to uncertainty in the
 order of the input, neither \verb!P(a,b):=return a;! nor \verb!P(a,b):=return b!
@@ -104,7 +104,7 @@ either of the synthesized programs or even of the synthesizer as a whole.
 However, verification of robustness requires the ability to reason about
 robustness.  Standard program verifiers are unable to verify robustness
 properties as they are an example of a \(2\)-safety property, a property which
-requires reasoning about two execution traces simultaneously.  In particular,
+requires reasoning about two execution traces simultaneously.  Rephrasing the definition,
 robustness is the property that given two inputs which are related by some form
 of uncertainty, the outputs should be related in a predictable way.  As such,
 verifying robustness requires reasoning about the relationship between two
@@ -144,12 +144,12 @@ execution traces.
 
     Verifying the property of Lipschitz continuity is considered by Chaudhuri et al.
     \cite{chaudhuri11}.  The approach taken is to verify continuity of
-    the program as a whole and then verify that each control flow path of the
+    the program as a whole using \cite{chaudhuri11} and then verify that each control flow path of the
     program is piecewise Lipschitz continuous by showing that it is piecewise
     linear.  The continuity verification is performed using a program logic for
     reasoning about continuity \cite{chaudhuri10}.  In order to establish that each
     control flow path is piecewise linear, an abstract interpretation is applied in
-    which an abstract state, referred to as a robustness matrix, is used to
+    which an abstract state, referred to as a robustness matrix, is propagated to
     determine each rate of change \(\partial x_{i}^{out}/\partial x_{j}^{in}\).
     However, the approach used in
     \cite{chaudhuri10,chaudhuri11} is limited to numerical perturbations,
@@ -161,7 +161,7 @@ execution traces.
 
   \subsection{$k$-Safety Properties}
     \noindent{\it\bf \(2\)-Safety Properties:}\space\space In \cite{terauchi05},
-    Terauchi \& Aiken introduced the term \(2\)-safety property.
+    Terauchi \& Aiken introduced the term \(2\)-safety property in the study of secure information flow.
     A general approach to verifying \(2\)-safety properties is the creation of a
     product program which is then provided as input to a standard program verifier
     \cite{bartheproduct}.  The product \(\mathcal{P}_{1} \varoast \mathcal{P}_{2}\)
@@ -177,8 +177,7 @@ execution traces.
     program verifier.
 
     In \cite{bartheanalysis}, Barthe et al.
-    analyzes various relational program logics, as well as different notions of
-    product programs.
+    analyzes different notions of product programs, as well as various relational program logics and relationships between them.
     \smallskip
 
     \noindent{\it\bf \(k\)-Safety Properties:}\space\space Clarkson \& Schneider
@@ -186,7 +185,7 @@ execution traces.
     these ideas. Sousa \& Dillig \cite{sousa16} developed a program logic based on product programs
     to reason about \(k\)-safety properties.  Their approach is more efficient than
     using product programs as they avoid creation of an actual product program, while
-    still being able to reason about the product program.  Moreover, rather than
+    still being able to reason about properties of such a program.  Moreover, rather than
     considering a single product program, their approach considers the equivalence
     class of programs which are equivalent to the product program
     \(\mathcal{P}_{1} \varoast \dotsb \varoast \mathcal{P}_{k}\) and attempts to
@@ -199,7 +198,7 @@ execution traces.
     of Java comparators.
     Discussion with the authors indicated that many structural invariants could
     be verified with this framework, but that the existing implementation is
-    heavily specialized and would require new features to handle objects like
+    heavily specialized and would require new features in order to handle objects like
     arrays or trees.
 
 \section{Example Robustness Properties}
