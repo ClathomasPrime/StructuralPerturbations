@@ -61,7 +61,9 @@
 % \begin{abstract}
 % \end{abstract}
 
+\vspace{-0.075in}
 \section{Introduction}
+\vspace{-0.05in}
 
 The question of robustness is fundamental to the subject of programming by
 example (PBE).  Robustness of a program is the property that the program behaves
@@ -113,22 +115,22 @@ execution traces.
 \vspace{-0.1in}
 \section{Related Work}
 
-  \subsection{Initial Approaches}
-    \noindent{\it\bf Relational Logics:}\space\space Benton \cite{benton} established a
-    Relational Hoare Logic in order to reason about relational properties,
-    properties which consider two, usually distinct, programs.  Barthe et al.
-    \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to
-    probabalistic programs in order to reason about cryptographic protocols and
-    differential privacy.
-    \smallskip
-
-    \noindent{\it\bf Self-Composition:}\space\space Barthe et al.
-    \cite{barthecomposition} applied self-composition, sequential running of renamed
-    copies of the original program, to study secure information flow.  Terauchi \&
-    Aiken \cite{terauchi05} built on this work by applying a type-based approach to
-    complement self-composition.
-
-    \vspace{-0.1in}
+%  \subsection{Initial Approaches}
+%    \noindent{\it\bf Relational Logics:}\space\space Benton \cite{benton} established a
+%    Relational Hoare Logic in order to reason about relational properties,
+%    properties which consider two, usually distinct, programs.  Barthe et al.
+%    \cite{barthecrypto,bartheprivacy} extended Benton's Relational Hoare Logic to
+%    probabalistic programs in order to reason about cryptographic protocols and
+%    differential privacy.
+%    \smallskip
+%
+%    \noindent{\it\bf Self-Composition:}\space\space Barthe et al.
+%    \cite{barthecomposition} applied self-composition, sequential running of renamed
+%    copies of the original program, to study secure information flow.  Terauchi \&
+%    Aiken \cite{terauchi05} built on this work by applying a type-based approach to
+%    complement self-composition.
+%
+%    \vspace{-0.1in}
   \subsection{Continuity and Lipschitz Robustness}
     \noindent{\it\bf Continuity:}\space\space Robustness in the setting of numerical perturbations
     is realized by the property of continuity.  Hamlet \cite{hamlet02} considered the
@@ -384,14 +386,6 @@ execution traces.
     reading any $a\in \Sigma$ and writing
     back $a$.
 
-    The automata $T_\alpha$ and $T_\beta$ each have $O(|\Sigma|)$ states.
-    Now, as discussed in Appendix A.2, the automata 
-    $M \circ T_\alpha$ and $M \circ T_\beta$ have $O(m|\Sigma|)$ states.
-    Determining language equality can then be done by minimizing the number of
-    states of each of these FSMs, because minimal FSMs are unique \cite{hopcroft71}.
-    This can be done, for example, by Hopcroft's algorithm \cite{hopcroft71},
-    yielding a total runtime of $O(m|\Sigma|^2\log(m|\Sigma|))$.
-
     \begin{figure}[h]
       \centering
       \subfloat[][The automata $T_{\alpha}$]{
@@ -441,6 +435,13 @@ execution traces.
       \caption{Examples of our transducers when $\Sigma = \{a,b,c\}$}
     \end{figure}
 
+    The automata $T_\alpha$ and $T_\beta$ each have $O(|\Sigma|)$ states.
+    Now, as discussed in Appendix A.2, the automata 
+    $M \circ T_\alpha$ and $M \circ T_\beta$ have $O(m|\Sigma|)$ states.
+    Determining language equality can then be done by minimizing the number of
+    states of each of these FSMs, because minimal FSMs are unique \cite{hopcroft71}.
+    This can be done, for example, by Hopcroft's algorithm \cite{hopcroft71},
+    yielding a total runtime of $O(m|\Sigma|^2\log(m|\Sigma|))$.
 
     \vspace{-0.05in}
 \section{Invariance under permuting binary search trees}
@@ -595,7 +596,7 @@ execution traces.
       \caption{Tree operations. The symbol $\e$ represents a null tree.}
       \label{fig-tree-ops}
     \end{figure}
-    \vspace{-0.4in}
+%    \vspace{-0.4in}
 
   \end{proof}
 
@@ -612,12 +613,16 @@ execution traces.
     if whenever $f(x)=f(y)$, we have $P(x)=P(y)$.
   \end{definition}
 
-  For example, if a programmer defines a tree or heap data type with a function
-  $\mathrm{list}$ mapping the data type to lists,
-  then nearly every function written on this data type should be class invariant with
-  respect to the $\mathrm{list}$ function,
-  because these data types are meant to represent the lists
-  (while allowing for faster algorithms).
+  Invariance under permutations of lists and binary search trees are special
+  cases of this definition.  For lists, the function \(f\) is the \verb!sort!,
+  while for binary search trees, \(f\) can be taken to be the \verb!list!
+  function, which returns the underlying list in sorted order.
+  %  General applicability of the definition can be seen if a programmer defines a
+  %  tree or heap data type with a function \verb!list! mapping the data type to
+  %  lists.
+  Nearly every function written on a tree or heap should be invariant with
+  respect to a \verb!list! function, as these data types are meant to
+  represent the lists faithfully (while allowing for faster algorithms).
 
   We regard this problem as very difficult, because $f$ can be
   an arbitrary program and thus encode more complicated properties than
@@ -754,6 +759,22 @@ execution traces.
     Because the verifier outputs counterexamples in some order,
     $s$ and $s_0$ will eventually be found, and the algorithm will output ``YES''.
   \end{proof}
+
+\section{Conclusion}
+
+While PBE suffers from some amount of uncertainty in a user's intent, synthesizing
+a robust program can mitigate some of this uncertainty.  To this end, we explored
+various approaches related to verifying the robustness of a program, as well as
+different robustness properties a program can possess.  We discovered a reduction
+for the problem of verifying permutation invariance in arrays and binary search trees,
+and proposed a counterexample guided synthesis approach to verifying more general
+invariance properties.
+
+Directions for future research include an implementing methods for verifying robustness
+in order to determine their usability as part of a synthesis procedure.  Specifically,
+we would like to implement the product program approach of \cite{bartheproduct}, the
+Cartesian Hoare Logic method of \cite{sousa16}, and our approach of synthesizing a
+\(\widetilde{P}\) program to verify invariance.
 
 \appendix
 
