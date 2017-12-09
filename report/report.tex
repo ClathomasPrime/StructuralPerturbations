@@ -227,22 +227,6 @@ execution traces.
 
     %\begin{multline*}N = \len(a_{1}) \wedge \exists s. \Perm(s, N) \wedge \forall i. 0
 
-    TODO: put this discussion in a reasonable place.
-    Break into ``invariance'' and ``respects''
-
-    Let \(F\) and \(G\) be the formulas
-    \begin{gather*}
-        F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
-            G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
-              \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
-    \end{gather*}
-    Then invariance of a program which takes an array as input can be specified
-    in the language of \cite{sousa16} as
-    \[
-      \|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| 
-        \mathcal{P}(a) \|\ret_{1} = \ret_{2}\|.
-    \]
-
   \subsubsection{Sorting}
 
     Sorting is one example of a procedure which is robust with respect to permuting
@@ -283,7 +267,45 @@ execution traces.
 \section{Invariance under permuting lists}
 \label{permlists}
 
-  TODO: write intro
+  As discussed above, many programs are invariant under the ordering of a list.
+  Results from group theory  suggest a powerful 
+  reduction from checking invariance of a list under all permutations
+  to invariance under a set of just two permutations.
+  Some background is discussed in Appendix A.2.
+
+  For any $n$, define
+  \[
+    \alpha = 
+      \begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
+      0 & 1 & 2 & 3 & \ldots & n\\
+      1 & 0 & 2 & 3 & \ldots & n
+      \end{tabular}
+    \qquad \qquad
+    \beta = 
+      \begin{tabular}{c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c@{\hspace{1em}}c}
+      0 & 1 & 2 & \ldots & n-1 & n\\
+      1 & 2 & 3 & \ldots & n & 0
+      \end{tabular}
+  \]
+
+  \begin{lemma}
+    Every permutation is a composition of some sequence of $\alpha$ and $\beta$.
+  \end{lemma}
+
+  \subsection{Application to programs}
+
+  Let \(F\) and \(G\) be the formulas
+  \begin{gather*}
+      F:  \forall i. 0 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[(i+1)\%\len(a_{1})],\\
+          G: a_{1}[0] = a_{2}[1] \wedge a_{1}[1] = a_{2}[0] \wedge 
+            \forall i.\big( 2 \leq i < \len(a_{1}) \rightarrow a_{1}[i] = a_{2}[i] \big).
+  \end{gather*}
+  Then invariance of a program which takes an array as input can be specified
+  in the language of \cite{sousa16} as
+  \[
+    \|\len(a_{1}) = \len(a_{2}) \wedge (F \vee G)\| 
+      \mathcal{P}(a) \|\ret_{1} = \ret_{2}\|.
+  \]
 
   \subsection{Automata}
     Given a program $P$ which takes a linear data type
@@ -469,13 +491,14 @@ execution traces.
     because then we can transform $t_1$ into $t_3$, then apply the inverse
     transformation to get to $t_2$.
     We proceed by providing an algorithm for transforming to a $t_3$
-    in the following form:
+    in the following form, as demonstrated in
+    figure~\ref{fig-tree-ops}\subref{fig-degenerate-list}:
 
     \begin{definition}
       A tree $t$ is in degenerate list form if either
       \begin{enumerate}
-        \item $t$ is Nil, or
-        \item $t$ has a Nil left child, and $t$'s right child is in degenerate
+        \item $t$ is null, or
+        \item $t$ has a null left child, and $t$'s right child is in degenerate
           list form.
       \end{enumerate}
     \end{definition}
@@ -529,7 +552,7 @@ execution traces.
     so it remain in degenerate list form.
     Thus, when we apply $\rho$ to $t$, it's left child has a null right child, and
     $t$'s right child is in degenerate list form.
-    As shown in figure~\ref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
+    As shown in figure~\ref{fig-tree-ops}\subref{fig-apply-rho}, this leave $\rho(t)$'s right subtree
     in degenerate list form. 
     Thus, the invariant is inductive.
 
@@ -541,6 +564,7 @@ execution traces.
       \centering
 
       \subfloat[][A tree in degenerate list form]{
+        \label{fig-degenerate-list}
         \hspace{0.8in}
         \Tree [.a $\e$ [.b $\e$ [.c $\e$ d ]]]
         \hspace{0.8in}
@@ -548,7 +572,7 @@ execution traces.
       \qquad
       \qquad
       \subfloat[][Applying $\rho$ to a tree as in line~\ref{apply-rho}]{
-        % \label{fig-apply-rho}
+        \label{fig-apply-rho}
         \qroofx=2
         \qroofy=1
           \begin{tabular}{ccc}
@@ -558,6 +582,7 @@ execution traces.
           \end{tabular}
       }
       \caption{}
+      \label{fig-tree-ops}
     \end{figure}
 
   \end{proof}
